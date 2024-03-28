@@ -7,10 +7,15 @@ use App\Models\Calendar;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
+/**
+ * APIs for managing calendars
+ */
 class CalendarController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get All Calendars
+     *
+     * Display a listing of the calendar.
      */
     public function index()
     {
@@ -22,7 +27,7 @@ class CalendarController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new calendar.
      */
     public function create()
     {
@@ -30,7 +35,9 @@ class CalendarController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create and Save new Calendar
+     *
+     * Store a newly created calendar in database.
      */
     public function store(Request $request)
     {
@@ -42,7 +49,9 @@ class CalendarController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Get calendar by ID
+     *
+     * Display the specified calendar.
      */
     public function show(Calendar $calendar)
     {
@@ -55,7 +64,7 @@ class CalendarController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified calendar.
      */
     public function edit(Calendar $calendar)
     {
@@ -63,7 +72,9 @@ class CalendarController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Calendar By ID
+     *
+     * Update the specified calendar in database.
      */
     public function update(Request $request, Calendar $calendar)
     {
@@ -73,7 +84,9 @@ class CalendarController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Calendar By ID
+     *
+     * Remove the specified calendar from database.
      */
     public function destroy(Calendar $calendar)
     {

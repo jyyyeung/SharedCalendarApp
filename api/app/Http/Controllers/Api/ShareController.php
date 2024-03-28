@@ -7,10 +7,15 @@ use App\Models\Share;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
+/**
+ * APIs for managing shares
+ */
 class ShareController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get All Shares
+     *
+     * Display a listing of the share.
      */
     public function index()
     {
@@ -22,7 +27,7 @@ class ShareController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new share.
      */
     public function create()
     {
@@ -30,7 +35,9 @@ class ShareController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create and Save new Share
+     *
+     * Store a newly created share in database.
      */
     public function store(Request $request)
     {
@@ -40,7 +47,9 @@ class ShareController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Get Share by ID
+     *
+     * Display the specified share.
      */
     public function show(Share $share)
     {
@@ -53,7 +62,7 @@ class ShareController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified share.
      */
     public function edit(Share $share)
     {
@@ -61,7 +70,9 @@ class ShareController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Share By ID
+     *
+     * Update the specified share in database.
      */
     public function update(Request $request, Share $share)
     {
@@ -70,7 +81,9 @@ class ShareController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Share By ID
+     *
+     * Remove the specified share from database.
      */
     public function destroy(Share $share)
     {
