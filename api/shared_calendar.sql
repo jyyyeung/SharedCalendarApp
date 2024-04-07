@@ -3,7 +3,7 @@ CREATE TABLE
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `username` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) UNIQUE NOT NULL,
-    `password_hash` VARCHAR(255) NOT NULL,
+    `passwordHash` VARCHAR(255) NOT NULL,
     `created_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `settings` JSON
@@ -16,14 +16,14 @@ CREATE TABLE
     `description` VARCHAR(255),
     `created_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `start_time` DATETIME NOT NULL,
-    `end_time` DATETIME NOT NULL,
+    `startTime` DATETIME NOT NULL,
+    `endTime` DATETIME NOT NULL,
     `location` VARCHAR(255),
     `color` VARCHAR(20),
-    `is_all_day` TINYINT (1) DEFAULT 0,
-    `is_private` TINYINT (1) DEFAULT 0,
+    `isAllDay` TINYINT (1) DEFAULT 0,
+    `isPrivate` TINYINT (1) DEFAULT 0,
     `participants` JSON,
-    `calendar_id` INT NOT NULL
+    `calendarId` INT NOT NULL
   );
 
 CREATE TABLE
@@ -32,21 +32,21 @@ CREATE TABLE
     `color` VARCHAR(20),
     `name` VARCHAR(100),
     `timezone` INT,
-    `owner_id` INT NOT NULL
+    `ownerId` INT NOT NULL
   );
 
-ALTER TABLE `event` ADD FOREIGN KEY (`calendar_id`) REFERENCES `calendar` (`id`);
+ALTER TABLE `event` ADD FOREIGN KEY (`calendarId`) REFERENCES `calendar` (`id`);
 
-ALTER TABLE `calendar` ADD FOREIGN KEY (`owner_id`) REFERENCES `account` (`id`);
+ALTER TABLE `calendar` ADD FOREIGN KEY (`ownerId`) REFERENCES `account` (`id`);
 
 CREATE TABLE
   IF NOT EXISTS share (
-    calendar_id INT,
-    account_id INT,
+    calendarId INT,
+    accountId INT,
     scope ENUM ('availability', 'read', 'write') DEFAULT 'read',
-    PRIMARY KEY (`calendar_id`, `account_id`)
+    PRIMARY KEY (`calendarId`, `accountId`)
   );
 
-ALTER TABLE `share` ADD FOREIGN KEY (`calendar_id`) REFERENCES `calendar` (`id`);
+ALTER TABLE `share` ADD FOREIGN KEY (`calendarId`) REFERENCES `calendar` (`id`);
 
-ALTER TABLE `share` ADD FOREIGN KEY (`account_id`) REFERENCES `account` (`id`);
+ALTER TABLE `share` ADD FOREIGN KEY (`accountId`) REFERENCES `account` (`id`);

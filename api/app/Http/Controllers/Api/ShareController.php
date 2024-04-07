@@ -20,10 +20,7 @@ class ShareController extends Controller
     public function index()
     {
         $shares = Share::all();
-        return response()->json([
-            'status' => true,
-            'shares' => $shares
-        ]);
+        return $shares;
     }
 
     /**

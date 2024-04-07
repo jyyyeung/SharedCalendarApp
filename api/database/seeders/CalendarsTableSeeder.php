@@ -10,28 +10,28 @@ use Illuminate\Support\Facades\DB;
 
 class CalendarsTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-    {
-        // Let's truncate our existing records to start from scratch.
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Calendar::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+	/**
+	 * Run the database seeds.
+	 */
+	public function run(): void
+	{
+		// Let's truncate our existing records to start from scratch.
+		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+		Calendar::truncate();
+		DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $faker = \Faker\Factory::create();
+		$faker = \Faker\Factory::create();
 
-        // And now, let's create a few calendars in our database:
-        $accounts = Account::pluck('id')->toArray();
+		// And now, let's create a few calendars in our database:
+		$accounts = Account::pluck('id')->toArray();
 
-        for ($i = 0; $i < 50; $i++) {
-            Calendar::create([
-                'color' => $faker->hexColor(),
-                'name' => $faker->word(),
-                'timezone' => $faker->timezone(),
-                'owner_id' => $faker->randomElement($accounts)
-            ]);
-        }
-    }
+		for ($i = 0; $i < 50; $i++) {
+			Calendar::create([
+				'color' => $faker->hexColor(),
+				'name' => $faker->word(),
+				'timezone' => $faker->timezone(),
+				'ownerId' => $faker->randomElement($accounts)
+			]);
+		}
+	}
 }

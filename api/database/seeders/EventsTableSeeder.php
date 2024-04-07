@@ -28,16 +28,16 @@ class EventsTableSeeder extends Seeder
         for ($i = 0; $i < 50; $i++) {
 
             Event::create([
-                'calendar_id' => $faker->randomElement($calendars),
+                'calendarId' => $faker->randomElement($calendars),
                 'title' => $faker->sentence(),
                 'description' => $faker->paragraph(),
-                'start_time' => $faker->dateTimeBetween('-1 month', '+1 month'),
-                'end_time' => $faker->dateTimeBetween('-1 month', '+1 month'),
+                'startTime' => $faker->dateTimeBetween('-1 month', '+1 month'),
+                'endTime' => $faker->dateTimeBetween('-1 month', '+1 month'),
                 'location' => $faker->address(),
                 'timezone' => $faker->timezone(),
                 'color' => $faker->hexColor(),
-                'is_all_day' => $faker->boolean(),
-                'is_private' => $faker->boolean(),
+                'isAllDay' => $faker->boolean(),
+                'isPrivate' => $faker->boolean(),
                 'participants' => json_encode($faker->words(3)),
             ]);
         }

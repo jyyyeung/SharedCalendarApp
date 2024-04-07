@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Share extends Model
 {
-    use HasFactory;
-    protected $fillable = ['calendar_id', 'account_id', 'permission'];
+	use HasFactory;
+	protected $fillable = ['calendarId', 'accountId', 'permission'];
 }

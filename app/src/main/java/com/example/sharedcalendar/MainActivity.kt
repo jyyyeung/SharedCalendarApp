@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, response.toString())
             if (response.isSuccessful) {
                 launch(Dispatchers.Main) {
-                    Log.i(TAG, response.body()?.calendars.toString())
+                    Log.i(TAG, response.body().toString())
                 }
             }
 

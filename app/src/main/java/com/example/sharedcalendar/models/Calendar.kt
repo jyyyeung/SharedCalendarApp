@@ -5,10 +5,5 @@ data class Calendar(
     var name: String? = null,
     var color: String? = null,
     var timezone: String? = null,
-    var owner_id: Int = 0
-)
-
-class GetAllCalendarsResponse(
-    var calendars: List<Calendar>,
-    var status: Boolean
+    var ownerId: Int = 0
 )

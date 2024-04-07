@@ -16,17 +16,17 @@ return new class extends Migration
             $table->timestamps();
             $table->string("title");
             $table->text("description")->nullable();
-            $table->dateTime("start_time");
-            $table->dateTime("end_time");
-            $table->unsignedBigInteger('calendar_id');
+            $table->dateTime("startTime");
+            $table->dateTime("endTime");
+            $table->unsignedBigInteger('calendarId');
             $table->string("timezone");
             $table->string("color")->nullable();
             $table->string("location")->nullable();
-            $table->boolean("is_all_day")->default(false);
-            $table->boolean("is_private")->default(false);
+            $table->boolean("isAllDay")->default(false);
+            $table->boolean("isPrivate")->default(false);
             $table->json("participants")->nullable();
 
-            $table->foreign('calendar_id')->references('id')->on('calendars');
+            $table->foreign('calendarId')->references('id')->on('calendars');
         });
     }
 

@@ -16,10 +16,7 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::all();
-        return response()->json([
-            'status' => true,
-            'events' => $events
-        ]);
+        return $events;
     }
 
     /**

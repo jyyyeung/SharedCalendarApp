@@ -30,8 +30,8 @@ class SharesTableSeeder extends Seeder
         for ($i = 0; $i < 50; $i++) {
 
             Share::create([
-                'calendar_id' => $faker->randomElement($calendars),
-                'account_id' => $faker->randomElement($accounts),
+                'calendarId' => $faker->randomElement($calendars),
+                'accountId' => $faker->randomElement($accounts),
                 'permission' => $faker->randomElement(['read', 'write', 'share', 'invite']),
                 // 'can_edit' => $faker->boolean(),
                 // 'can_share' => $faker->boolean(),

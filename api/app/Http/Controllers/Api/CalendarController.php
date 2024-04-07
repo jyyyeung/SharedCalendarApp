@@ -20,10 +20,7 @@ class CalendarController extends Controller
     public function index()
     {
         $calendars = Calendar::all();
-        return response()->json([
-            'status' => true,
-            'calendars' => $calendars
-        ]);
+        return $calendars;
     }
 
     /**

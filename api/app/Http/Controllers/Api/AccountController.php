@@ -20,10 +20,7 @@ class AccountController extends Controller
     public function index()
     {
         $accounts = Account::all();
-        return response()->json([
-            'status' => true,
-            'accounts' => $accounts
-        ]);
+        return $accounts;
     }
 
     /**
