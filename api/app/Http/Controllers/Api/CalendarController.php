@@ -16,6 +16,7 @@ class CalendarController extends Controller
      * Get All Calendars
      *
      * Display a listing of the calendar.
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Calendar>
      */
     public function index()
     {
