@@ -28,5 +28,4 @@ class MainActivity : AppCompatActivity() {
             Log.i(TAG, response2.body().toString())
         }
     }
-
 }

@@ -15,7 +15,5 @@ data class Event(
     var color: String? = null,
     var isAllDay: Boolean? = false,
     var isPrivate: Boolean? = false,
-    var participants: JSONObject? = null
+    var participants: JSONObject? = null,
 )
-
-

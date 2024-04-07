@@ -5,5 +5,5 @@ data class Calendar(
     var name: String? = null,
     var color: String? = null,
     var timezone: String? = null,
-    var ownerId: Int = 0
+    var ownerId: Int = 0,
 )

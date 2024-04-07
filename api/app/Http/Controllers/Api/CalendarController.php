@@ -84,6 +84,8 @@ class CalendarController extends Controller
      * Remove Calendar By ID
      *
      * Remove the specified calendar from database.
+     * @param Calendar $calendar
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Calendar $calendar)
     {
