@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -46,6 +47,11 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
+        try {
+            $event = Event::findOrFail($event->id);
+        } catch (ModelNotFoundException $exception) {
+            return back()->withError($exception->getMessage())->withInput();
+        }
         return $event;
     }
 
