@@ -14,33 +14,114 @@
         android:orientation="horizontal"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="20dp">
-        <Button
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="<-"
-            android:textColor="@color/blue"
-            android:background="@null"
-            android:textStyle="bold"
-            android:textSize="20sp"/>
 
         <Button
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="->"
-            android:textColor="@color/blue"
+            android:layout_weight="1"
             android:background="@null"
+            android:onClick="previousMonthAction"
+            android:text="《-"
+            android:textAlignment="center"
+            android:textColor="@color/blue"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:textSize="20sp"/>
-
+            tools:ignore="TouchTargetSizeCheck" />
         <TextView
+            android:id="@+id/monthViewTV"
             android:layout_width="0dp"
             android:layout_weight="2"
             android:layout_height="wrap_content"
             android:text="Hello World!"
+            android:textAlignment="center"
             android:textSize="20sp" />
-            
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:onClick="nextMonthAction"
+            android:text="-》"
+            android:textAlignment="center"
+            android:textColor="@color/blue"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="SUN"
+            android:layout_weight="1"
+        />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="MON"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="TUE"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="WED"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="THUR"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="FRI"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:text="SAT"
+            android:layout_weight="1"
+            />
+
 
     </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/calendarRecyclerView"/>
+
 </LinearLayout>
