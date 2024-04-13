@@ -7,6 +7,22 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
+// IMPLEMENTATION EXAMPLE in onCreate
+//super.onCreate(savedInstanceState)
+//setContentView(R.layout.activity_main)
+//
+//lifecycleScope.launch {
+//    val response = ApiClient.apiService.getAllCalendars()
+//    Log.d(TAG, response.toString())
+//    if (response.isSuccessful) {
+//        launch(Dispatchers.Main) {
+//            Log.i(TAG, response.body().toString())
+//        }
+//    }
+//
+//    val response2 = ApiClient.apiService.getCalendarById(1)
+//    Log.i(TAG, response2.body().toString())
+//}
 interface ApiService {
     /**
      * Returns a list of all calendars.
