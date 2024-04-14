@@ -2,9 +2,14 @@ package com.example.sharedcalendar
 
 import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.models.Event
+import com.example.sharedcalendar.models.LoginRequest
+import com.example.sharedcalendar.models.LoginResponse
 import com.example.sharedcalendar.models.Share
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 // IMPLEMENTATION EXAMPLE in onCreate
@@ -24,6 +29,13 @@ import retrofit2.http.Path
 //    Log.i(TAG, response2.body().toString())
 //}
 interface ApiService {
+    /**
+     * Login with email and password
+     */
+    @Headers("Content-Type: application/json")
+    @POST("login")
+    suspend fun login(@Body login: LoginRequest): Response<LoginResponse>
+
     /**
      * Returns a list of all calendars.
      * @return A list of all calendars.
