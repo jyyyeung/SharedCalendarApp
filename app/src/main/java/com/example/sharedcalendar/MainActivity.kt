@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity(), OnItemListener {
     private var monthYearText: TextView? = null
     private var calendarRecyclerView: RecyclerView? = null
     private var selectedDate: LocalDate? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
