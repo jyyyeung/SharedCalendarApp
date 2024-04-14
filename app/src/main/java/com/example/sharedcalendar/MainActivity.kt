@@ -1,6 +1,8 @@
 package com.example.sharedcalendar
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -8,10 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sharedcalendar.CalendarAdapter.OnItemListener
+import com.example.sharedcalendar.data.LoginDataSource
+import com.example.sharedcalendar.data.LoginRepository
+import com.example.sharedcalendar.ui.login.LoginActivity
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
+const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), OnItemListener {
     private var monthYearText: TextView? = null
@@ -23,6 +29,12 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         initWidgets()
         selectedDate = LocalDate.now()
         setMonthView()
+
+        // Start Login Activity if not logged in
+        Log.i(TAG, LoginRepository(LoginDataSource()).isLoggedIn.toString())
+        if (!LoginRepository(LoginDataSource()).isLoggedIn) {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
     }
 
     private fun initWidgets() {
