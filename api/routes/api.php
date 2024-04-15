@@ -6,18 +6,21 @@ use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\ShareController;
+use App\Http\Controllers\Api\UserController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 Route::post('/login', [AuthController::class, 'login']);
-
-// Requires Authorization Bearer {{ token }} in Headers
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::post('/register', [AuthController::class, 'register']);
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum'])->group(
+    // Requires Authorization Bearer {{ token }} in Headers
     function () { {
+            Route::apiResource('users', UserController::class);
+            Route::get('/user', [UserController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
         }
     }
