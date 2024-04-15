@@ -32,12 +32,18 @@ class CalendarController extends Controller
 
     /**
      * Get all calendars owned by the authenticated user
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Calendar>
      */
     public function indexOwned()
     {
         $authUser = auth()->user();
-        $calendars = Calendar::where('ownerId', $authUser->id)->get();
-        return $calendars;
+        try {
+            $calendars = Calendar::where('ownerId', $authUser->id)->get();
+        } catch (ModelNotFoundException $exception) {
+            return back()->withError($exception->getMessage())->withInput();
+        }
+        // $calendars = Calendar::where('ownerId', $authUser->id)->get();
+        return response()->json($calendars, 200);
     }
 
     /**
@@ -60,9 +66,17 @@ class CalendarController extends Controller
      * Create and Save new Calendar
      *
      * Store a newly created calendar in database.
+     * @param Request $request
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Calendar>
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string',
+            'color' => 'required|string',
+            'timezone' => 'required|string',
+        ]);
+
         $calendar = Calendar::create([
             // taken from authenticated user
             'ownerId' => $request->user()->id,
@@ -83,6 +97,7 @@ class CalendarController extends Controller
      */
     public function show(Calendar $calendar)
     {
+
         $authorized = false;
         // Authenticated user is not the owner of the calendar
         $calendar->ownerId === auth()->id() ?: $authorized = true;
@@ -111,6 +126,12 @@ class CalendarController extends Controller
      */
     public function update(Request $request, Calendar $calendar)
     {
+        $request->validate([
+            'name' => 'required|string',
+            'color' => 'required|string',
+            'timezone' => 'required|string',
+        ]);
+
         // Check if authenticated user is the owner of the calendar
         $authorized = false;
         // Authenticated user is not the owner of the calendar
@@ -152,7 +173,8 @@ class CalendarController extends Controller
         }
 
         $calendar->delete();
-        // 204 No Content
+
+
         return response()->json(null, 204);
     }
 }

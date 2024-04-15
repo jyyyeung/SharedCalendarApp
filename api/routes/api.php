@@ -12,9 +12,6 @@ use App\Http\Controllers\Api\CalendarShareController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum'])->group(
     // Requires Authorization Bearer {{ token }} in Headers
