@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Controllers\Api;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -10,6 +12,7 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -23,7 +26,10 @@ class AuthController extends Controller
 
         // If the user does not exist or the password is incorrect
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response(['status' => 404, 'message' => "Not Found!!!"]);
+            return response([
+                'status' => 404,
+                'message' => "Not Found!!!"
+            ], 404);
         }
 
         $token = $user->createToken($request->device_name)->plainTextToken;
@@ -31,9 +37,9 @@ class AuthController extends Controller
         return response([
             'token' => $token,
             'user' => $user,
-            'status' => 200,
-            'message' => 'Success'
-        ]);
+            // 'status' => 200,
+            // 'message' => 'Success'
+        ], 200);
     }
 
     public function logout(Request $request)
@@ -43,7 +49,7 @@ class AuthController extends Controller
         return response([
             'status' => 200,
             'message' => 'Logout successful'
-        ]);
+        ], 200);
     }
 
     public function register(Request $request)
@@ -68,7 +74,7 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'status' => 201,
             'message' => 'User created successfully'
-        ]);
+        ], 201);
     }
 
     public function me(Request $request)

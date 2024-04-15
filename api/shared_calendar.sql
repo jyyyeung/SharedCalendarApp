@@ -42,11 +42,11 @@ ALTER TABLE `calendar` ADD FOREIGN KEY (`ownerId`) REFERENCES `account` (`id`);
 CREATE TABLE
     IF NOT EXISTS share (
         calendarId INT,
-        accountId INT,
-        scope ENUM ('AVAILABILITY', 'READ', 'WRITE', 'SHARE') DEFAULT 'READ',
-        PRIMARY KEY (`calendarId`, `accountId`)
+        userId INT,
+        scope ENUM ('AVAILABILITY', 'READ', 'WRITE', 'ADMIN') DEFAULT 'READ',
+        PRIMARY KEY (`calendarId`, `userId`)
     );
 
 ALTER TABLE `share` ADD FOREIGN KEY (`calendarId`) REFERENCES `calendar` (`id`);
 
-ALTER TABLE `share` ADD FOREIGN KEY (`accountId`) REFERENCES `account` (`id`);
+ALTER TABLE `share` ADD FOREIGN KEY (`userId`) REFERENCES `account` (`id`);
