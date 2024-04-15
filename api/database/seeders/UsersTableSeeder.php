@@ -23,14 +23,23 @@ class UsersTableSeeder extends Seeder
             User::truncate();
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
+            $faker = \Faker\Factory::create();
+
             $password = Hash::make("password");
             for ($i = 0; $i < 1; $i++) {
                 $users = [
-                    'name' => 'admin',
+                    'name' => 'Admin',
+                    'username' => 'admin',
                     'email' => 'test1@example.com',
                     'password' => $password,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
+                    'settings' => json_encode([
+                        'default_view' => $faker->randomElement(['day', '4-day', 'week', 'month']),
+                        'default_calendar' => $faker->randomElement(['work', 'personal', 'school']),
+                        'default_timezone' => $faker->timezone(),
+                        'default_reminder' => $faker->randomElement(['email', 'popup', 'sms'])
+                    ])
                 ];
             }
             User::insert($users);
