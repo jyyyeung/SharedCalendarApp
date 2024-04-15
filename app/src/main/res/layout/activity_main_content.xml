@@ -20,11 +20,34 @@
 
 
     </androidx.appcompat.widget.Toolbar>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <fragment
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/weekBtn"
+            android:text="Week"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:id="@+id/monthBtn"
+            android:layout_height="wrap_content"
+            android:text="Month"/>
+
+    </LinearLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fragment"
+        android:id="@+id/flFragment">
+
+    </FrameLayout>
+
+
+
+
+
 
 
 
