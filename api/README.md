@@ -4,7 +4,7 @@ This is the API for the Shared Calendar App. It is built with Laravel.
 
 ## Requirements
 
-- PHP 7.4
+- PHP 8.2
 - Composer
 - MySQL
 - Laravel
