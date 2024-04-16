@@ -9,36 +9,29 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    /**
-     * Get All Events
-     *
-     * Display a listing of the event.
-     */
-    public function index()
-    {
-        $events = Event::all();
-        return $events;
-    }
+    // /**
+    //  * Get All Events
+    //  *
+    //  * Display a listing of the event.
+    //  */
+    // public function index(string $calendarId)
+    // {
+    //     $events = Event::where('calendarId', $calendarId)->get();
+    //     // $events = Event::all();
+    //     return $events;
+    // }
 
-    /**
-     * Show the form for creating a new event.
-     */
-    public function create()
-    {
-        //
-    }
+    // /**
+    //  * Create and Save new Event
+    //  *
+    //  * Store a newly created event in database.
+    //  */
+    // public function store(Request $request)
+    // {
+    //     $event = Event::create($request->all());
 
-    /**
-     * Create and Save new Event
-     *
-     * Store a newly created event in database.
-     */
-    public function store(Request $request)
-    {
-        $event = Event::create($request->all());
-
-        return response()->json($event, 201);
-    }
+    //     return response()->json($event, 201);
+    // }
 
     /**
      * Get Event by ID
@@ -55,13 +48,6 @@ class EventController extends Controller
         return $event;
     }
 
-    /**
-     * Show the form for editing the specified event.
-     */
-    public function edit(Event $event)
-    {
-        //
-    }
 
     /**
      * Update Event By ID
