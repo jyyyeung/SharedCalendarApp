@@ -1,5 +1,6 @@
 package com.example.sharedcalendar.ui.login
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,25 +10,30 @@ import com.example.sharedcalendar.data.LoginRepository
 import com.example.sharedcalendar.data.Result
 
 import com.example.sharedcalendar.R
+import com.example.sharedcalendar.data.SessionManager
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
-
+class LoginViewModel(
+    private val loginRepository: LoginRepository
+) : ViewModel() {
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    fun login(username: String, password: String) {
+
+    fun login(username: String, password: String, sessionManager: SessionManager) {
+
         viewModelScope.launch {
+
             try {
                 // can be launched in a separate asynchronous job
-                val result = loginRepository.login(username, password)
+                val result = loginRepository.login(username, password, sessionManager)
 
                 if (result is Result.Success) {
                     _loginResult.value =
-                        LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
+                        LoginResult(success = LoggedInUserView(displayName = result.data.user.username))
                 } else {
                     _loginResult.value = LoginResult(error = R.string.login_failed)
                 }

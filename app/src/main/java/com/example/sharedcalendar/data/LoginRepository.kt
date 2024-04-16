@@ -1,6 +1,8 @@
 package com.example.sharedcalendar.data
 
 import com.example.sharedcalendar.data.model.LoggedInUser
+import com.example.sharedcalendar.models.LoginResponse
+import com.example.sharedcalendar.models.User
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -10,7 +12,7 @@ import com.example.sharedcalendar.data.model.LoggedInUser
 class LoginRepository(val dataSource: LoginDataSource) {
 
     // in-memory cache of the loggedInUser object
-    var user: LoggedInUser? = null
+    var user: User? = null
         private set
 
     val isLoggedIn: Boolean
@@ -27,19 +29,23 @@ class LoginRepository(val dataSource: LoginDataSource) {
         dataSource.logout()
     }
 
-    suspend fun login(username: String, password: String): Result<LoggedInUser> {
+    suspend fun login(
+        username: String,
+        password: String,
+        sessionManager: SessionManager
+    ): Result<LoginResponse> {
         // handle login
         val result = dataSource.login(username, password)
 
         if (result is Result.Success) {
             // If Login is successful
-            setLoggedInUser(result.data)
+            sessionManager.setAuthToken(result.data.token)
+            setLoggedInUser(result.data.user)
         }
-
         return result
     }
 
-    private fun setLoggedInUser(loggedInUser: LoggedInUser) {
+    private fun setLoggedInUser(loggedInUser: User) {
         this.user = loggedInUser
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore

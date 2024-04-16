@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sharedcalendar.CalendarAdapter.OnItemListener
 import com.example.sharedcalendar.data.LoginDataSource
 import com.example.sharedcalendar.data.LoginRepository
+import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.ui.login.LoginActivity
 import java.time.LocalDate
 import java.time.YearMonth
@@ -20,6 +21,7 @@ import java.time.format.DateTimeFormatter
 const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), OnItemListener {
+    private lateinit var sessionManager: SessionManager
     private var monthYearText: TextView? = null
     private var calendarRecyclerView: RecyclerView? = null
     private var selectedDate: LocalDate? = null
@@ -31,9 +33,14 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         selectedDate = LocalDate.now()
         setMonthView()
 
+        sessionManager = SessionManager(this)
+
         // Start Login Activity if not logged in
         Log.i(TAG, LoginRepository(LoginDataSource()).isLoggedIn.toString())
-        if (!LoginRepository(LoginDataSource()).isLoggedIn) {
+        Log.i(TAG, sessionManager.getAuthToken().toString())
+//        if (!LoginRepository(LoginDataSource()).isLoggedIn || sessionManager.getAuthToken() == "") {
+        if (sessionManager.getAuthToken() == "") {
+            // If auth token does not exist
             startActivity(Intent(this, LoginActivity::class.java))
         }
     }

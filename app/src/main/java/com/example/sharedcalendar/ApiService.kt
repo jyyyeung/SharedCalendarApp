@@ -4,6 +4,8 @@ import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.LoginRequest
 import com.example.sharedcalendar.models.LoginResponse
+import com.example.sharedcalendar.models.RegisterRequest
+import com.example.sharedcalendar.models.RegisterResponse
 import com.example.sharedcalendar.models.Share
 import retrofit2.Response
 import retrofit2.http.Body
@@ -32,9 +34,16 @@ interface ApiService {
     /**
      * Login with email and password
      */
-    @Headers("Content-Type: application/json")
+    @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("login")
     suspend fun login(@Body login: LoginRequest): Response<LoginResponse>
+
+    /**
+     * Register for a new account
+     */
+    @Headers("Content-Type: application/json")
+    @POST("register")
+    suspend fun register(@Body register: RegisterRequest): Response <RegisterResponse>
 
     /**
      * Returns a list of all calendars.

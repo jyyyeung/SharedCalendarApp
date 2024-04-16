@@ -15,8 +15,10 @@ import android.widget.Toast
 import com.example.sharedcalendar.databinding.ActivityLoginBinding
 
 import com.example.sharedcalendar.R
+import com.example.sharedcalendar.data.SessionManager
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var sessionManager: SessionManager
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
@@ -32,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
         val login = binding.login
         val loading = binding.loading
 
+        sessionManager = SessionManager(this)
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
 
@@ -85,7 +88,8 @@ class LoginActivity : AppCompatActivity() {
                     EditorInfo.IME_ACTION_DONE ->
                         loginViewModel.login(
                             username.text.toString(),
-                            password.text.toString()
+                            password.text.toString(),
+                            sessionManager
                         )
                 }
                 false
@@ -93,7 +97,11 @@ class LoginActivity : AppCompatActivity() {
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
+                loginViewModel.login(
+                    username.text.toString(),
+                    password.text.toString(),
+                    sessionManager
+                )
             }
         }
     }
