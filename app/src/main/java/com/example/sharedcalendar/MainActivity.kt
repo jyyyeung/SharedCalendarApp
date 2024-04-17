@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        //Drawer button
         var drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
         var buttonDrawerToggle : ImageButton = findViewById(R.id.drawerLayoutToggle)
 
@@ -20,12 +21,12 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.open()
         })
 
+
+        //Chnage Fragment from month to week on button click
         val monthViewFragment = MonthViewFragment()
         val weekViewFragment = WeekViewFragment()
         val weekBtn : Button = findViewById(R.id.weekBtn)
         val monthBtn : Button = findViewById(R.id.monthBtn)
-
-
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, monthViewFragment)
             commit()
