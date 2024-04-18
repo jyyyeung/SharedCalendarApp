@@ -1,6 +1,8 @@
 package com.example.sharedcalendar.ui
 
 import android.view.View
+import com.kizitonwose.calendarview.model.CalendarDay
+import com.kizitonwose.calendarview.model.CalendarMonth
 
 open class ViewContainer(val view: View)
 
@@ -15,14 +17,17 @@ interface Binder<Data, Container : ViewContainer> {
     fun bind(container: Container, data: Data)
 }
 
-interface WeekDayBinder<Container : ViewContainer> : Binder<WeekDay, Container>
+//interface WeekDayBinder<Container : ViewContainer> : Binder<WeekDay, Container>
 
-interface WeekHeaderFooterBinder<Container : ViewContainer> : Binder<Week, Container>
+//interface WeekHeaderFooterBinder<Container : ViewContainer> : Binder<Week, Container>
 
+/**
+ * Bind a day View to a Month View?
+ */
 interface MonthDayBinder<Container : ViewContainer> : Binder<CalendarDay, Container>
 
 interface MonthHeaderFooterBinder<Container : ViewContainer> : Binder<CalendarMonth, Container>
 
 typealias MonthScrollListener = (CalendarMonth) -> Unit
 
-typealias WeekScrollListener = (Week) -> Unit
+//typealias WeekScrollListener = (Week) -> Unit
