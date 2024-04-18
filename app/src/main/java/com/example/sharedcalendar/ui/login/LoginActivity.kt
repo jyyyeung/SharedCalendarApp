@@ -6,7 +6,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -20,8 +22,7 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
-    lateinit var sessionManager: SessionManager
-
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,34 +30,38 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val username = binding.username
-        val password = binding.password
-        val login = binding.login
-        val loading = binding.loading
+        // Set variables for views
+        val etEmail = findViewById<EditText>(R.id.etEmail) // binding.username
+        val etPassword = findViewById<EditText>(R.id.etPassword)
+        val btnLogin = findViewById<Button>(R.id.btnLogin)
+        val pbLoading = findViewById<ProgressBar>(R.id.pbLoading)
 
+        // Init session manager
         sessionManager = SessionManager(this)
-        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
-            .get(LoginViewModel::class.java)
+        // set login view model
+        loginViewModel =
+            ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
-            login.isEnabled = loginState.isDataValid
+            btnLogin.isEnabled = loginState.isDataValid
 
-            if (loginState.usernameError != null) {
-
-                username.error = getString(loginState.usernameError)
+            // Ensure email is valid
+            if (loginState.emailError != null) {
+                etEmail.error = getString(loginState.emailError)
             }
+            // Ensure password is valid
             if (loginState.passwordError != null) {
-                password.error = getString(loginState.passwordError)
+                etPassword.error = getString(loginState.passwordError)
             }
         })
 
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 //            Log.d(TAG, loginResult.toString())
-            loading.visibility = View.GONE
+            pbLoading.visibility = View.GONE
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)
             }
@@ -69,18 +74,20 @@ class LoginActivity : AppCompatActivity() {
             finish()
         })
 
-        username.afterTextChanged {
+        // Listen to changes in Email input
+        etEmail.afterTextChanged {
             loginViewModel.loginDataChanged(
-                username.text.toString(),
-                password.text.toString()
+                etEmail.text.toString(),
+                etPassword.text.toString()
             )
         }
 
-        password.apply {
+
+        etPassword.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
-                    username.text.toString(),
-                    password.text.toString()
+                    etEmail.text.toString(),
+                    etPassword.text.toString()
                 )
             }
 
@@ -88,29 +95,33 @@ class LoginActivity : AppCompatActivity() {
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
                         loginViewModel.login(
-                            username.text.toString(),
-                            password.text.toString(),
+                            etEmail.text.toString(),
+                            etPassword.text.toString(),
                             sessionManager
                         )
                 }
                 false
             }
 
-            login.setOnClickListener {
-                loading.visibility = View.VISIBLE
+            // Listen to Login btn click event
+            btnLogin.setOnClickListener {
+                pbLoading.visibility = View.VISIBLE
                 loginViewModel.login(
-                    username.text.toString(),
-                    password.text.toString(),
+                    etEmail.text.toString(),
+                    etPassword.text.toString(),
                     sessionManager
                 )
             }
         }
     }
 
+
+    // Called when User login successful
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
         // TODO : initiate successful logged in experience
+
         Toast.makeText(
             applicationContext,
             "$welcome $displayName",
@@ -118,6 +129,7 @@ class LoginActivity : AppCompatActivity() {
         ).show()
     }
 
+    // Called when user login failed
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }

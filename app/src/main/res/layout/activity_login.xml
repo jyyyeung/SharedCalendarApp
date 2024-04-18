@@ -27,7 +27,7 @@
         app:layout_constraintGuide_end="24dp" />
 
     <ImageView
-        android:id="@+id/logo"
+        android:id="@+id/ivLogo"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginTop="50dp"
@@ -38,26 +38,8 @@
         app:layout_constraintStart_toStartOf="@+id/guideline_left"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--
-        <EditText
-            android:id="@+id/email"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:background="@drawable/et_bg"
-            android:drawableEnd="@drawable/ic_baseline_email_24"
-            android:drawableTint="@color/white_light"
-            android:hint="Email address"
-            android:inputType="textEmailAddress"
-            android:padding="16dp"
-            android:textColor="@color/white_light"
-            android:textColorHint="@color/white_light"
-            app:layout_constraintEnd_toStartOf="@id/guideline_right"
-            app:layout_constraintStart_toStartOf="@id/guideline_left"
-            app:layout_constraintTop_toBottomOf="@+id/logo" />-->
-
     <EditText
-        android:id="@+id/username"
+        android:id="@+id/etEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -69,28 +51,10 @@
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toStartOf="@id/guideline_right"
         app:layout_constraintStart_toStartOf="@id/guideline_left"
-        app:layout_constraintTop_toBottomOf="@+id/logo" />
-
-
-    <!--    <EditText-->
-    <!--        android:id="@+id/password"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginTop="16dp"-->
-    <!--        android:background="@drawable/et_bg"-->
-    <!--        android:drawableEnd="@drawable/ic_baseline_eye_24"-->
-    <!--        android:drawableTint="@color/white_light"-->
-    <!--        android:hint="Password"-->
-    <!--        android:inputType="textPassword"-->
-    <!--        android:padding="16dp"-->
-    <!--        android:textColor="@color/white_light"-->
-    <!--        android:textColorHint="@color/white_light"-->
-    <!--        app:layout_constraintEnd_toStartOf="@id/guideline_right"-->
-    <!--        app:layout_constraintStart_toStartOf="@id/guideline_left"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/email" />-->
+        app:layout_constraintTop_toBottomOf="@+id/ivLogo" />
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/etPassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -104,10 +68,10 @@
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toStartOf="@id/guideline_right"
         app:layout_constraintStart_toStartOf="@id/guideline_left"
-        app:layout_constraintTop_toBottomOf="@+id/username" />
+        app:layout_constraintTop_toBottomOf="@+id/etEmail" />
 
     <Button
-        android:id="@+id/login"
+        android:id="@+id/btnLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -116,47 +80,10 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@+id/guideline_right"
         app:layout_constraintStart_toStartOf="@+id/guideline_left"
-        app:layout_constraintTop_toBottomOf="@+id/password" />
-
-    <!--    <Button-->
-    <!--        android:id="@+id/login"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="start"-->
-    <!--        android:layout_marginTop="16dp"-->
-    <!--        android:layout_marginBottom="64dp"-->
-    <!--        android:enabled="false"-->
-    <!--        android:text="@string/action_sign_in"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--       -->
-    <!--        app:layout_constraintVertical_bias="0.2" />-->
-
-
-    <!--    <TextView-->
-    <!--        android:id="@+id/google_login"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginBottom="16dp"-->
-    <!--        android:padding="8dp"-->
-    <!--        android:text="Sign in with Google"-->
-    <!--        android:textColor="@color/black"-->
-    <!--        android:textStyle="bold"-->
-    <!--        app:layout_constraintBottom_toTopOf="@id/footer_line"-->
-    <!--        app:layout_constraintEnd_toStartOf="@id/guideline_right"-->
-    <!--        app:layout_constraintStart_toStartOf="@id/guideline_left" />-->
-
-    <!--    <View-->
-    <!--        android:id="@+id/footer_line"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="1dp"-->
-    <!--        android:layout_marginBottom="50dp"-->
-    <!--        android:background="@color/black"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        tools:ignore="MissingConstraints" />-->
+        app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
     <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/footer_line"
+        android:id="@+id/dvdFooterLine"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginBottom="50dp"
@@ -164,7 +91,7 @@
         tools:ignore="MissingConstraints" />
 
     <Button
-        android:id="@+id/sign_up"
+        android:id="@+id/btnGoSignUp"
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -172,20 +99,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/footer_line" />
-    <!--    <TextView-->
-    <!--        android:id="@+id/sign_up"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Don't have an account? Sign Up"-->
-    <!--        android:textColor="@color/black"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/footer_line" />-->
+        app:layout_constraintTop_toBottomOf="@id/dvdFooterLine" />
 
     <ProgressBar
-        android:id="@+id/loading"
+        android:id="@+id/pbLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -193,8 +110,8 @@
         android:layout_marginBottom="64dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/password"
-        app:layout_constraintStart_toStartOf="@+id/password"
+        app:layout_constraintEnd_toEndOf="@+id/etPassword"
+        app:layout_constraintStart_toStartOf="@+id/etPassword"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
 
