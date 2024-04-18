@@ -5,11 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.text.util.LocalePreferences.FirstDayOfWeek
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
+import com.example.sharedcalendar.databinding.CalendarDayBinding
+
 import com.example.sharedcalendar.ui.MonthDayBinder
-import com.kizitonwose.calendarview.model.CalendarDay
-import com.kizitonwose.calendarview.ui.ViewContainer
+//import com.kizitonwose.calendarview.model.CalendarDay
+//import com.kizitonwose.calendarview.ui.ViewContainer
 import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -26,22 +29,22 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMonthViewBinding.bind(view)
 
-        val daysOfWeek = DaysOfWeek()
+        val daysOfWeek = daysOfWeek()
         val currentMonth = YearMonth.now()
         val startMonth = currentMonth.minusMonths(200)
         val endMonth = currentMonth.plusMonths(200)
+        configureBinders(daysOfWeek)
+        binding.MonthViewCalendar.setup(startMonth,endMonth,daysOfWeek.first())
+        binding.MonthViewCalendar.scrollToMonth(currentMonth)
+
+        //scroll listener
 
 
     }
 
-    fun DaysOfWeek(firstDayOfWeek: DayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek): List<DayOfWeek> {
-        val pivot = 7 - firstDayOfWeek.ordinal
-        val daysOfWeek = DayOfWeek.entries
-        return (daysOfWeek.takeLast(pivot) + daysOfWeek.dropLast(pivot))
-    }
     private fun configureBinders(daysOfWeek: List<DayOfWeek>) {
         class DayViewContainer(view:View) : com.example.sharedcalendar.ui.ViewContainer(view){
-            lateinit var day : CalendarDay
+            lateinit var day : com.example.sharedcalendar.CalendarDay
             val binding = FragmentMonthViewBinding.bind(view)
 
             init{
@@ -60,25 +63,23 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
             }
         }
 
-        binding.MonthViewCalendar.dayBinder = object : MonthDayBinder<DayViewContainer>{
+        binding.MonthViewCalendar.dayBinder = object : MonthDayBinder<DayViewContainer>
+        {
             override fun create(view:View) = DayViewContainer(view)
-            override fun bind(container: DayViewContainer, data:CalendarDay){
+            override fun bind(container: DayViewContainer, data:com.example.sharedcalendar.CalendarDay){
                 container.day = data
                 val context = container.binding.root.context
-                val textView = container.binding.
+                val textView : TextView = container.binding.root.findViewById<TextView>(R.id.calendarDayText)
                 val layout = container.binding.MonthViewCalendar
-                //textView.text =
+                textView.text = data.date.dayOfMonth.toString()
+
+                if(data.position == DayPosition.MonthDate){
+                    textView.setTextColor(resources.getColor(R.color.example_5_text_grey))
+                    layout.setBackgroundResource(if(selectedDate == data.date) R.drawable.example_5_selected_bg else 0)
+                }
             }
         }
     }
-
-    enum class DayPosition {
-        InDate,
-        MonthDate,
-        OutDate,
-    }
-
-    data class CalendarDay(val date: LocalDate, val position: DayPosition) : Serializable
 
 
 }
