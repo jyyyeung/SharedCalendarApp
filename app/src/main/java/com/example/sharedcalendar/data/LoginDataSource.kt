@@ -1,11 +1,11 @@
 package com.example.sharedcalendar.data
 
 import android.util.Log
-import com.example.sharedcalendar.ApiClient
+import com.example.sharedcalendar.ApiService
+import com.example.sharedcalendar.ApiServiceNoAuth
 import com.example.sharedcalendar.getDeviceName
 import com.example.sharedcalendar.models.LoginRequest
 import com.example.sharedcalendar.models.LoginResponse
-import com.example.sharedcalendar.ui.login.LoginActivity
 import retrofit2.Response
 import java.io.IOException
 
@@ -16,7 +16,11 @@ const val TAG = "LoginDataSource"
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 class LoginDataSource {
-    suspend fun login(username: String, password: String): Result<LoginResponse> {
+    suspend fun login(
+        username: String,
+        password: String,
+        apiServiceNoAuth: ApiServiceNoAuth
+    ): Result<LoginResponse> {
         try {
             Log.i(TAG, username)
             Log.i(TAG, password)
@@ -24,10 +28,9 @@ class LoginDataSource {
             //  handle loggedInUser authentication
             val credentials = LoginRequest(username, password, deviceName)
             Log.i(TAG, credentials.toString())
-            val response: Response<LoginResponse> =
-                LoginActivity.apiServiceNoAuth.login(credentials)
+            val response: Response<LoginResponse> = apiServiceNoAuth.login(credentials)
             Log.d(TAG, response.toString())
-            Log.d(TAG, response.body().toString())
+//            Log.d(TAG, response.body().toString())
             return if (response.isSuccessful) {
                 Log.i(TAG, response.body().toString())
                 // TODO: use real login credentials and save token
@@ -46,11 +49,11 @@ class LoginDataSource {
         }
     }
 
-    suspend fun logout() {
+    suspend fun logout(apiService: ApiService) {
         // TODO: revoke authentication
         try {
             val response: Response<Any> =
-                LoginActivity.apiService.logout()
+                apiService.logout()
             Log.d(TAG, response.toString())
             Log.d(TAG, response.body().toString())
 

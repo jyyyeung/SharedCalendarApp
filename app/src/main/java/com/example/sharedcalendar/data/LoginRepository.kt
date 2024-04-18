@@ -1,9 +1,9 @@
 package com.example.sharedcalendar.data
 
-import com.example.sharedcalendar.data.model.LoggedInUser
+import android.util.Log
+import com.example.sharedcalendar.ApiClient
 import com.example.sharedcalendar.models.LoginResponse
 import com.example.sharedcalendar.models.User
-import com.example.sharedcalendar.ui.login.LoginActivity
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -25,10 +25,11 @@ class LoginRepository(val dataSource: LoginDataSource) {
         user = null
     }
 
-    suspend fun logout() {
+    suspend fun logout(sessionManager: SessionManager) {
         user = null
-        LoginActivity.sessionManager.setAuthToken("")
-        dataSource.logout()
+        sessionManager.setAuthToken("")
+        val apiService = ApiClient(sessionManager).apiService
+        dataSource.logout(apiService)
     }
 
     suspend fun login(
@@ -36,9 +37,11 @@ class LoginRepository(val dataSource: LoginDataSource) {
         password: String,
         sessionManager: SessionManager
     ): Result<LoginResponse> {
-        // handle login
-        val result = dataSource.login(username, password)
+        val apiServiceNoAuth = ApiClient(sessionManager).apiServiceNoAuth
 
+        // handle login
+        val result = dataSource.login(username, password, apiServiceNoAuth)
+        Log.i(TAG, result.toString())
         if (result is Result.Success) {
             // If Login is successful
             sessionManager.setAuthToken(result.data.token)

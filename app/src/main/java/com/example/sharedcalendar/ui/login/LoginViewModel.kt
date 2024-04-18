@@ -1,15 +1,13 @@
 package com.example.sharedcalendar.ui.login
 
-import android.content.Context
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.util.Patterns
 import androidx.lifecycle.viewModelScope
+import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.LoginRepository
 import com.example.sharedcalendar.data.Result
-
-import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
 import kotlinx.coroutines.launch
 
@@ -26,7 +24,6 @@ class LoginViewModel(
     fun login(username: String, password: String, sessionManager: SessionManager) {
 
         viewModelScope.launch {
-
             try {
                 // can be launched in a separate asynchronous job
                 val result = loginRepository.login(username, password, sessionManager)

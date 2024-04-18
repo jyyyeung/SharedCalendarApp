@@ -1,35 +1,27 @@
 package com.example.sharedcalendar.ui.login
 
 import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
-import com.example.sharedcalendar.ApiClient
-import com.example.sharedcalendar.ApiService
-import com.example.sharedcalendar.ApiServiceNoAuth
-import com.example.sharedcalendar.databinding.ActivityLoginBinding
-
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
+    lateinit var sessionManager: SessionManager
 
-    companion object {
-        lateinit var sessionManager: SessionManager
-        var apiService: ApiService = ApiClient(sessionManager).apiService
-        var apiServiceNoAuth: ApiServiceNoAuth = ApiClient(sessionManager).apiServiceNoAuth
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
             login.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
-                
+
                 username.error = getString(loginState.usernameError)
             }
             if (loginState.passwordError != null) {
@@ -63,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
-
+//            Log.d(TAG, loginResult.toString())
             loading.visibility = View.GONE
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)

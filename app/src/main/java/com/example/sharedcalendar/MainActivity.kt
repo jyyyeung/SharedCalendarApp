@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), OnItemListener {
         Log.i(TAG, LoginRepository(LoginDataSource()).isLoggedIn.toString())
         Log.i(TAG, sessionManager.getAuthToken().toString())
 //        if (!LoginRepository(LoginDataSource()).isLoggedIn || sessionManager.getAuthToken() == "") {
-        if (sessionManager.getAuthToken() == "") {
+        if (sessionManager.getAuthToken() != "") {
             // If auth token does not exist
             startActivity(Intent(this, LoginActivity::class.java))
         }
