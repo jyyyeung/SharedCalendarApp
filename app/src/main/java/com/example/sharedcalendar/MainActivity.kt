@@ -13,13 +13,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //Drawer button
-        var drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
-        var buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
 
+
+        // START SIDEBAR NAVIGATION //
+        //Drawer button
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+        val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
+
+        // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
             drawerLayout.open()
         }
+        // END SIDEBAR NAVIGATION //
 
 
         // Change Fragment from month to week on button click
