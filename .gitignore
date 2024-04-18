@@ -66,3 +66,14 @@ local.properties
 ehthumbs.db
 Thumbs.db
 /.idea/
+
+# Gradle files
+.gradle/
+build/
+
+# Log/OS Files
+*.log
+
+# ENV Files 
+.env
+
