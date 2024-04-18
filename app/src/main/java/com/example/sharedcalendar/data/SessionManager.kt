@@ -13,6 +13,7 @@ class SessionManager(context: Context) {
 
     companion object {
         const val USER_TOKEN = ""
+        const val API_BASE_URL = "http://10.0.2.2:8000/api/"
     }
 
     /**
@@ -26,5 +27,15 @@ class SessionManager(context: Context) {
 
     fun getAuthToken(): String? {
         return prefs.getString(USER_TOKEN, null)
+    }
+
+    fun setAPIBaseURL(apiBaseUrl: String) {
+        val editor = prefs.edit()
+        editor.putString(API_BASE_URL, apiBaseUrl)
+        editor.apply()
+    }
+
+    fun getAPIBaseURL(): String? {
+        return prefs.getString(API_BASE_URL, null)
     }
 }

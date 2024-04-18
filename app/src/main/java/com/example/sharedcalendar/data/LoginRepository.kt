@@ -3,6 +3,7 @@ package com.example.sharedcalendar.data
 import com.example.sharedcalendar.data.model.LoggedInUser
 import com.example.sharedcalendar.models.LoginResponse
 import com.example.sharedcalendar.models.User
+import com.example.sharedcalendar.ui.login.LoginActivity
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -24,8 +25,9 @@ class LoginRepository(val dataSource: LoginDataSource) {
         user = null
     }
 
-    fun logout() {
+    suspend fun logout() {
         user = null
+        LoginActivity.sessionManager.setAuthToken("")
         dataSource.logout()
     }
 

@@ -12,16 +12,24 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import com.example.sharedcalendar.ApiClient
+import com.example.sharedcalendar.ApiService
+import com.example.sharedcalendar.ApiServiceNoAuth
 import com.example.sharedcalendar.databinding.ActivityLoginBinding
 
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
 
 class LoginActivity : AppCompatActivity() {
-    private lateinit var sessionManager: SessionManager
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
+
+    companion object {
+        lateinit var sessionManager: SessionManager
+        var apiService: ApiService = ApiClient(sessionManager).apiService
+        var apiServiceNoAuth: ApiServiceNoAuth = ApiClient(sessionManager).apiServiceNoAuth
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +53,7 @@ class LoginActivity : AppCompatActivity() {
             login.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
+                
                 username.error = getString(loginState.usernameError)
             }
             if (loginState.passwordError != null) {

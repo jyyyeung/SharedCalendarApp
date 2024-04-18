@@ -5,6 +5,7 @@ import com.example.sharedcalendar.ApiClient
 import com.example.sharedcalendar.getDeviceName
 import com.example.sharedcalendar.models.LoginRequest
 import com.example.sharedcalendar.models.LoginResponse
+import com.example.sharedcalendar.ui.login.LoginActivity
 import retrofit2.Response
 import java.io.IOException
 
@@ -15,8 +16,6 @@ const val TAG = "LoginDataSource"
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 class LoginDataSource {
-
-
     suspend fun login(username: String, password: String): Result<LoginResponse> {
         try {
             Log.i(TAG, username)
@@ -25,7 +24,8 @@ class LoginDataSource {
             //  handle loggedInUser authentication
             val credentials = LoginRequest(username, password, deviceName)
             Log.i(TAG, credentials.toString())
-            val response: Response<LoginResponse> = ApiClient.apiService.login(credentials)
+            val response: Response<LoginResponse> =
+                LoginActivity.apiServiceNoAuth.login(credentials)
             Log.d(TAG, response.toString())
             Log.d(TAG, response.body().toString())
             return if (response.isSuccessful) {
@@ -46,7 +46,18 @@ class LoginDataSource {
         }
     }
 
-    fun logout() {
+    suspend fun logout() {
         // TODO: revoke authentication
+        try {
+            val response: Response<Any> =
+                LoginActivity.apiService.logout()
+            Log.d(TAG, response.toString())
+            Log.d(TAG, response.body().toString())
+
+//            return Result.Error(IOException("Function not implemented"))
+        } catch (e: Throwable) {
+            Log.d(TAG, e.message.toString())
+//            return Result.Error(IOException("Error logging in", e))
+        }
     }
 }

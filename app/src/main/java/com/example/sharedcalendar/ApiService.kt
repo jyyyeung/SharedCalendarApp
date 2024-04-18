@@ -30,23 +30,31 @@ import retrofit2.http.Path
 //    val response2 = ApiClient.apiService.getCalendarById(1)
 //    Log.i(TAG, response2.body().toString())
 // }
-interface ApiService {
+
+interface ApiServiceNoAuth {
+
     /**
      * Login with email and password
      */
-    @Headers("Content-Type: application/json", "Accept: application/json")
     @POST("login")
     suspend fun login(@Body login: LoginRequest): Response<LoginResponse>
 
     /**
      * Register for a new account
      */
-    @Headers("Content-Type: application/json")
     @POST("register")
-    suspend fun register(@Body register: RegisterRequest): Response <RegisterResponse>
+    suspend fun register(@Body register: RegisterRequest): Response<RegisterResponse>
+}
+
+interface ApiService {
 
     /**
-     * Returns a list of all calendars.
+     * Logout user
+     */
+    suspend fun logout(): Response<Any>
+
+    /**
+     * Returns a list of all calendars the user is allowed to view.
      * @return A list of all calendars.
      */
     @GET("calendars")
