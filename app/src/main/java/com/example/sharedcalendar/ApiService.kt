@@ -4,6 +4,8 @@ import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.LoginRequest
 import com.example.sharedcalendar.models.LoginResponse
+import com.example.sharedcalendar.models.RegisterRequest
+import com.example.sharedcalendar.models.RegisterResponse
 import com.example.sharedcalendar.models.Share
 import retrofit2.Response
 import retrofit2.http.Body
@@ -28,16 +30,31 @@ import retrofit2.http.Path
 //    val response2 = ApiClient.apiService.getCalendarById(1)
 //    Log.i(TAG, response2.body().toString())
 // }
-interface ApiService {
+
+interface ApiServiceNoAuth {
+
     /**
      * Login with email and password
      */
-    @Headers("Content-Type: application/json")
     @POST("login")
     suspend fun login(@Body login: LoginRequest): Response<LoginResponse>
 
     /**
-     * Returns a list of all calendars.
+     * Register for a new account
+     */
+    @POST("register")
+    suspend fun register(@Body register: RegisterRequest): Response<RegisterResponse>
+}
+
+interface ApiService {
+
+    /**
+     * Logout user
+     */
+    suspend fun logout(): Response<Any>
+
+    /**
+     * Returns a list of all calendars the user is allowed to view.
      * @return A list of all calendars.
      */
     @GET("calendars")

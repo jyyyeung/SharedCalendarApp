@@ -37,7 +37,6 @@ android {
         viewBinding = true
     }
 }
-
 dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -58,4 +57,6 @@ dependencies {
     // Coroutine (For API)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
+
 }
