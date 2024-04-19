@@ -7,6 +7,7 @@ import com.example.sharedcalendar.models.LoginResponse
 import com.example.sharedcalendar.models.RegisterRequest
 import com.example.sharedcalendar.models.RegisterResponse
 import com.example.sharedcalendar.models.Share
+import com.example.sharedcalendar.models.User
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -147,7 +148,7 @@ interface ApiService {
 
     /**
      * Returns a share by id.
-     * @param id The id of the share.
+     * @param shareId The id of the share.
      * @return The share with the given id.
      */
     @GET("shares/{share}")
@@ -169,10 +170,20 @@ interface ApiService {
     suspend fun getUser()
 
     @GET("users")
-    suspend fun getUsers()
+    suspend fun getUsers(): Response<List<User>>
 
     @GET("users/{user}")
     suspend fun getUserById(
+        @Path("user") userId: Int
+    ): Response<User>
+
+    @PATCH("users/{user}")
+    suspend fun patchUserById(
+        @Path("user") userId: Int
+    ): Response<User>
+
+    @DELETE("users/{user}")
+    suspend fun deleteUserById(
         @Path("user") userId: Int
     )
 }

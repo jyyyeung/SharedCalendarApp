@@ -31,4 +31,40 @@ class CalendarDataSource {
             Result.Error(IOException("Error fetching all calendars", e))
         }
     }
+
+//    suspend fun createNewCalendar(apiService: ApiService): Result<Calendar>{
+//        return try{
+//
+//        }
+//    }
+
+    suspend fun getAllPersonalCalendars(apiService: ApiService): Result<List<Calendar>> {
+        return try {
+            val response: Response<List<Calendar>> = apiService.getAllPersonalCalendars()
+            if (response.isSuccessful) {
+                val calendarResponse: List<Calendar> = response.body()!!
+                Result.Success(calendarResponse)
+            } else {
+                Result.Error(IOException("Error fetching all personal calendars"))
+            }
+        } catch (e: Throwable) {
+            Log.d(TAG, e.message.toString())
+            Result.Error(IOException("Error fetching all personal calendars", e))
+        }
+    }
+
+    suspend fun getAllSharedCalendars(apiService: ApiService): Result<List<Calendar>> {
+        return try {
+            val response: Response<List<Calendar>> = apiService.getAllSharedCalendars()
+            if (response.isSuccessful) {
+                val calendarResponse: List<Calendar> = response.body()!!
+                Result.Success(calendarResponse)
+            } else {
+                Result.Error(IOException("Error fetching all shared calendars"))
+            }
+        } catch (e: Throwable) {
+            Log.d(TAG, e.message.toString())
+            Result.Error(IOException("Error fetching all shared calendars", e))
+        }
+    }
 }
