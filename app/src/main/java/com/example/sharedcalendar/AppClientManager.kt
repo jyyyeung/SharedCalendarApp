@@ -19,6 +19,7 @@ class ApiClient(sessionManager: SessionManager) {
         GsonBuilder().setLenient().create()
     }
 
+    
     private fun requestBuilder(chain: Interceptor.Chain): Request.Builder {
         return chain.request().newBuilder()
             .addHeader("Content-Type", "application/json")
@@ -63,7 +64,8 @@ class ApiClient(sessionManager: SessionManager) {
         retrofit.create(ApiService::class.java)
     }
 
+
     val apiServiceNoAuth: ApiServiceNoAuth by lazy {
-        retrofit.create(ApiServiceNoAuth::class.java)
+        retrofitNoAuth.create(ApiServiceNoAuth::class.java)
     }
 }

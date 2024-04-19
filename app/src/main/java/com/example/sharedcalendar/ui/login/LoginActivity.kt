@@ -19,11 +19,17 @@ import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
-
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
     private lateinit var sessionManager: SessionManager
 
+    /**
+     * Called when the activity is starting.
+     * This is where most initialization should go: calling [setContentView(int)] to inflate the activity's UI,
+     * using [findViewById] to programmatically interact with widgets in the UI,
+     * and [onRestoreInstanceState] to restore the activity's state from the saved instance state.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied in [onSaveInstanceState].
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,62 +48,71 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel =
             ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
 
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
-            val loginState = it ?: return@Observer
+        // Observe changes in login form state
+        loginViewModel.loginFormState.observe(
+            this@LoginActivity,
+            Observer {
+                val loginState = it ?: return@Observer
 
-            // disable login button unless both username / password is valid
-            btnLogin.isEnabled = loginState.isDataValid
+                // disable login button unless both username / password is valid
+                btnLogin.isEnabled = loginState.isDataValid
 
-            // Ensure email is valid
-            if (loginState.emailError != null) {
-                etEmail.error = getString(loginState.emailError)
-            }
-            // Ensure password is valid
-            if (loginState.passwordError != null) {
-                etPassword.error = getString(loginState.passwordError)
-            }
-        })
+                // Ensure email is valid
+                if (loginState.emailError != null) {
+                    etEmail.error = getString(loginState.emailError)
+                }
+                // Ensure password is valid
+                if (loginState.passwordError != null) {
+                    etPassword.error = getString(loginState.passwordError)
+                }
+            },
+        )
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
-            val loginResult = it ?: return@Observer
+        loginViewModel.loginResult.observe(
+            // Observe changes in login result
+            this@LoginActivity,
+            Observer {
+                val loginResult = it ?: return@Observer
 //            Log.d(TAG, loginResult.toString())
-            pbLoading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
-            }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
+                pbLoading.visibility = View.GONE
+                if (loginResult.error != null) {
+                    showLoginFailed(loginResult.error)
+                }
+                if (loginResult.success != null) {
+                    updateUiWithUser(loginResult.success)
+                }
+                setResult(Activity.RESULT_OK)
 
-            //Complete and destroy login activity once successful
-            finish()
-        })
+                // Complete and destroy login activity once successful
+                finish()
+            },
+        )
 
         // Listen to changes in Email input
         etEmail.afterTextChanged {
             loginViewModel.loginDataChanged(
                 etEmail.text.toString(),
-                etPassword.text.toString()
+                etPassword.text.toString(),
             )
         }
 
-
+        // Listen to changes in Password input
         etPassword.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
                     etEmail.text.toString(),
-                    etPassword.text.toString()
+                    etPassword.text.toString(),
                 )
             }
 
+            // Listen to Done action on keyboard
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
                         loginViewModel.login(
                             etEmail.text.toString(),
                             etPassword.text.toString(),
-                            sessionManager
+                            sessionManager,
                         )
                 }
                 false
@@ -109,12 +124,11 @@ class LoginActivity : AppCompatActivity() {
                 loginViewModel.login(
                     etEmail.text.toString(),
                     etPassword.text.toString(),
-                    sessionManager
+                    sessionManager,
                 )
             }
         }
     }
-
 
     // Called when User login successful
     private fun updateUiWithUser(model: LoggedInUserView) {
@@ -125,12 +139,14 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(
             applicationContext,
             "$welcome $displayName",
-            Toast.LENGTH_LONG
+            Toast.LENGTH_LONG,
         ).show()
     }
 
     // Called when user login failed
-    private fun showLoginFailed(@StringRes errorString: Int) {
+    private fun showLoginFailed(
+        @StringRes errorString: Int,
+    ) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
 }
@@ -139,13 +155,25 @@ class LoginActivity : AppCompatActivity() {
  * Extension function to simplify setting an afterTextChanged action to EditText components.
  */
 fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
+    this.addTextChangedListener(
+        object : TextWatcher {
+            override fun afterTextChanged(editable: Editable?) {
+                afterTextChanged.invoke(editable.toString())
+            }
 
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun beforeTextChanged(
+                s: CharSequence,
+                start: Int,
+                count: Int,
+                after: Int,
+            ) {}
 
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-    })
+            override fun onTextChanged(
+                s: CharSequence,
+                start: Int,
+                before: Int,
+                count: Int,
+            ) {}
+        },
+    )
 }

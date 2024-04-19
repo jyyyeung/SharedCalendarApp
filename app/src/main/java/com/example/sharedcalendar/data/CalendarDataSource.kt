@@ -6,8 +6,16 @@ import com.example.sharedcalendar.models.Calendar
 import retrofit2.Response
 import java.io.IOException
 
+
 class CalendarDataSource {
     private val TAG = "CalendarDataSource"
+
+    /**
+     * Get All Calendars.
+     *
+     * @param apiService
+     * @return Return [Result]
+     */
     suspend fun getAllCalendars(apiService: ApiService): Result<List<Calendar>> {
         return try {
             val response: Response<List<Calendar>> = apiService.getAllCalendars()

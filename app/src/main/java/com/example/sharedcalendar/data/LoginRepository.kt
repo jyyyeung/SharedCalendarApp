@@ -3,6 +3,7 @@ package com.example.sharedcalendar.data
 import android.util.Log
 import com.example.sharedcalendar.ApiClient
 import com.example.sharedcalendar.models.LoginResponse
+import com.example.sharedcalendar.models.RegisterResponse
 import com.example.sharedcalendar.models.User
 
 /**
@@ -16,6 +17,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
     var user: User? = null
         private set
 
+
     val isLoggedIn: Boolean
         get() = user != null
 
@@ -25,6 +27,11 @@ class LoginRepository(val dataSource: LoginDataSource) {
         user = null
     }
 
+    /**
+     * Logout.
+     *
+     * @param sessionManager
+     */
     suspend fun logout(sessionManager: SessionManager) {
         user = null
         sessionManager.setAuthToken("")
@@ -32,6 +39,14 @@ class LoginRepository(val dataSource: LoginDataSource) {
         dataSource.logout(apiService)
     }
 
+    /**
+     * Login.
+     *
+     * @param username
+     * @param password
+     * @param sessionManager
+     * @return [Result]
+     */
     suspend fun login(
         username: String,
         password: String,
@@ -50,6 +65,38 @@ class LoginRepository(val dataSource: LoginDataSource) {
         return result
     }
 
+    /**
+     * Login.
+     *
+     * @param username
+     * @param password
+     * @param sessionManager
+     * @return [Result]
+     */
+    suspend fun register(
+        username: String,
+        email: String,
+        password: String,
+        sessionManager: SessionManager
+    ): Result<RegisterResponse> {
+        val apiServiceNoAuth = ApiClient(sessionManager).apiServiceNoAuth
+
+        // handle login
+        val result = dataSource.register(username, email, password, apiServiceNoAuth)
+        Log.i(TAG, result.toString())
+        if (result is Result.Success) {
+            // If Login is successful
+            sessionManager.setAuthToken(result.data.token)
+            setLoggedInUser(result.data.user)
+        }
+        return result
+    }
+
+    /**
+     * Set Logged In User.
+     *
+     * @param loggedInUser
+     */
     private fun setLoggedInUser(loggedInUser: User) {
         this.user = loggedInUser
         // If user credentials will be cached in local storage, it is recommended it be encrypted

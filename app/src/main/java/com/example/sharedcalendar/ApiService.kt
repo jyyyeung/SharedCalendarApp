@@ -10,7 +10,6 @@ import com.example.sharedcalendar.models.Share
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -31,23 +30,32 @@ import retrofit2.http.Path
 //    Log.i(TAG, response2.body().toString())
 // }
 
+/**
+ * Interface for API calls that do not require authentication.
+ */
 interface ApiServiceNoAuth {
-
     /**
      * Login with email and password
+     * @param login The login request.
+     * @return The login response.
      */
     @POST("login")
-    suspend fun login(@Body login: LoginRequest): Response<LoginResponse>
+    suspend fun login(
+        @Body login: LoginRequest,
+    ): Response<LoginResponse>
 
     /**
      * Register for a new account
+     * @param register The register request.
+     * @return The register response.
      */
     @POST("register")
-    suspend fun register(@Body register: RegisterRequest): Response<RegisterResponse>
+    suspend fun register(
+        @Body register: RegisterRequest,
+    ): Response<RegisterResponse>
 }
 
 interface ApiService {
-
     /**
      * Logout user
      */
