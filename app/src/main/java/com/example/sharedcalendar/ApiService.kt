@@ -9,7 +9,9 @@ import com.example.sharedcalendar.models.RegisterResponse
 import com.example.sharedcalendar.models.Share
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -59,6 +61,7 @@ interface ApiService {
     /**
      * Logout user
      */
+    @POST("logout")
     suspend fun logout(): Response<Any>
 
     /**
@@ -68,47 +71,108 @@ interface ApiService {
     @GET("calendars")
     suspend fun getAllCalendars(): Response<List<Calendar>>
 
+
+    /**
+     * Create New Calendar.
+     *
+     * @return [Response]
+     */
+    @POST("calendars")
+    suspend fun createNewCalendar(): Response<List<Calendar>>
+
+
+    @GET("calendars/me")
+    suspend fun getAllPersonalCalendars(): Response<List<Calendar>>
+
+    @GET("calendars/shared")
+    suspend fun getAllSharedCalendars(): Response<List<Calendar>>
+
+
     /**
      * Returns a calendar by id.
      * @param id The id of the calendar.
      * @return The calendar with the given id.
      */
-    @GET("calendars/{id}")
+    @GET("calendars/{calendar}")
     suspend fun getCalendarById(
-        @Path("id") id: Int,
+        @Path("calendar") calendarId: Int,
     ): Response<Calendar>
+
+    @PATCH("calendars/{calendar}")
+    suspend fun patchCalendarById(
+        @Path("calendar") calendarId: Int,
+    ): Response<Calendar>
+
+    @DELETE("calendars/{calendar}")
+    suspend fun deleteCalendarById(
+        @Path("calendar") calendarId: Int,
+    )
 
     /**
      * Returns a list of all shares.
      * @return A list of all shares.
      */
-    @GET("events")
-    suspend fun getAllEvents(): Response<List<Event>>
+    @GET("calendars/{calendar}/events")
+    suspend fun getAllCalendarEvents(@Path("calendar") calendarId: Int): Response<List<Event>>
+
+    @POST("calendars/{calendar}/events")
+    suspend fun createNewCalendarEvent(@Path("calendar") calendarId: Int): Response<List<Event>>
+
+    @GET("calendars/{calendar}/shares")
+    suspend fun getCalendarShares(@Path("calendar") calendarId: Int): Response<List<Share>>
+
+    @POST("calendars/{calendar}/shares")
+    suspend fun createCalendarShare(@Path("calendar") calendarId: Int): Response<List<Share>>
 
     /**
      * Returns an event by id.
-     * @param id The id of the event.
+     * @param eventId The id of the event.
      * @return The event with the given id.
      */
-    @GET("events/{id}")
+    @GET("events/{event}")
     suspend fun getEventById(
-        @Path("id") id: Int,
+        @Path("event") eventId: Int,
     ): Response<Event>
 
-    /**
-     * Returns a list of all shares.
-     * @return A list of all shares.
-     */
-    @GET("shares")
-    suspend fun getAllShares(): Response<List<Share>>
+    @PATCH("events/{event}")
+    suspend fun patchEventById(
+        @Path("event") eventId: Int
+    ): Response<Event>
+
+    @DELETE("events/{event}")
+    suspend fun deleteEventById(
+        @Path("event") eventId: Int
+    )
+
 
     /**
      * Returns a share by id.
      * @param id The id of the share.
      * @return The share with the given id.
      */
-    @GET("shares/{id}")
+    @GET("shares/{share}")
     suspend fun getShareById(
-        @Path("id") id: Int,
+        @Path("share") shareId: Int,
     ): Response<Share>
+
+    @PATCH("shares/{share}")
+    suspend fun patchShareById(
+        @Path("share") shareId: Int,
+    ): Response<Share>
+
+    @DELETE("shares/{shareId}")
+    suspend fun deleteShareById(
+        @Path("shareId") id: Int,
+    )
+
+    @GET("user")
+    suspend fun getUser()
+
+    @GET("users")
+    suspend fun getUsers()
+
+    @GET("users/{user}")
+    suspend fun getUserById(
+        @Path("user") userId: Int
+    )
 }
