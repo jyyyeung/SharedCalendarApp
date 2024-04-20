@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
+import com.example.sharedcalendar.databinding.CalendarDayBinding
+import com.example.sharedcalendar.databinding.CalendarEventBinding
+import com.example.sharedcalendar.databinding.CalendarHeaderBinding
+
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.ViewContainer
 import java.io.Serializable
@@ -41,6 +45,8 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         val currentMonth = YearMonth.now()
         val startMonth = currentMonth.minusMonths(200)
         val endMonth = currentMonth.plusMonths(200)
+        binding.MonthViewCalendar.setup(startMonth,endMonth,daysOfWeek.first())
+        binding.MonthViewCalendar.scrollToMonth(currentMonth)
 
 
     }
@@ -80,21 +86,12 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
             override fun bind(container: DayViewContainer, data: CalendarDay) {
                 container.day = data
                 val context = container.binding.root.context
-//                val textView = container.binding.
+                val textview = container.binding.
                 val layout = container.binding.MonthViewCalendar
-                //textView.text =
+
             }
         }
     }
-
-//    enum class DayPosition {
-//        InDate,
-//        MonthDate,
-//        OutDate,
-//    }
-
-//    data class CalendarDay(val date: LocalDate, val position: DayPosition) : Serializable
-
 
 }
 
