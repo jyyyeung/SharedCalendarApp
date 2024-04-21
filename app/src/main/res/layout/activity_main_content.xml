@@ -18,6 +18,15 @@
             android:background="#00000000"
             android:src="@drawable/round_menu_24" />
 
+        <ImageButton
+            android:id="@+id/addEventBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="#00000000"
+            android:paddingRight="20dp"
+            app:srcCompat="@drawable/round_add_circle_24" />
+
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -36,16 +45,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Month" />
+        "/>
 
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/flFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="426dp"
+        android:paddingBottom="10dp"></FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
 
-
-    </FrameLayout>
-
+        ></FrameLayout>
 
 </LinearLayout>
