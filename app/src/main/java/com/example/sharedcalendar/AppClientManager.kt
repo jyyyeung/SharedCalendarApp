@@ -19,12 +19,12 @@ class ApiClient(sessionManager: SessionManager) {
         GsonBuilder().setLenient().create()
     }
 
-    
+
     private fun requestBuilder(chain: Interceptor.Chain): Request.Builder {
         return chain.request().newBuilder()
             .addHeader("Content-Type", "application/json")
             .addHeader("Accept", "application/json")
-            .addHeader("Au", "application/json")
+//            .addHeader("Au", "application/json")
     }
 
     private val httpClient: OkHttpClient by lazy {

@@ -1,6 +1,7 @@
 package com.example.sharedcalendar.ui.login
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +15,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.databinding.ActivityLoginBinding
@@ -80,11 +82,16 @@ class LoginActivity : AppCompatActivity() {
                 }
                 if (loginResult.success != null) {
                     updateUiWithUser(loginResult.success)
+                    // NOTE: Commented for debugging
+//                    startActivity(Intent(this, MainActivity::class.java))
                 }
                 setResult(Activity.RESULT_OK)
 
+                // NOTE: For debugging only, will allow continue even login failed
+                startActivity(Intent(this, MainActivity::class.java))
                 // Complete and destroy login activity once successful
-                finish()
+                finish() // Do not allow user go back to sign in page
+
             },
         )
 
@@ -108,12 +115,11 @@ class LoginActivity : AppCompatActivity() {
             // Listen to Done action on keyboard
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            etEmail.text.toString(),
-                            etPassword.text.toString(),
-                            sessionManager,
-                        )
+                    EditorInfo.IME_ACTION_DONE -> loginViewModel.login(
+                        etEmail.text.toString(),
+                        etPassword.text.toString(),
+                        sessionManager,
+                    )
                 }
                 false
             }
@@ -166,14 +172,16 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
                 start: Int,
                 count: Int,
                 after: Int,
-            ) {}
+            ) {
+            }
 
             override fun onTextChanged(
                 s: CharSequence,
                 start: Int,
                 before: Int,
                 count: Int,
-            ) {}
+            ) {
+            }
         },
     )
 }

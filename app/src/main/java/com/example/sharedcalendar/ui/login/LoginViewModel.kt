@@ -66,8 +66,9 @@ class LoginViewModel(
         username: String,
         password: String,
     ) {
-        if (!isUserNameValid(username)) {
-            _loginForm.value = LoginFormState(emailError = R.string.invalid_username)
+        // Validate form fields
+        if (!isEmailValid(username)) {
+            _loginForm.value = LoginFormState(emailError = R.string.invalid_email)
         } else if (!isPasswordValid(password)) {
             _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
         } else {
@@ -77,14 +78,14 @@ class LoginViewModel(
 
     /**
      * Username Validation: Checks if the username is valid.
-     * @param username The username to be checked.
-     * @return True if the username is valid, false otherwise.
+     * @param email The email to be checked.
+     * @return True if the email is valid, false otherwise.
      */
-    private fun isUserNameValid(username: String): Boolean {
-        return if (username.contains('@')) {
-            Patterns.EMAIL_ADDRESS.matcher(username).matches()
+    private fun isEmailValid(email: String): Boolean {
+        return if (email.contains('@')) {
+            Patterns.EMAIL_ADDRESS.matcher(email).matches()
         } else {
-            username.isNotBlank()
+            email.isNotBlank()
         }
     }
 
