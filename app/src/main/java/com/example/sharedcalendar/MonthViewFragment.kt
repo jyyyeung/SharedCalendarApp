@@ -80,13 +80,6 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
     }
 
-//    @OptIn(ExperimentalStdlibApi::class)
-//    fun DaysOfWeek(firstDayOfWeek: DayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek): List<DayOfWeek> {
-//        val pivot = 7 - firstDayOfWeek.ordinal
-//        val daysOfWeek = DayOfWeek.entries
-//        return (daysOfWeek.takeLast(pivot) + daysOfWeek.dropLast(pivot))
-//    }
-
     private fun configureBinders(daysOfWeek: List<DayOfWeek>) {
         class DayViewContainer(view: View) : ViewContainer(view) {
             lateinit var day: CalendarDay
@@ -122,7 +115,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                 eventBottomView.background = null
 
                 if (data.position == DayPosition.MonthDate) {
-                    textView.setTextColor(resources.getColor(R.color.example_5_text_grey))
+                    textView.setTextColor(resources.getColor(R.color.black))
                     layout.setBackgroundResource(if (selectedDate == data.date) R.drawable.example_5_selected_bg else 0)
 
                     val thisEvents = thisEvents[data.date]
@@ -142,7 +135,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         }
 
         class MonthViewContainer(view: View) : ViewContainer(view) {
-            val legendLayout = CalendarHeaderBinding.bind(view).legendLayout
+            val monthHeader = CalendarHeaderBinding.bind(view).monthHeader.root
         }
 
         val typeFace = Typeface.create("sans-serif-light", Typeface.NORMAL)
@@ -150,12 +143,12 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
             object : MonthHeaderFooterBinder<MonthViewContainer> {
                 override fun create(view: View) = MonthViewContainer(view)
                 override fun bind(container: MonthViewContainer, data: CalendarMonth) {
-                    if (container.legendLayout.tag == null) {
-                        container.legendLayout.tag = data.yearMonth
-                        container.legendLayout.children.map { it as TextView }
+                    if (container.monthHeader.tag == null) {
+                        container.monthHeader.tag = data.yearMonth
+                        container.monthHeader.children.map { it as TextView }
                             .forEachIndexed { index, tv ->
                                 tv.text = daysOfWeek[index].displayText(uppercase = true)
-                                tv.setTextColor(resources.getColor(R.color.white))
+                                tv.setTextColor(resources.getColor(R.color.black))
                                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                                 tv.typeface = typeFace
                             }
