@@ -2,98 +2,68 @@ package com.example.sharedcalendar
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.sharedcalendar.CalendarAdapter.OnItemListener
-import com.example.sharedcalendar.data.LoginDataSource
-import com.example.sharedcalendar.data.LoginRepository
-import com.example.sharedcalendar.data.SessionManager
-import com.example.sharedcalendar.ui.login.LoginActivity
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
+import androidx.drawerlayout.widget.DrawerLayout
 
-const val TAG = "MainActivity"
+class MainActivity : AppCompatActivity() {
+    private val TAG = "MainActivity"
 
-class MainActivity : AppCompatActivity(), OnItemListener {
-    private lateinit var sessionManager: SessionManager
-    private var monthYearText: TextView? = null
-    private var calendarRecyclerView: RecyclerView? = null
-    private var selectedDate: LocalDate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initWidgets()
-        selectedDate = LocalDate.now()
-        setMonthView()
 
-        sessionManager = SessionManager(this)
 
-        // Start Login Activity if not logged in
-        Log.i(TAG, LoginRepository(LoginDataSource()).isLoggedIn.toString())
-        Log.i(TAG, sessionManager.getAuthToken().toString())
-//        if (!LoginRepository(LoginDataSource()).isLoggedIn || sessionManager.getAuthToken() == "") {
-        if (sessionManager.getAuthToken() != "") {
-            // If auth token does not exist
-            startActivity(Intent(this, LoginActivity::class.java))
+        // START SIDEBAR NAVIGATION //
+        //Drawer button
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+        val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
+
+        // If Click on Burger, Open drawer Layout
+        buttonDrawerToggle.setOnClickListener {
+            drawerLayout.open()
         }
-    }
+        // END SIDEBAR NAVIGATION //
 
-    private fun initWidgets() {
-        calendarRecyclerView = findViewById<RecyclerView>(R.id.calendarRecyclerView)
-        monthYearText = findViewById<TextView>(R.id.monthViewTV)
-    }
 
-    private fun setMonthView() {
-        monthYearText!!.text = monthYearFromDate(selectedDate)
-        val daysInMonth = daysInMonthArray(selectedDate)
-        val calendarAdapter = CalendarAdapter(daysInMonth, this)
-        val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(applicationContext, 7)
-        calendarRecyclerView!!.layoutManager = layoutManager
-        calendarRecyclerView!!.adapter = calendarAdapter
-    }
+        // Change Fragment from month to week on button click
+        // Set variables for change view buttons
+        val weekBtn: Button = findViewById(R.id.weekBtn)
+        val monthBtn: Button = findViewById(R.id.monthBtn)
 
-    private fun daysInMonthArray(date: LocalDate?): ArrayList<String> {
-        val daysInMonthArray = ArrayList<String>()
-        val yearMonth = YearMonth.from(date)
-        val daysInMonth = yearMonth.lengthOfMonth()
-        val firstOfMonth = selectedDate!!.withDayOfMonth(1)
-        val dayOfWeek = firstOfMonth.dayOfWeek.value
-        for (i in 1..42) {
-            if (i <= dayOfWeek || i > daysInMonth + dayOfWeek) {
-                daysInMonthArray.add("")
-            } else {
-                daysInMonthArray.add((i - dayOfWeek).toString())
+        // Set variables for View Fragments
+        val monthViewFragment = MonthViewFragment()
+        val weekViewFragment = WeekViewFragment()
+
+        // By default, the view fragment is month view fragment
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, monthViewFragment)
+            commit()
+        }
+
+        // When Click Month Button
+        monthBtn.setOnClickListener {
+            supportFragmentManager.beginTransaction().apply {
+                // Replace fragment with month view fragment
+                replace(R.id.flFragment, monthViewFragment)
+                addToBackStack(null)
+                // commit the change
+                commit()
             }
         }
-        return daysInMonthArray
-    }
-
-    private fun monthYearFromDate(date: LocalDate?): String {
-        val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
-        return date!!.format(formatter)
-    }
-
-    fun previousMonthAction(view: View?) {
-        selectedDate = selectedDate!!.minusMonths(1)
-        setMonthView()
-    }
-
-    fun nextMonthAction(view: View?) {
-        selectedDate = selectedDate!!.plusMonths(1)
-        setMonthView()
-    }
-
-    override fun onItemClick(position: Int, dayText: String?) {
-        if (dayText != "") {
-            val message = "Selected Date " + dayText + " " + monthYearFromDate(selectedDate)
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        // When Click Week Button
+        weekBtn.setOnClickListener {
+            supportFragmentManager.beginTransaction().apply {
+                // Replace fragment with week view fragment
+                replace(R.id.flFragment, weekViewFragment)
+                addToBackStack(null)
+                // Commit the changes
+                commit()
+            }
         }
+
+
     }
 }
