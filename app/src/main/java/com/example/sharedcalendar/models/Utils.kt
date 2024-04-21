@@ -3,6 +3,8 @@ package com.example.sharedcalendar.models
 import android.content.Context
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import com.kizitonwose.calendar.core.Week
+import com.kizitonwose.calendar.core.yearMonth
 import java.time.DayOfWeek
 import java.time.Month
 import java.time.YearMonth
@@ -27,4 +29,18 @@ fun Month.displayText(short: Boolean = true): String {
 fun Context.getColorCompat(@ColorRes color:Int) =
     ContextCompat.getColor(this, color)
 
-
+fun getWeekPageTitle(week: Week):String{
+    val firstDate = week.days.first().date
+    val lastDate = week.days.last().date
+    return when{
+        firstDate.yearMonth == lastDate.yearMonth ->{
+            firstDate.yearMonth.displayText()
+        }
+        firstDate.year == lastDate.year -> {
+            "${firstDate.month.displayText(short = false)} - ${lastDate.yearMonth.displayText()}"
+        }
+        else ->{
+            "${firstDate.yearMonth.displayText()} - ${lastDate.yearMonth.displayText()}"
+        }
+    }
+}

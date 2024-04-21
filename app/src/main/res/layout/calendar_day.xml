@@ -9,17 +9,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="1dp"
-        android:background="@color/example_5_item_view_bg_color">
+        android:background="@color/white"
+        tools:layout_editor_absoluteX="-206dp"
+        tools:layout_editor_absoluteY="223dp">
 
         <TextView
             android:id="@+id/calendarDayText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
+            android:layout_gravity="top|center"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="4dp"
             android:gravity="center"
-            android:textColor="@color/white"
+            android:textColor="@color/red_800"
             android:textSize="12sp"
             tools:text="24" />
 
