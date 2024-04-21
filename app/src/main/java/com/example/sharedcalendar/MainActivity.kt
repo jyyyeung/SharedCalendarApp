@@ -75,13 +75,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
         val addEventBtn : ImageButton = findViewById(R.id.addEventBtn)
+        val bottomWindow = BottomSheetFragment()
         addEventBtn.setOnClickListener(){
-            showBottomWindow()
+            //showBottomWindow()
+            bottomWindow.show(supportFragmentManager,"BottomSheetDialogue")
+
         }
 
 
-    }
 
+
+
+
+    }
+/*
     fun showBottomWindow(){
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -91,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
         //val text1Layout : LinearLayout = findViewById(R.id.bottom_window_text1_layout)
         //val text2Layout : LinearLayout = findViewById(R.id.bottom_window_text2_layout)
-/*
+*//*
         text1Layout.setOnClickListener(){
             dialog.dismiss()
             Toast.makeText(this, "Text1", Toast.LENGTH_SHORT).show()
@@ -99,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         text2Layout.setOnClickListener(){
             dialog.dismiss()
             Toast.makeText(this, "Text2", Toast.LENGTH_SHORT).show()
-        }*/
+        }*//*
 
         dialog.show()
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -118,6 +125,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    }
+    }*/
 
 }
