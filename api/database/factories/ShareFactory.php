@@ -15,8 +15,8 @@ class ShareFactory extends Factory
     {
         return [
             'calendarId' => Calendar::factory(),
-            'accountId' => Account::factory(),
-            'permission' => $this->faker->randomElement(["READ", "WRITE", "AVAILABILITY", "SHARE"])
+            'userId' => Account::factory(),
+            'permission' => $this->faker->randomElement(["READ", "WRITE", "AVAILABILITY", "ADMIN"])
         ];
     }
 }

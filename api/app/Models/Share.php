@@ -9,5 +9,5 @@ class Share extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['calendarId', 'accountId', 'permission'];
+    protected $fillable = ['calendarId', 'userId', 'Permission'];
 }

@@ -11,29 +11,29 @@ use Illuminate\Support\Facades\DB;
 
 class SharesTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-    {
-        // Let's truncate our existing records to start from scratch.
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Share::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+	/**
+	 * Run the database seeds.
+	 */
+	public function run(): void
+	{
+		// Let's truncate our existing records to start from scratch.
+		DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+		Share::truncate();
+		DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $faker = \Faker\Factory::create();
+		$faker = \Faker\Factory::create();
 
-        // And now, let's create a few shares in our database:
-        $calendars = Calendar::pluck('id')->toArray();
-        $accounts = Account::pluck('id')->toArray();
+		// And now, let's create a few shares in our database:
+		$calendars = Calendar::pluck('id')->toArray();
+		$accounts = Account::pluck('id')->toArray();
 
-        for ($i = 0; $i < 50; $i++) {
+		for ($i = 0; $i < 50; $i++) {
 
-            Share::create([
-                'calendarId' => $faker->randomElement($calendars),
-                'accountId' => $faker->randomElement($accounts),
-                'permission' => $faker->randomElement(['READ', 'WRITE', 'SHARE', 'AVAILABILITY']),
-            ]);
-        }
-    }
+			Share::create([
+				'calendarId' => $faker->randomElement($calendars),
+				'userId' => $faker->randomElement($accounts),
+				'permission' => $faker->randomElement(['READ', 'WRITE', 'ADMIN', 'AVAILABILITY']),
+			]);
+		}
+	}
 }
