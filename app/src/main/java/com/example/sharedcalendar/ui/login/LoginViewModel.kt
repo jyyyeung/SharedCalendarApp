@@ -1,5 +1,6 @@
 package com.example.sharedcalendar.ui.login
 
+import android.text.Editable
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -57,31 +58,11 @@ class LoginViewModel(
     }
 
     /**
-     * Validates the login data.
-     * @param username The username of the user.
-     * @param password The password of the user.
-     * @see LoginFormState
-     */
-    fun loginDataChanged(
-        username: String,
-        password: String,
-    ) {
-        // Validate form fields
-        if (!isEmailValid(username)) {
-            _loginForm.value = LoginFormState(emailError = R.string.invalid_email)
-        } else if (!isPasswordValid(password)) {
-            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
-        } else {
-            _loginForm.value = LoginFormState(isDataValid = true)
-        }
-    }
-
-    /**
-     * Username Validation: Checks if the username is valid.
+     * Email Validation: Checks if the email is valid.
      * @param email The email to be checked.
      * @return True if the email is valid, false otherwise.
      */
-    private fun isEmailValid(email: String): Boolean {
+    fun isEmailValid(email: Editable): Boolean {
         return if (email.contains('@')) {
             Patterns.EMAIL_ADDRESS.matcher(email).matches()
         } else {
@@ -94,7 +75,7 @@ class LoginViewModel(
      * @param password The password to be checked.
      * @return True if the password is valid, false otherwise.
      */
-    private fun isPasswordValid(password: String): Boolean {
+    fun isPasswordValid(password: Editable): Boolean {
         return password.length > 5
     }
 }
