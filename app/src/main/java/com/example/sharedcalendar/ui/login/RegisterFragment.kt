@@ -20,11 +20,6 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
  * A simple [Fragment] subclass.
  * Use the [RegisterFragment.newInstance] factory method to
@@ -49,12 +44,16 @@ class RegisterFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_register, container, false)
 
         // Set variables for views
-        val etEmail = view.findViewById<TextInputLayout>(R.id.loRegisterEmail) // binding.username
-        val etEmailInput =
+        val loUsername = view.findViewById<TextInputLayout>(R.id.loRegisterUsername)
+        val etUsername = view.findViewById<TextInputEditText>(R.id.etRegisterUsername)
+        val loEmail = view.findViewById<TextInputLayout>(R.id.loRegisterEmail) // binding.username
+        val etEmail =
             view.findViewById<TextInputEditText>(R.id.etRegisterEmail) // binding.username
-        val etPassword = view.findViewById<TextInputLayout>(R.id.loRegisterPassword)
-        val etPasswordInput = view.findViewById<TextInputEditText>(R.id.etRegisterPassword)
-        val btnLogin = view.findViewById<Button>(R.id.btn_register)
+        val loPassword = view.findViewById<TextInputLayout>(R.id.loRegisterPassword)
+        val etPassword = view.findViewById<TextInputEditText>(R.id.etRegisterPassword)
+        val loConfirmPassword = view.findViewById<TextInputLayout>(R.id.loRegisterConfirmPassword)
+        val etConfirmPassword = view.findViewById<TextInputEditText>(R.id.etRegisterConfirmPassword)
+        val btnRegister = view.findViewById<Button>(R.id.btn_register)
         val pbLoading = view.findViewById<CircularProgressIndicator>(R.id.pbLoading)
 
         loginViewModel.loginResult.observe(
@@ -83,48 +82,75 @@ class RegisterFragment : Fragment() {
         )
 
         // Listen to changes in Email input
-        etEmailInput.setOnKeyListener { _, _, _ ->
+        etUsername.setOnKeyListener { _, _, _ ->
 //            Log.d("LoginFragment", etEmailInput.text.toString())
-            if (loginViewModel.isEmailValid(etEmailInput.text!!)) {
+            if (loginViewModel.isUsernameValid(etUsername.text!!)) {
                 // Clear Error
-                etEmail.error = null
+                loUsername.error = null
             } else {
-                etEmail.error = getString(R.string.invalid_email)
+                loUsername.error = getString(R.string.invalid_username)
+            }
+            false
+        }
+
+        // Listen to changes in Email input
+        etEmail.setOnKeyListener { _, _, _ ->
+//            Log.d("LoginFragment", etEmailInput.text.toString())
+            if (loginViewModel.isEmailValid(etEmail.text!!)) {
+                // Clear Error
+                loEmail.error = null
+            } else {
+                loEmail.error = getString(R.string.invalid_email)
             }
             false
         }
 
         // Listen to changes in Password input
-        etPasswordInput.setOnKeyListener { _, _, _ ->
-            if (loginViewModel.isPasswordValid(etPasswordInput.text!!)) {
+        etPassword.setOnKeyListener { _, _, _ ->
+            if (loginViewModel.isPasswordValid(etPassword.text!!)) {
                 // Clear Error
-                etPassword.error = null
+                loPassword.error = null
             } else {
-                etPassword.error = getString(R.string.invalid_password)
+                loPassword.error = getString(R.string.invalid_password)
             }
             false
         }
 
-        // Listen to Done action on keyboard
-        etPasswordInput.setOnEditorActionListener { _, actionId, _ ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_DONE -> loginViewModel.login(
-                    etEmailInput?.text.toString(),
-                    etPasswordInput.text.toString(),
-                    sessionManager,
-                )
+
+        // Listen to changes in Password input
+        etConfirmPassword.setOnKeyListener { _, _, _ ->
+            if (loginViewModel.valuesAreEqual(etPassword.text!!, etConfirmPassword.text!!)) {
+                // Clear Error
+                loConfirmPassword.error = null
+            } else {
+                loConfirmPassword.error = getString(R.string.passwords_are_not_equal)
             }
             false
         }
+
+//        // Listen to Done action on keyboard
+//        etPassword.setOnEditorActionListener { _, actionId, _ ->
+//            when (actionId) {
+//                EditorInfo.IME_ACTION_DONE -> loginViewModel.login(
+//                    etEmail?.text.toString(),
+//                    etPassword.text.toString(),
+//                    sessionManager,
+//                )
+//            }
+//            false
+//        }
 
 
         // Listen to Login btn click event
-        btnLogin?.setOnClickListener {
+        btnRegister?.setOnClickListener {
             // On login clicked
             //Verify Data validity
-            if (!loginViewModel.isEmailValid(etEmailInput?.text!!) ||
+            if (!loginViewModel.isEmailValid(etEmail?.text!!) ||
                 !loginViewModel.isPasswordValid(
-                    etPasswordInput?.text!!
+                    etPassword?.text!!
+                ) || !loginViewModel.isUsernameValid(etUsername?.text!!) || !loginViewModel.valuesAreEqual(
+                    etPassword.text!!,
+                    etConfirmPassword?.text!!
                 )
             ) {
                 return@setOnClickListener
@@ -132,10 +158,11 @@ class RegisterFragment : Fragment() {
             // Show circular loader
             pbLoading?.visibility = View.VISIBLE
 
-            // Call login process
-            loginViewModel.login(
-                etEmailInput.text.toString(),
-                etPasswordInput.text.toString(),
+            // Call Register process
+            loginViewModel.register(
+                etEmail.text.toString(),
+                etUsername.text.toString(),
+                etPassword.text.toString(),
                 sessionManager,
             )
         }

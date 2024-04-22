@@ -18,4 +18,5 @@
     <string name="register_failed">Register Failed</string>
     <string name="action_register_short">register</string>
     <string name="prompt_username">Username</string>
+    <string name="passwords_are_not_equal">Passwords are not equal</string>
 </resources>

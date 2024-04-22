@@ -80,6 +80,18 @@ class LoginViewModel(
         }
     }
 
+    fun valueIsNotEmpty(value: Editable): Boolean {
+        return value.isNotBlank()
+    }
+
+    fun valuesAreEqual(value1: Editable, value2: Editable): Boolean {
+        return value1.toString() == value2.toString()
+    }
+
+    fun isUsernameValid(username: Editable): Boolean {
+        return valueIsNotEmpty(username) && !username.contains(' ')
+    }
+
     /**
      * Email Validation: Checks if the email is valid.
      * @param email The email to be checked.

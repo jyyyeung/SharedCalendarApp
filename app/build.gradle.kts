@@ -41,7 +41,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.12.0-beta01")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.kizitonwose.calendar:view:2.5.0")
     implementation("androidx.annotation:annotation:1.6.0")
