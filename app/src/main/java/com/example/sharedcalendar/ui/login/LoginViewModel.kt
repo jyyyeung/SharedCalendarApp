@@ -57,6 +57,29 @@ class LoginViewModel(
         }
     }
 
+    fun register(
+        username: String,
+        email: String,
+        password: String,
+        sessionManager: SessionManager,
+    ) {
+        viewModelScope.launch {
+            try {
+                // can be launched in a separate asynchronous job
+                val result = loginRepository.register(username, email, password, sessionManager)
+
+                if (result is Result.Success) {
+                    _loginResult.value =
+                        LoginResult(success = LoggedInUserView(displayName = result.data.user.username))
+                } else {
+                    _loginResult.value = LoginResult(error = R.string.register_failed)
+                }
+            } catch (ex: Exception) {
+                _loginResult.value = LoginResult(error = R.string.register_failed)
+            }
+        }
+    }
+
     /**
      * Email Validation: Checks if the email is valid.
      * @param email The email to be checked.

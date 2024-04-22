@@ -1,11 +1,24 @@
 package com.example.sharedcalendar.ui.login
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
+import com.example.sharedcalendar.data.SessionManager
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,16 +31,14 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class RegisterFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var sessionManager: SessionManager
+    private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        sessionManager = SessionManager(requireActivity())
+        loginViewModel =
+            ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -35,26 +46,120 @@ class RegisterFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register, container, false)
+        val view = inflater.inflate(R.layout.fragment_register, container, false)
+
+        // Set variables for views
+        val etEmail = view.findViewById<TextInputLayout>(R.id.loRegisterEmail) // binding.username
+        val etEmailInput =
+            view.findViewById<TextInputEditText>(R.id.etRegisterEmail) // binding.username
+        val etPassword = view.findViewById<TextInputLayout>(R.id.loRegisterPassword)
+        val etPasswordInput = view.findViewById<TextInputEditText>(R.id.etRegisterPassword)
+        val btnLogin = view.findViewById<Button>(R.id.btn_register)
+        val pbLoading = view.findViewById<CircularProgressIndicator>(R.id.pbLoading)
+
+        loginViewModel.loginResult.observe(
+            // Observe changes in login result
+            viewLifecycleOwner,
+            Observer {
+                val loginResult = it ?: return@Observer
+//            Log.d(TAG, loginResult.toString())
+                pbLoading?.visibility = View.GONE
+                if (loginResult.error != null) {
+                    showLoginFailed(loginResult.error)
+                }
+                if (loginResult.success != null) {
+                    updateUiWithUser(loginResult.success)
+                    // NOTE: Commented for debugging
+//                    startActivity(Intent(this, MainActivity::class.java))
+                }
+                activity?.setResult(Activity.RESULT_OK)
+
+                // NOTE: For debugging only, will allow continue even login failed
+                startActivity(Intent(activity, MainActivity::class.java))
+                // Complete and destroy login activity once successful
+                activity?.finish() // Do not allow user go back to sign in page
+
+            },
+        )
+
+        // Listen to changes in Email input
+        etEmailInput.setOnKeyListener { _, _, _ ->
+//            Log.d("LoginFragment", etEmailInput.text.toString())
+            if (loginViewModel.isEmailValid(etEmailInput.text!!)) {
+                // Clear Error
+                etEmail.error = null
+            } else {
+                etEmail.error = getString(R.string.invalid_email)
+            }
+            false
+        }
+
+        // Listen to changes in Password input
+        etPasswordInput.setOnKeyListener { _, _, _ ->
+            if (loginViewModel.isPasswordValid(etPasswordInput.text!!)) {
+                // Clear Error
+                etPassword.error = null
+            } else {
+                etPassword.error = getString(R.string.invalid_password)
+            }
+            false
+        }
+
+        // Listen to Done action on keyboard
+        etPasswordInput.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> loginViewModel.login(
+                    etEmailInput?.text.toString(),
+                    etPasswordInput.text.toString(),
+                    sessionManager,
+                )
+            }
+            false
+        }
+
+
+        // Listen to Login btn click event
+        btnLogin?.setOnClickListener {
+            // On login clicked
+            //Verify Data validity
+            if (!loginViewModel.isEmailValid(etEmailInput?.text!!) ||
+                !loginViewModel.isPasswordValid(
+                    etPasswordInput?.text!!
+                )
+            ) {
+                return@setOnClickListener
+            }
+            // Show circular loader
+            pbLoading?.visibility = View.VISIBLE
+
+            // Call login process
+            loginViewModel.login(
+                etEmailInput.text.toString(),
+                etPasswordInput.text.toString(),
+                sessionManager,
+            )
+        }
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment RegisterFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            RegisterFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    // Called when User login successful
+    private fun updateUiWithUser(model: LoggedInUserView) {
+        val welcome = getString(R.string.welcome)
+        val displayName = model.displayName
+        // TODO : initiate successful logged in experience
+
+        Toast.makeText(
+            requireActivity().application,
+            "$welcome $displayName",
+            Toast.LENGTH_LONG,
+        ).show()
     }
+
+    // Called when user login failed
+    private fun showLoginFailed(
+        @StringRes errorString: Int,
+    ) {
+        Toast.makeText(requireActivity().application, errorString, Toast.LENGTH_SHORT).show()
+    }
+
 }

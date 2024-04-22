@@ -15,4 +15,7 @@
     <string name="go_to_register">Don\'t have an account? Sign Up</string>
     <string name="register_heading">Register</string>
     <string name="login_heading">Login</string>
+    <string name="register_failed">Register Failed</string>
+    <string name="action_register_short">register</string>
+    <string name="prompt_username">Username</string>
 </resources>
