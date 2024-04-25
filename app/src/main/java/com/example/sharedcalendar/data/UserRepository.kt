@@ -26,8 +26,8 @@ class UserRepository(val dataSource: UserDataSource) {
         private set
 
 
-    val isLoggedIn: Boolean
-        get() = user != null
+//    val isLoggedIn: Boolean
+//        get() = user != null
 
     init {
         // If user credentials will be cached in local storage, it is recommended it be encrypted
@@ -95,12 +95,18 @@ class UserRepository(val dataSource: UserDataSource) {
     ): Result<RegisterResponse> {
         val apiServiceNoAuth = ApiClient(sessionManager).apiServiceNoAuth
 
-        // handle login
+        // handle Register
         val result = dataSource.register(username, email, password, apiServiceNoAuth)
         Log.i(TAG, result.toString())
         if (result is Result.Success) {
             // If Login is successful
             sessionManager.setAuthToken(result.data.token)
+            val user = result.data.user
+            val gson = Gson()
+            if (user.settings is String) {
+                user.settings = gson.fromJson(user.settings as String, UserSettings::class.java)
+//                Log.i(TAG, user.settings.toString())
+            }
             setLoggedInUser(sessionManager, result.data.user)
         }
         return result
