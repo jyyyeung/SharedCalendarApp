@@ -3,7 +3,7 @@ package com.example.sharedcalendar.ui.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.MainActivity
@@ -61,7 +62,7 @@ class LoginFragment : Fragment() {
             viewLifecycleOwner,
             Observer {
                 val loginResult = it ?: return@Observer
-//            Log.d(TAG, loginResult.toString())
+                Log.d(TAG, loginResult.toString())
                 pbLoading?.visibility = View.GONE
                 if (loginResult.error != null) {
                     showLoginFailed(loginResult.error)
@@ -164,7 +165,7 @@ class LoginFragment : Fragment() {
     }
 
     companion object {
-
+        private val TAG: String = LoginFragment::class.java.name
     }
 }
 

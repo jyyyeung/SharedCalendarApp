@@ -8,21 +8,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sharedcalendar.R
-import com.example.sharedcalendar.data.LoginRepository
 import com.example.sharedcalendar.data.Result
 import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.data.UserRepository
 import kotlinx.coroutines.launch
 
 private val TAG: String = LoginViewModel::class.java.name
 
 /**
  * ViewModel for the login screen.
- * @property loginRepository The login repository to be used.
+ * @property userRepository The login repository to be used.
  * @constructor Creates a new instance of [LoginViewModel].
- * @see LoginRepository
+ * @see UserRepository
  */
 class LoginViewModel(
-    private val loginRepository: LoginRepository,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
     // LiveData holds state which is observed by the UI
 //    private val _loginForm = MutableLiveData<LoginFormState>()
@@ -46,7 +46,8 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 // can be launched in a separate asynchronous job
-                val result = loginRepository.login(username, password, sessionManager)
+                val result = userRepository.login(username, password, sessionManager)
+                Log.i(TAG, "Received login result: $result")
 
                 if (result is Result.Success) {
                     _loginResult.value =
@@ -55,6 +56,7 @@ class LoginViewModel(
                     _loginResult.value = LoginResult(error = R.string.login_failed)
                 }
             } catch (ex: Exception) {
+                Log.d(TAG, "Login Failed in loginViewModel: $ex")
                 _loginResult.value = LoginResult(error = R.string.login_failed)
             }
         }
@@ -69,7 +71,7 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 // can be launched in a separate asynchronous job
-                val result = loginRepository.register(username, email, password, sessionManager)
+                val result = userRepository.register(username, email, password, sessionManager)
 
                 if (result is Result.Success) {
                     _loginResult.value =
@@ -87,7 +89,7 @@ class LoginViewModel(
         viewModelScope.launch {
 
             try {
-                loginRepository.logout(sessionManager = sessionManager)
+                userRepository.logout(sessionManager = sessionManager)
             } catch (ex: Exception) {
                 Log.d(TAG, "Logout Failed: $ex")
             }

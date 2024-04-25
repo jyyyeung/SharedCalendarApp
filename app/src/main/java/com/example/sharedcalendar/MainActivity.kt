@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModel
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
@@ -58,7 +59,8 @@ class MainActivity : AppCompatActivity() {
             menuItem.isChecked = true
             Log.i(TAG, menuItem.toString() + menuItem.itemId)
             if (menuItem.toString() == "Settings") {
-//                TODO: Handle to settings page
+                // Open settings activity
+                startActivity(Intent(this, SettingsActivity::class.java))
             } else if (menuItem.toString() == "Logout") {
                 // Call Logout process
                 loginViewModel.logout(
