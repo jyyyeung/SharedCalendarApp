@@ -10,23 +10,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
-import com.example.sharedcalendar.ui.login.LoginViewModel
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
+import com.example.sharedcalendar.ui.login.UserViewModel
 import com.google.android.material.navigation.NavigationView
 
 private val TAG: String = MainActivity::class.java.name
 
 class MainActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
-    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var userViewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sessionManager = SessionManager(this)
-        loginViewModel =
-            ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
+        userViewModel =
+            ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
@@ -55,13 +56,15 @@ class MainActivity : AppCompatActivity() {
 
         nvSidebar.setNavigationItemSelectedListener { menuItem ->
             // Handle menu item selected
-            menuItem.isChecked = true
+            menuItem.isChecked = false
+
             Log.i(TAG, menuItem.toString() + menuItem.itemId)
             if (menuItem.toString() == "Settings") {
-//                TODO: Handle to settings page
+                // Open settings activity
+                startActivity(Intent(this, SettingsActivity::class.java))
             } else if (menuItem.toString() == "Logout") {
                 // Call Logout process
-                loginViewModel.logout(
+                userViewModel.logout(
                     sessionManager = sessionManager
                 )
                 startActivity(Intent(this, AuthActivity::class.java))

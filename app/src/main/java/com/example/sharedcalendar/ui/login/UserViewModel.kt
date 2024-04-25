@@ -1,5 +1,6 @@
 package com.example.sharedcalendar.ui.login
 
+import android.content.SharedPreferences
 import android.text.Editable
 import android.util.Log
 import android.util.Patterns
@@ -8,21 +9,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sharedcalendar.R
-import com.example.sharedcalendar.data.LoginRepository
 import com.example.sharedcalendar.data.Result
 import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.data.UserRepository
 import kotlinx.coroutines.launch
 
-private val TAG: String = LoginViewModel::class.java.name
+private val TAG: String = UserViewModel::class.java.name
 
 /**
  * ViewModel for the login screen.
- * @property loginRepository The login repository to be used.
- * @constructor Creates a new instance of [LoginViewModel].
- * @see LoginRepository
+ * @property userRepository The login repository to be used.
+ * @constructor Creates a new instance of [UserViewModel].
+ * @see UserRepository
  */
-class LoginViewModel(
-    private val loginRepository: LoginRepository,
+class UserViewModel(
+    private val userRepository: UserRepository,
 ) : ViewModel() {
     // LiveData holds state which is observed by the UI
 //    private val _loginForm = MutableLiveData<LoginFormState>()
@@ -46,7 +47,8 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 // can be launched in a separate asynchronous job
-                val result = loginRepository.login(username, password, sessionManager)
+                val result = userRepository.login(username, password, sessionManager)
+                Log.i(TAG, "Received login result: $result")
 
                 if (result is Result.Success) {
                     _loginResult.value =
@@ -55,6 +57,7 @@ class LoginViewModel(
                     _loginResult.value = LoginResult(error = R.string.login_failed)
                 }
             } catch (ex: Exception) {
+                Log.d(TAG, "Login Failed in loginViewModel: $ex")
                 _loginResult.value = LoginResult(error = R.string.login_failed)
             }
         }
@@ -69,7 +72,7 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 // can be launched in a separate asynchronous job
-                val result = loginRepository.register(username, email, password, sessionManager)
+                val result = userRepository.register(username, email, password, sessionManager)
 
                 if (result is Result.Success) {
                     _loginResult.value =
@@ -87,11 +90,37 @@ class LoginViewModel(
         viewModelScope.launch {
 
             try {
-                loginRepository.logout(sessionManager = sessionManager)
+                userRepository.logout(sessionManager = sessionManager)
             } catch (ex: Exception) {
                 Log.d(TAG, "Logout Failed: $ex")
             }
         }
+    }
+
+    fun updateUserSettings(
+        sessionManager: SessionManager,
+        sharedPreferences: SharedPreferences?,
+        key: String?
+    ) {
+        viewModelScope.launch {
+            try {
+                Log.i(TAG, "Trying to Update Preferences: $sharedPreferences - $key")
+                if (sharedPreferences != null && key != null) {
+                    // can be launched in a separate asynchronous job
+                    val result =
+                        userRepository.updateUserSettings(sessionManager, sharedPreferences, key)
+                    if (result is Result.Success) {
+                        Log.i(TAG, "Update Successful: $result.toString()")
+                    } else {
+                        Log.e(TAG, "Update Result was Error: $result.toString()")
+                    }
+                }
+
+            } catch (ex: Exception) {
+                Log.e(TAG, "Update Failed: $ex")
+            }
+        }
+
     }
 
 

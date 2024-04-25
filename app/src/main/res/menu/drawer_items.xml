@@ -12,20 +12,20 @@
         android:title="Menu">
         <menu>
             <item
-                android:id="@+id/inbox_item"
-                android:checkable="true"
+                android:id="@+id/add_person_item"
+                android:checkable="false"
                 android:icon="@drawable/ic_person_add_24px"
                 android:title="Add Person to Calendar" />
             <item
-                android:id="@+id/outbox_item"
-                android:checkable="true"
+                android:id="@+id/settings_item"
+                android:checkable="false"
                 android:icon="@drawable/ic_settings_24px"
                 android:title="Settings" />
         </menu>
     </item>
     <item
-        android:id="@+id/favourites_item"
-        android:checkable="true"
+        android:id="@+id/logout_item"
+        android:checkable="false"
         android:icon="@drawable/baseline_logout_24"
         android:title="Logout" />
 

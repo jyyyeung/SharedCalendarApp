@@ -17,7 +17,7 @@ Route::middleware(['auth:sanctum'])->group(
     // Requires Authorization Bearer {{ token }} in Headers
     function () { {
             Route::apiResource('users', UserController::class);
-            Route::get('/user', [UserController::class, 'me']);
+            Route::get('/user', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
 
             // Calendar API Routes
