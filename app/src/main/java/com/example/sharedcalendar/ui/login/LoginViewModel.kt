@@ -22,8 +22,8 @@ class LoginViewModel(
     private val loginRepository: LoginRepository,
 ) : ViewModel() {
     // LiveData holds state which is observed by the UI
-    private val _loginForm = MutableLiveData<LoginFormState>()
-    val loginFormState: LiveData<LoginFormState> = _loginForm
+//    private val _loginForm = MutableLiveData<LoginFormState>()
+//    val loginFormState: LiveData<LoginFormState> = _loginForm
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
@@ -80,7 +80,7 @@ class LoginViewModel(
         }
     }
 
-    fun valueIsNotEmpty(value: Editable): Boolean {
+    private fun valueIsNotEmpty(value: Editable): Boolean {
         return value.isNotBlank()
     }
 

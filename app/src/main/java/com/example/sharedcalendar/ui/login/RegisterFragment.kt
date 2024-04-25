@@ -3,14 +3,13 @@ package com.example.sharedcalendar.ui.login
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.MainActivity
@@ -160,8 +159,8 @@ class RegisterFragment : Fragment() {
 
             // Call Register process
             loginViewModel.register(
-                etEmail.text.toString(),
                 etUsername.text.toString(),
+                etEmail.text.toString(),
                 etPassword.text.toString(),
                 sessionManager,
             )
