@@ -1,6 +1,7 @@
 package com.example.sharedcalendar.ui.login
 
 import android.text.Editable
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +12,8 @@ import com.example.sharedcalendar.data.LoginRepository
 import com.example.sharedcalendar.data.Result
 import com.example.sharedcalendar.data.SessionManager
 import kotlinx.coroutines.launch
+
+private val TAG: String = LoginViewModel::class.java.name
 
 /**
  * ViewModel for the login screen.
@@ -79,6 +82,18 @@ class LoginViewModel(
             }
         }
     }
+
+    fun logout(sessionManager: SessionManager) {
+        viewModelScope.launch {
+
+            try {
+                loginRepository.logout(sessionManager = sessionManager)
+            } catch (ex: Exception) {
+                Log.d(TAG, "Logout Failed: $ex")
+            }
+        }
+    }
+
 
     private fun valueIsNotEmpty(value: Editable): Boolean {
         return value.isNotBlank()
