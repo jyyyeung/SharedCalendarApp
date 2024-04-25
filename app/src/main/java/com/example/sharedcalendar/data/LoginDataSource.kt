@@ -59,12 +59,12 @@ class LoginDataSource {
         try {
             //  handle loggedInUser authentication
             val credentials = RegisterRequest(username, email, password, deviceName)
-//            Log.i(TAG, credentials.toString())
+            Log.i(TAG, credentials.toString())
             val response: Response<RegisterResponse> = apiServiceNoAuth.register(credentials)
-//            Log.d(TAG, response.toString())
+            Log.d(TAG, response.toString())
 //            Log.d(TAG, response.body().toString())
             return if (response.isSuccessful) {
-//                Log.i(TAG, response.body().toString())
+                Log.i(TAG, response.body().toString())
                 // TODO: use real login credentials and save token
 
                 // TODO: `LoginResponse(token=null, status=404, message=Not Found!!!)` still logins user
@@ -72,12 +72,12 @@ class LoginDataSource {
                 val registerResponse: RegisterResponse = response.body()!!
                 Result.Success(registerResponse)
             } else {
-                Result.Error(IOException("Error logging in"))
+                Result.Error(IOException("Error Registering"))
             }
 //            return Result.Error(IOException("Function not implemented"))
         } catch (e: Throwable) {
             Log.d(TAG, e.message.toString())
-            return Result.Error(IOException("Error logging in", e))
+            return Result.Error(IOException("Error Registering", e))
         }
     }
 

@@ -12,4 +12,11 @@
     <string name="invalid_email">Not a email </string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="go_to_register">Don\'t have an account? Sign Up</string>
+    <string name="register_heading">Register</string>
+    <string name="login_heading">Login</string>
+    <string name="register_failed">Register Failed</string>
+    <string name="action_register_short">register</string>
+    <string name="prompt_username">Username</string>
+    <string name="passwords_are_not_equal">Passwords are not equal</string>
 </resources>

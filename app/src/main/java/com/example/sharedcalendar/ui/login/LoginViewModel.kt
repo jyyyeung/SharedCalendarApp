@@ -1,5 +1,6 @@
 package com.example.sharedcalendar.ui.login
 
+import android.text.Editable
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,8 +22,8 @@ class LoginViewModel(
     private val loginRepository: LoginRepository,
 ) : ViewModel() {
     // LiveData holds state which is observed by the UI
-    private val _loginForm = MutableLiveData<LoginFormState>()
-    val loginFormState: LiveData<LoginFormState> = _loginForm
+//    private val _loginForm = MutableLiveData<LoginFormState>()
+//    val loginFormState: LiveData<LoginFormState> = _loginForm
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
@@ -56,32 +57,47 @@ class LoginViewModel(
         }
     }
 
-    /**
-     * Validates the login data.
-     * @param username The username of the user.
-     * @param password The password of the user.
-     * @see LoginFormState
-     */
-    fun loginDataChanged(
+    fun register(
         username: String,
+        email: String,
         password: String,
+        sessionManager: SessionManager,
     ) {
-        // Validate form fields
-        if (!isEmailValid(username)) {
-            _loginForm.value = LoginFormState(emailError = R.string.invalid_email)
-        } else if (!isPasswordValid(password)) {
-            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
-        } else {
-            _loginForm.value = LoginFormState(isDataValid = true)
+        viewModelScope.launch {
+            try {
+                // can be launched in a separate asynchronous job
+                val result = loginRepository.register(username, email, password, sessionManager)
+
+                if (result is Result.Success) {
+                    _loginResult.value =
+                        LoginResult(success = LoggedInUserView(displayName = result.data.user.username))
+                } else {
+                    _loginResult.value = LoginResult(error = R.string.register_failed)
+                }
+            } catch (ex: Exception) {
+                _loginResult.value = LoginResult(error = R.string.register_failed)
+            }
         }
     }
 
+    private fun valueIsNotEmpty(value: Editable): Boolean {
+        return value.isNotBlank()
+    }
+
+    fun valuesAreEqual(value1: Editable, value2: Editable): Boolean {
+        return value1.toString() == value2.toString()
+    }
+
+    fun isUsernameValid(username: Editable): Boolean {
+        return valueIsNotEmpty(username) && !username.contains(' ')
+    }
+
     /**
-     * Username Validation: Checks if the username is valid.
+     * Email Validation: Checks if the email is valid.
      * @param email The email to be checked.
      * @return True if the email is valid, false otherwise.
      */
-    private fun isEmailValid(email: String): Boolean {
+    fun isEmailValid(email: Editable): Boolean {
         return if (email.contains('@')) {
             Patterns.EMAIL_ADDRESS.matcher(email).matches()
         } else {
@@ -94,7 +110,7 @@ class LoginViewModel(
      * @param password The password to be checked.
      * @return True if the password is valid, false otherwise.
      */
-    private fun isPasswordValid(password: String): Boolean {
+    fun isPasswordValid(password: Editable): Boolean {
         return password.length > 5
     }
 }
