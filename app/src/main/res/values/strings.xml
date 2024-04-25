@@ -19,4 +19,6 @@
     <string name="action_register_short">register</string>
     <string name="prompt_username">Username</string>
     <string name="passwords_are_not_equal">Passwords are not equal</string>
+    <string name="default_sidebar_username">Username</string>
+    <string name="default_sidebar_email">UserEmail</string>
 </resources>

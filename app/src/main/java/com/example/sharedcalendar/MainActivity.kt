@@ -2,28 +2,76 @@ package com.example.sharedcalendar
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
+import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.ui.login.AuthActivity
+import com.example.sharedcalendar.ui.login.LoginViewModel
+import com.example.sharedcalendar.ui.login.LoginViewModelFactory
+import com.google.android.material.navigation.NavigationView
+
+private val TAG: String = MainActivity::class.java.name
 
 class MainActivity : AppCompatActivity() {
-    private val TAG = "MainActivity"
-
+    private lateinit var sessionManager: SessionManager
+    private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        sessionManager = SessionManager(this)
+        loginViewModel =
+            ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
+        val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
 
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
             drawerLayout.open()
+
+            val tvUsername: TextView = findViewById(R.id.tvSidebarUsername)
+            val tvEmail: TextView = findViewById(R.id.tvSidebarEmail)
+            // Update Sidebar username if current values are default
+            if (tvUsername.text == getString(R.string.default_sidebar_username) ||
+                tvEmail.text == getString(
+                    R.string.default_sidebar_email
+                )
+            ) {
+                val user = sessionManager.getUser()
+                tvUsername.text = user?.username
+                tvEmail.text = user?.email
+            }
+        }
+
+
+        nvSidebar.setNavigationItemSelectedListener { menuItem ->
+            // Handle menu item selected
+            menuItem.isChecked = true
+            Log.i(TAG, menuItem.toString() + menuItem.itemId)
+            if (menuItem.toString() == "Settings") {
+//                TODO: Handle to settings page
+            } else if (menuItem.toString() == "Logout") {
+                // Call Logout process
+                loginViewModel.logout(
+                    sessionManager = sessionManager
+                )
+                startActivity(Intent(this, AuthActivity::class.java))
+                finish()
+            } else if (menuItem.toString() == "Add Person to Calendar") {
+                // TODO: Handle add person to calendar
+            }
+//            menuItem.itemId
+            drawerLayout.close()
+            true
         }
         // END SIDEBAR NAVIGATION //
 

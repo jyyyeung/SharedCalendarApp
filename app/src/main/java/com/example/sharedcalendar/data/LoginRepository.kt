@@ -35,6 +35,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
     suspend fun logout(sessionManager: SessionManager) {
         user = null
         sessionManager.setAuthToken("")
+        sessionManager.setUser(null)
         val apiService = ApiClient(sessionManager).apiService
         dataSource.logout(apiService)
     }
@@ -60,7 +61,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
         if (result is Result.Success) {
             // If Login is successful
             sessionManager.setAuthToken(result.data.token)
-            setLoggedInUser(result.data.user)
+            setLoggedInUser(sessionManager, result.data.user)
         }
         return result
     }
@@ -87,7 +88,7 @@ class LoginRepository(val dataSource: LoginDataSource) {
         if (result is Result.Success) {
             // If Login is successful
             sessionManager.setAuthToken(result.data.token)
-            setLoggedInUser(result.data.user)
+            setLoggedInUser(sessionManager, result.data.user)
         }
         return result
     }
@@ -97,9 +98,10 @@ class LoginRepository(val dataSource: LoginDataSource) {
      *
      * @param loggedInUser
      */
-    private fun setLoggedInUser(loggedInUser: User) {
+    private fun setLoggedInUser(sessionManager: SessionManager, loggedInUser: User) {
         this.user = loggedInUser
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore
+        sessionManager.setUser(loggedInUser)
     }
 }
