@@ -12,6 +12,7 @@ import com.example.sharedcalendar.data.UserDataSource
 import com.example.sharedcalendar.data.UserRepository
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
+import com.google.android.material.appbar.MaterialToolbar
 
 private val TAG: String = SettingsActivity::class.java.name
 
@@ -33,11 +34,16 @@ class SettingsActivity : AppCompatActivity(),
         userRepository = UserRepository(
             dataSource = UserDataSource()
         )
-        userViewModel =
-            ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
+        userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
         sessionManager = SessionManager(this)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val tbSettingsToolbar: MaterialToolbar = findViewById(R.id.tbSettingsToolbar)
+        tbSettingsToolbar.setNavigationOnClickListener { it ->
+            finish()
+        }
+
     }
 
     override fun onStart() {

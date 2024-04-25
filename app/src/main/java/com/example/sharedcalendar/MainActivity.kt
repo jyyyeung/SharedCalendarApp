@@ -56,7 +56,8 @@ class MainActivity : AppCompatActivity() {
 
         nvSidebar.setNavigationItemSelectedListener { menuItem ->
             // Handle menu item selected
-            menuItem.isChecked = true
+            menuItem.isChecked = false
+
             Log.i(TAG, menuItem.toString() + menuItem.itemId)
             if (menuItem.toString() == "Settings") {
                 // Open settings activity
