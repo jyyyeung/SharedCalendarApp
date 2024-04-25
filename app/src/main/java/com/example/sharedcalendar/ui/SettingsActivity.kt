@@ -2,16 +2,16 @@ package com.example.sharedcalendar.ui
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.data.UserDataSource
 import com.example.sharedcalendar.data.UserRepository
-import kotlinx.coroutines.launch
+import com.example.sharedcalendar.ui.login.LoginViewModelFactory
+import com.example.sharedcalendar.ui.login.UserViewModel
 
 private val TAG: String = SettingsActivity::class.java.name
 
@@ -20,6 +20,7 @@ class SettingsActivity : AppCompatActivity(),
 //    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
     SharedPreferences.OnSharedPreferenceChangeListener {
     private lateinit var userRepository: UserRepository
+    private lateinit var userViewModel: UserViewModel
     private lateinit var sessionManager: SessionManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +33,8 @@ class SettingsActivity : AppCompatActivity(),
         userRepository = UserRepository(
             dataSource = UserDataSource()
         )
+        userViewModel =
+            ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
         sessionManager = SessionManager(this)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -76,18 +79,9 @@ class SettingsActivity : AppCompatActivity(),
         sharedPreferences: SharedPreferences?, key: String?
     ) {
         recreate()
-        Log.i(TAG, key.toString())
 
-        lifecycleScope.launch {
-            if (sharedPreferences != null && key != null) {
-
-                userRepository.updateUserSettings(sessionManager, sharedPreferences, key)
-
-            }
-        }
-//        TODO: Save new value to DB
-
-//        TODO("Not yet implemented")
+        // Update Changed Settings in Database
+        userViewModel.updateUserSettings(sessionManager, sharedPreferences, key)
     }
 
 }

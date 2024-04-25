@@ -1,5 +1,6 @@
 package com.example.sharedcalendar.ui.login
 
+import android.content.SharedPreferences
 import android.text.Editable
 import android.util.Log
 import android.util.Patterns
@@ -13,15 +14,15 @@ import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.data.UserRepository
 import kotlinx.coroutines.launch
 
-private val TAG: String = LoginViewModel::class.java.name
+private val TAG: String = UserViewModel::class.java.name
 
 /**
  * ViewModel for the login screen.
  * @property userRepository The login repository to be used.
- * @constructor Creates a new instance of [LoginViewModel].
+ * @constructor Creates a new instance of [UserViewModel].
  * @see UserRepository
  */
-class LoginViewModel(
+class UserViewModel(
     private val userRepository: UserRepository,
 ) : ViewModel() {
     // LiveData holds state which is observed by the UI
@@ -94,6 +95,32 @@ class LoginViewModel(
                 Log.d(TAG, "Logout Failed: $ex")
             }
         }
+    }
+
+    fun updateUserSettings(
+        sessionManager: SessionManager,
+        sharedPreferences: SharedPreferences?,
+        key: String?
+    ) {
+        viewModelScope.launch {
+            try {
+                Log.i(TAG, "Trying to Update Preferences: $sharedPreferences - $key")
+                if (sharedPreferences != null && key != null) {
+                    // can be launched in a separate asynchronous job
+                    val result =
+                        userRepository.updateUserSettings(sessionManager, sharedPreferences, key)
+                    if (result is Result.Success) {
+                        Log.i(TAG, "Update Successful: $result.toString()")
+                    } else {
+                        Log.e(TAG, "Update Result was Error: $result.toString()")
+                    }
+                }
+
+            } catch (ex: Exception) {
+                Log.e(TAG, "Update Failed: $ex")
+            }
+        }
+
     }
 
 

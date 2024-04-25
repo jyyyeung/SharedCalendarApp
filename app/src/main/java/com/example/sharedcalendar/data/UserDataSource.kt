@@ -22,9 +22,7 @@ class UserDataSource {
     private val deviceName = getDeviceName()
 
     suspend fun login(
-        email: String,
-        password: String,
-        apiServiceNoAuth: ApiServiceNoAuth
+        email: String, password: String, apiServiceNoAuth: ApiServiceNoAuth
     ): Result<LoginResponse> {
         try {
             //  handle loggedInUser authentication
@@ -52,10 +50,7 @@ class UserDataSource {
     }
 
     suspend fun register(
-        username: String,
-        email: String,
-        password: String,
-        apiServiceNoAuth: ApiServiceNoAuth
+        username: String, email: String, password: String, apiServiceNoAuth: ApiServiceNoAuth
     ): Result<RegisterResponse> {
         try {
             //  handle loggedInUser authentication
@@ -85,8 +80,7 @@ class UserDataSource {
     suspend fun logout(apiService: ApiService) {
         // TODO: revoke authentication
         try {
-            val response: Response<Any> =
-                apiService.logout()
+            val response: Response<Any> = apiService.logout()
             Log.d(TAG, response.toString())
             Log.d(TAG, response.body().toString())
 
@@ -126,13 +120,15 @@ class UserDataSource {
     }
 
     suspend fun updateUser(
-        apiService: ApiService,
-        userId: Int,
-        updatedUser: User
+        apiService: ApiService, userId: Int, updatedUser: Any
 //        prefKey: String
     ): Result<User> {
+        if (updatedUser !is User && updatedUser !is Map<*, *>) {
+            return Result.Error(IOException("Invalid Input Type for updated User"))
+        }
         return try {
             val response: Response<User> = apiService.patchUserById(userId, updatedUser)
+            Log.i(TAG, "Response for updateUser is $response")
 
             if (response.isSuccessful) {
                 Log.i(TAG, response.body().toString())

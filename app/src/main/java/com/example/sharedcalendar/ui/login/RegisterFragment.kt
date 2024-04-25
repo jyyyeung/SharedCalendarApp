@@ -26,13 +26,13 @@ import com.google.android.material.textfield.TextInputLayout
  */
 class RegisterFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
-    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var userViewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sessionManager = SessionManager(requireActivity())
-        loginViewModel =
-            ViewModelProvider(this, LoginViewModelFactory())[LoginViewModel::class.java]
+        userViewModel =
+            ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -55,7 +55,7 @@ class RegisterFragment : Fragment() {
         val btnRegister = view.findViewById<Button>(R.id.btn_register)
         val pbLoading = view.findViewById<CircularProgressIndicator>(R.id.pbLoading)
 
-        loginViewModel.loginResult.observe(
+        userViewModel.loginResult.observe(
             // Observe changes in login result
             viewLifecycleOwner,
             Observer {
@@ -83,7 +83,7 @@ class RegisterFragment : Fragment() {
         // Listen to changes in Email input
         etUsername.setOnKeyListener { _, _, _ ->
 //            Log.d("LoginFragment", etEmailInput.text.toString())
-            if (loginViewModel.isUsernameValid(etUsername.text!!)) {
+            if (userViewModel.isUsernameValid(etUsername.text!!)) {
                 // Clear Error
                 loUsername.error = null
             } else {
@@ -95,7 +95,7 @@ class RegisterFragment : Fragment() {
         // Listen to changes in Email input
         etEmail.setOnKeyListener { _, _, _ ->
 //            Log.d("LoginFragment", etEmailInput.text.toString())
-            if (loginViewModel.isEmailValid(etEmail.text!!)) {
+            if (userViewModel.isEmailValid(etEmail.text!!)) {
                 // Clear Error
                 loEmail.error = null
             } else {
@@ -106,7 +106,7 @@ class RegisterFragment : Fragment() {
 
         // Listen to changes in Password input
         etPassword.setOnKeyListener { _, _, _ ->
-            if (loginViewModel.isPasswordValid(etPassword.text!!)) {
+            if (userViewModel.isPasswordValid(etPassword.text!!)) {
                 // Clear Error
                 loPassword.error = null
             } else {
@@ -118,7 +118,7 @@ class RegisterFragment : Fragment() {
 
         // Listen to changes in Password input
         etConfirmPassword.setOnKeyListener { _, _, _ ->
-            if (loginViewModel.valuesAreEqual(etPassword.text!!, etConfirmPassword.text!!)) {
+            if (userViewModel.valuesAreEqual(etPassword.text!!, etConfirmPassword.text!!)) {
                 // Clear Error
                 loConfirmPassword.error = null
             } else {
@@ -144,10 +144,10 @@ class RegisterFragment : Fragment() {
         btnRegister?.setOnClickListener {
             // On login clicked
             //Verify Data validity
-            if (!loginViewModel.isEmailValid(etEmail?.text!!) ||
-                !loginViewModel.isPasswordValid(
+            if (!userViewModel.isEmailValid(etEmail?.text!!) ||
+                !userViewModel.isPasswordValid(
                     etPassword?.text!!
-                ) || !loginViewModel.isUsernameValid(etUsername?.text!!) || !loginViewModel.valuesAreEqual(
+                ) || !userViewModel.isUsernameValid(etUsername?.text!!) || !userViewModel.valuesAreEqual(
                     etPassword.text!!,
                     etConfirmPassword?.text!!
                 )
@@ -158,7 +158,7 @@ class RegisterFragment : Fragment() {
             pbLoading?.visibility = View.VISIBLE
 
             // Call Register process
-            loginViewModel.register(
+            userViewModel.register(
                 etUsername.text.toString(),
                 etEmail.text.toString(),
                 etPassword.text.toString(),

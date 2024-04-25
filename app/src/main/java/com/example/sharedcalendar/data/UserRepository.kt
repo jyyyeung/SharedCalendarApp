@@ -8,6 +8,7 @@ import com.example.sharedcalendar.models.RegisterResponse
 import com.example.sharedcalendar.models.User
 import com.example.sharedcalendar.models.UserSettings
 import com.google.gson.Gson
+import java.io.IOException
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -56,9 +57,7 @@ class UserRepository(val dataSource: UserDataSource) {
      * @return [Result]
      */
     suspend fun login(
-        username: String,
-        password: String,
-        sessionManager: SessionManager
+        username: String, password: String, sessionManager: SessionManager
     ): Result<LoginResponse> {
         val apiServiceNoAuth = ApiClient(sessionManager).apiServiceNoAuth
 
@@ -92,10 +91,7 @@ class UserRepository(val dataSource: UserDataSource) {
      * @return [Result]
      */
     suspend fun register(
-        username: String,
-        email: String,
-        password: String,
-        sessionManager: SessionManager
+        username: String, email: String, password: String, sessionManager: SessionManager
     ): Result<RegisterResponse> {
         val apiServiceNoAuth = ApiClient(sessionManager).apiServiceNoAuth
 
@@ -125,31 +121,57 @@ class UserRepository(val dataSource: UserDataSource) {
     }
 
     suspend fun updateUserSettings(
-        sessionManager: SessionManager,
-        sharedPreferences: SharedPreferences,
-        key: String
-    ) {
-        val updatedUser = sessionManager.getUser()
+        sessionManager: SessionManager, sharedPreferences: SharedPreferences, key: String
+    ): Result<User> {
+        Log.i(TAG, "Will update user preferences")
+        val userSettings = sessionManager.getUser()?.settings
+        val userId = sessionManager.getUser()?.id
+        val updatedSettings = mutableMapOf<String, String>()
         val apiService = ApiClient(sessionManager).apiService
-        if (updatedUser?.settings == null) {
-            updatedUser?.settings = UserSettings(
-                defaultView = null,
-                defaultCalendar = null,
-                defaultTimezone = null,
-                defaultReminder = "Push"
-            )
-        }
-        if (updatedUser?.settings !is UserSettings) {
-            return
+        val updatedUser = mutableMapOf<String, Any>()
+
+        if (key != "name" && userSettings != null && userSettings is UserSettings) {
+            // Get current settings if updated pref is not "name"
+            updatedSettings["default_view"] = userSettings.defaultView ?: "month"
+            updatedSettings["default_calendar"] = userSettings.defaultCalendar ?: "default"
+            updatedSettings["default_reminder"] = userSettings.defaultReminder ?: "push"
+            updatedSettings["default_timezone"] = userSettings.defaultTimezone ?: "UTC"
         }
 
-        if (key == "calendar_view") {
-            (updatedUser.settings as UserSettings).defaultView =
-                sharedPreferences.getString(key, null)
+        val newValue = sharedPreferences.getString(key, "")
+        // Check if new preferences value is empty
+        if (newValue.isNullOrEmpty()) {
+            return Result.Error(IOException("Value for $key is Null or Empty"))
         }
-        val userId: Int = updatedUser.id
 
-        apiService.patchUserById(userId, updatedUser)
+        Log.i(
+            TAG, "now setting $key to ${sharedPreferences.getString(key, null)}"
+        )
 
+        // Parse updated preference to required format in DB
+        when (key) {
+            "name" -> updatedUser["name"] = newValue
+            "default_view" -> updatedSettings["default_view"] = newValue
+            "default_reminder" -> updatedSettings["default_reminder"] = newValue
+            "default_calendar" -> updatedSettings["default_calendar"] = newValue
+            "default_timezone" -> updatedSettings["default_timezone"] = newValue
+        }
+
+        if (updatedSettings.isNotEmpty()) // Check if Settings have been changed
+            updatedUser["settings"] = updatedSettings
+
+        Log.i(TAG, "Calling patchUserById")
+        if (userId !is Int) {
+            return Result.Error(IOException("UserID not Int, $userId"))
+        }
+        if (updatedUser.isEmpty()) return Result.Error(IOException("$key is not saved in database, skipping update"))
+
+        val result = dataSource.updateUser(apiService, userId, updatedUser)
+
+        if (result is Result.Success) {
+            Log.i(TAG, "Result is Success, updated user already ")
+        }
+        Log.i(TAG, "Returning Result: $result")
+        return result
     }
 }

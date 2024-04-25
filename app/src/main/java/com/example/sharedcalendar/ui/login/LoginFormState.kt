@@ -6,7 +6,7 @@ package com.example.sharedcalendar.ui.login
  * @param passwordError Integer resource ID for the password error, or null if there is no error.
  * @param isDataValid If the data entered is valid.
  * @constructor Creates a new instance of [LoginFormState].
- * @see LoginViewModel
+ * @see UserViewModel
  */
 data class LoginFormState(
     val emailError: Int? = null,

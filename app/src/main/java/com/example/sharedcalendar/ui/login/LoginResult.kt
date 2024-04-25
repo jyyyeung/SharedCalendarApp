@@ -5,7 +5,7 @@ package com.example.sharedcalendar.ui.login
  * @property success User details data.
  * @property error Integer resource ID for the error message.
  * @constructor Creates a new instance of [LoginResult].
- * @see LoginViewModel
+ * @see UserViewModel
  */
 data class LoginResult(
     val success: LoggedInUserView? = null,

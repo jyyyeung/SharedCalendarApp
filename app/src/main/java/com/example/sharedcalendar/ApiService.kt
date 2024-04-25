@@ -181,10 +181,10 @@ interface ApiService {
         @Path("user") userId: Int,
     ): Response<User>
 
-    @PATCH("users/{user}")
+    @PATCH("users/{user}/")
     suspend fun patchUserById(
         @Path("user") userId: Int,
-        @Body updatedUser: User,
+        @Body updatedUser: Any,
     ): Response<User>
 
     @DELETE("users/{user}")
