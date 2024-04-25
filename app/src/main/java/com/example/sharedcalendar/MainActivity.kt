@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
@@ -36,9 +37,21 @@ class MainActivity : AppCompatActivity() {
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
             drawerLayout.open()
+
+            val tvUsername: TextView = findViewById(R.id.tvSidebarUsername)
+            val tvEmail: TextView = findViewById(R.id.tvSidebarEmail)
+            // Update Sidebar username if current values are default
+            if (tvUsername.text == getString(R.string.default_sidebar_username) ||
+                tvEmail.text == getString(
+                    R.string.default_sidebar_email
+                )
+            ) {
+                val user = sessionManager.getUser()
+                tvUsername.text = user?.username
+                tvEmail.text = user?.email
+            }
         }
 
-        
 
         nvSidebar.setNavigationItemSelectedListener { menuItem ->
             // Handle menu item selected
