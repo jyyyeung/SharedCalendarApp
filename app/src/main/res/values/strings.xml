@@ -38,4 +38,7 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="authentication_failed">Authentication Failed</string>
+    <string name="previous_month">Previous Month</string>
+    <string name="next_month">Next Month</string>
+    <string name="toggle_sidebar">Toggle Sidebar</string>
 </resources>
