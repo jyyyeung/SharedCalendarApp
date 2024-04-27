@@ -1,5 +1,7 @@
 plugins {
     id("com.android.application")
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
     id("org.jetbrains.kotlin.android")
 }
 
@@ -57,9 +59,23 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.10.0")
     implementation("com.squareup.retrofit2:converter-gson:2.10.0")
 
+
     // Coroutine (For API)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
 
+    // Declare the dependency for the Cloud Firestore library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-firestore")
+    // Add the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-auth")
+    // Add the dependency for the Realtime Database library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-database")
+
+    implementation("com.github.crysxd:shared-firebase-preferences:1.0.1")
 }

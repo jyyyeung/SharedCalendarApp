@@ -1,9 +1,10 @@
 package com.example.sharedcalendar.models
 
 data class Calendar(
-    var id: Int = 0,
-    var name: String? = null,
+    var name: String = "default",
     var color: String? = null,
     var timezone: String? = null,
-    var ownerId: Int = 0,
+    var ownerId: String = "",
+    var shares: Map<String, String>?,
+    var events: ArrayList<Event>?
 )

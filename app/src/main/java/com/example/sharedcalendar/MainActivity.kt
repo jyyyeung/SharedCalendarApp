@@ -10,30 +10,43 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 private val TAG: String = MainActivity::class.java.name
 
 class MainActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
-
+    private lateinit var user: FirebaseUser
+    private lateinit var calendars: ArrayList<Calendar>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sessionManager = SessionManager(this)
-        userViewModel =
-            ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
+        userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
+
+        if (Firebase.auth.currentUser == null) {
+            startActivity(Intent(this, AuthActivity::class.java))
+            finish()
+        }
+        user = Firebase.auth.currentUser!!
+
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
+        calendars = getCalendars()
 
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
@@ -42,14 +55,12 @@ class MainActivity : AppCompatActivity() {
             val tvUsername: TextView = findViewById(R.id.tvSidebarUsername)
             val tvEmail: TextView = findViewById(R.id.tvSidebarEmail)
             // Update Sidebar username if current values are default
-            if (tvUsername.text == getString(R.string.default_sidebar_username) ||
-                tvEmail.text == getString(
+            if (tvUsername.text == getString(R.string.default_sidebar_username) || tvEmail.text == getString(
                     R.string.default_sidebar_email
                 )
             ) {
-                val user = sessionManager.getUser()
-                tvUsername.text = user?.username
-                tvEmail.text = user?.email
+                tvUsername.text = user.displayName
+                tvEmail.text = user.email
             }
         }
 
@@ -64,9 +75,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, SettingsActivity::class.java))
             } else if (menuItem.toString() == "Logout") {
                 // Call Logout process
-                userViewModel.logout(
-                    sessionManager = sessionManager
-                )
+                Firebase.auth.signOut()
                 startActivity(Intent(this, AuthActivity::class.java))
                 finish()
             } else if (menuItem.toString() == "Add Person to Calendar") {
@@ -114,7 +123,22 @@ class MainActivity : AppCompatActivity() {
                 commit()
             }
         }
+    }
 
-
+    private fun getCalendars(): ArrayList<Calendar> {
+        val calendars = ArrayList<Calendar>()
+        val db = Firebase.firestore
+        db.collection("calendars").whereEqualTo("owner_id", user.uid)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    calendars.add(document.toObject(Calendar::class.java))
+                    Log.d(TAG, "${document.id} => ${document.data}")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents.", exception)
+            }
+        return calendars
     }
 }

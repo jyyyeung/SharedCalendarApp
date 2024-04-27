@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.sharedcalendar" />
+                  <option name="mobileSdkAppId" value="1:115281770598:android:9f7a36737db0491af7d5a7" />
+                  <option name="projectId" value="sharedcalendarapp-62fbd" />
+                  <option name="projectNumber" value="115281770598" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

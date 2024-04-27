@@ -4,15 +4,12 @@ import android.content.SharedPreferences
 import android.text.Editable
 import android.util.Log
 import android.util.Patterns
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.sharedcalendar.R
-import com.example.sharedcalendar.data.Result
 import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.data.UserRepository
-import kotlinx.coroutines.launch
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.ktx.Firebase
 
 private val TAG: String = UserViewModel::class.java.name
 
@@ -25,101 +22,26 @@ private val TAG: String = UserViewModel::class.java.name
 class UserViewModel(
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    // LiveData holds state which is observed by the UI
-//    private val _loginForm = MutableLiveData<LoginFormState>()
-//    val loginFormState: LiveData<LoginFormState> = _loginForm
-
-    private val _loginResult = MutableLiveData<LoginResult>()
-    val loginResult: LiveData<LoginResult> = _loginResult
-
-    /**
-     * Logs in the user.
-     * @param username The username of the user.
-     * @param password The password of the user.
-     * @param sessionManager The session manager to be used.
-     * @see SessionManager
-     */
-    fun login(
-        username: String,
-        password: String,
-        sessionManager: SessionManager,
-    ) {
-        viewModelScope.launch {
-            try {
-                // can be launched in a separate asynchronous job
-                val result = userRepository.login(username, password, sessionManager)
-                Log.i(TAG, "Received login result: $result")
-
-                if (result is Result.Success) {
-                    _loginResult.value =
-                        LoginResult(success = LoggedInUserView(displayName = result.data.user.username))
-                } else {
-                    _loginResult.value = LoginResult(error = R.string.login_failed)
-                }
-            } catch (ex: Exception) {
-                Log.d(TAG, "Login Failed in loginViewModel: $ex")
-                _loginResult.value = LoginResult(error = R.string.login_failed)
-            }
-        }
-    }
-
-    fun register(
-        username: String,
-        email: String,
-        password: String,
-        sessionManager: SessionManager,
-    ) {
-        viewModelScope.launch {
-            try {
-                // can be launched in a separate asynchronous job
-                val result = userRepository.register(username, email, password, sessionManager)
-
-                if (result is Result.Success) {
-                    _loginResult.value =
-                        LoginResult(success = LoggedInUserView(displayName = result.data.user.username))
-                } else {
-                    _loginResult.value = LoginResult(error = R.string.register_failed)
-                }
-            } catch (ex: Exception) {
-                _loginResult.value = LoginResult(error = R.string.register_failed)
-            }
-        }
-    }
-
-    fun logout(sessionManager: SessionManager) {
-        viewModelScope.launch {
-
-            try {
-                userRepository.logout(sessionManager = sessionManager)
-            } catch (ex: Exception) {
-                Log.d(TAG, "Logout Failed: $ex")
-            }
-        }
-    }
-
     fun updateUserSettings(
         sessionManager: SessionManager,
         sharedPreferences: SharedPreferences?,
         key: String?
     ) {
-        viewModelScope.launch {
-            try {
-                Log.i(TAG, "Trying to Update Preferences: $sharedPreferences - $key")
-                if (sharedPreferences != null && key != null) {
-                    // can be launched in a separate asynchronous job
-                    val result =
-                        userRepository.updateUserSettings(sessionManager, sharedPreferences, key)
-                    if (result is Result.Success) {
-                        Log.i(TAG, "Update Successful: $result.toString()")
-                    } else {
-                        Log.e(TAG, "Update Result was Error: $result.toString()")
+        val user = Firebase.auth.currentUser
+
+        if (key == "name") {
+            val profileUpdates = userProfileChangeRequest {
+                displayName = sharedPreferences?.getString(key, null)
+            }
+
+            user!!.updateProfile(profileUpdates)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "User profile updated.")
                     }
                 }
-
-            } catch (ex: Exception) {
-                Log.e(TAG, "Update Failed: $ex")
-            }
         }
+
 
     }
 

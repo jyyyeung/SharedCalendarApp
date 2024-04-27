@@ -1,6 +1,5 @@
 package com.example.sharedcalendar.ui.login
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,7 +11,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
@@ -20,6 +18,8 @@ import com.example.sharedcalendar.data.SessionManager
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 
 /**
@@ -31,11 +31,13 @@ class LoginFragment : Fragment() {
 
     private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sessionManager = SessionManager(requireActivity())
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
+        auth = FirebaseAuth.getInstance()
     }
 
     override fun onCreateView(
@@ -53,31 +55,6 @@ class LoginFragment : Fragment() {
         val btnLogin = view.findViewById<Button>(R.id.btnLogin)
         val pbLoading = view.findViewById<CircularProgressIndicator>(R.id.pbLoading)
 
-
-        userViewModel.loginResult.observe(
-            // Observe changes in login result
-            viewLifecycleOwner,
-            Observer {
-                val loginResult = it ?: return@Observer
-                Log.d(TAG, loginResult.toString())
-                pbLoading?.visibility = View.GONE
-                if (loginResult.error != null) {
-                    showLoginFailed(loginResult.error)
-                }
-                if (loginResult.success != null) {
-                    updateUiWithUser(loginResult.success)
-                    // NOTE: Commented for debugging
-//                    startActivity(Intent(this, MainActivity::class.java))
-                }
-                activity?.setResult(Activity.RESULT_OK)
-
-                // NOTE: For debugging only, will allow continue even login failed
-                startActivity(Intent(activity, MainActivity::class.java))
-                // Complete and destroy login activity once successful
-                activity?.finish() // Do not allow user go back to sign in page
-
-            },
-        )
 
         // Listen to changes in Email input
         etEmailInput.setOnKeyListener { _, _, _ ->
@@ -105,10 +82,9 @@ class LoginFragment : Fragment() {
         // Listen to Done action on keyboard
         etPasswordInput.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
-                EditorInfo.IME_ACTION_DONE -> userViewModel.login(
-                    etEmailInput?.text.toString(),
-                    etPasswordInput.text.toString(),
-                    sessionManager,
+                EditorInfo.IME_ACTION_DONE -> login(
+                    etEmailInput.text.toString(),
+                    etPasswordInput.text.toString()
                 )
             }
             false
@@ -119,9 +95,8 @@ class LoginFragment : Fragment() {
         btnLogin?.setOnClickListener {
             // On login clicked
             //Verify Data validity
-            if (!userViewModel.isEmailValid(etEmailInput?.text!!) || !userViewModel.isPasswordValid(
-                    etPasswordInput?.text!!
-                )
+            if (!userViewModel.isEmailValid(etEmailInput?.text!!) ||
+                !userViewModel.isPasswordValid(etPasswordInput?.text!!)
             ) {
                 return@setOnClickListener
             }
@@ -129,19 +104,37 @@ class LoginFragment : Fragment() {
             pbLoading?.visibility = View.VISIBLE
 
             // Call login process
-            userViewModel.login(
-                etEmailInput.text.toString(),
-                etPasswordInput.text.toString(),
-                sessionManager,
-            )
+            login(etEmailInput.text.toString(), etPasswordInput.text.toString())
+            pbLoading?.visibility = View.GONE
         }
 
         return view
     }
 
 
+    private fun login(email: String, password: String) {
+        auth.signInWithEmailAndPassword(
+            email, password
+        ).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val user = task.result.user
+                if (user != null) {
+                    updateUiWithUser(user)
+                    Log.i(TAG, user.toString())
+                }
+                startActivity(Intent(activity, MainActivity::class.java))
+                activity?.finish()
+            }
+        }.addOnFailureListener { exception ->
+            showLoginFailed(R.string.login_failed)
+            error("Login Failed, $exception.localizedMessage")
+//                Toast.makeText(applicationContext, exception.localizedMessage, Toast.LENGTH_LONG)
+//                    .show()
+        }
+    }
+
     // Called when User login successful
-    private fun updateUiWithUser(model: LoggedInUserView) {
+    private fun updateUiWithUser(model: FirebaseUser) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
         // TODO : initiate successful logged in experience
