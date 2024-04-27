@@ -9,22 +9,41 @@
     android:orientation="vertical"
     tools:context=".WeekViewFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <com.alamkanak.weekview.WeekView
+        android:id="@+id/weekView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/WeeklyToolbar"/>
-        <com.kizitonwose.calendar.view.WeekCalendarView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/WeekView"
-            app:cv_dayViewResource="@layout/weekly_calender_day"
-            app:cv_daySize="seventhWidth"
-            app:cv_orientation="horizontal"/>
+        android:layout_height="match_parent"
+        app:columnGap="8dp"
+        app:dayBackgroundColor="@color/white"
+        app:defaultEventColor="?attr/colorSurfaceContainerHigh"
+        app:eventTextColor="?attr/colorOnSurface"
+        app:headerBackgroundColor="?attr/colorPrimaryContainer"
+        app:headerPadding="12dp"
+        app:hourHeight="60dp"
+        app:numberOfVisibleDays="3"
+        app:timeColumnBackgroundColor="@color/white"
+        app:timeColumnPadding="8dp"
+        app:timeColumnTextColor="?attr/colorOnSurface"
+        app:timeColumnTextSize="12sp"
+        app:todayBackgroundColor="?attr/colorSurface" />
 
 
-    </com.google.android.material.appbar.AppBarLayout>
+    <!--    <com.google.android.material.appbar.AppBarLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content">-->
+    <!--        <androidx.appcompat.widget.Toolbar-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:id="@+id/WeeklyToolbar"/>-->
+    <!--        <com.kizitonwose.calendar.view.WeekCalendarView-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            android:id="@+id/WeekView"-->
+    <!--            app:cv_dayViewResource="@layout/weekly_calender_day"-->
+    <!--            app:cv_daySize="seventhWidth"-->
+    <!--            app:cv_orientation="horizontal"/>-->
+
+
+    <!--</com.google.android.material.appbar.AppBarLayout>-->
 
 </LinearLayout>

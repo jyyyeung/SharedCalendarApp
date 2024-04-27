@@ -78,4 +78,7 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
 
     implementation("com.github.crysxd:shared-firebase-preferences:1.0.1")
+    implementation("com.github.thellmund.Android-Week-View:core:5.2.4")
+    implementation("com.github.thellmund.Android-Week-View:jsr310:5.2.4")
+    implementation("com.github.thellmund.Android-Week-View:emoji:5.2.4")
 }
