@@ -1,16 +1,16 @@
 package com.example.sharedcalendar.ui.login
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
@@ -18,6 +18,11 @@ import com.example.sharedcalendar.data.SessionManager
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.ktx.Firebase
 
 /**
  * A simple [Fragment] subclass.
@@ -27,17 +32,20 @@ import com.google.android.material.textfield.TextInputLayout
 class RegisterFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
+    private lateinit var auth: FirebaseAuth
+
+    companion object {
+        private val TAG: String? = RegisterFragment::class.java.name
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sessionManager = SessionManager(requireActivity())
-        userViewModel =
-            ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
+        userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_register, container, false)
@@ -46,8 +54,7 @@ class RegisterFragment : Fragment() {
         val loUsername = view.findViewById<TextInputLayout>(R.id.loRegisterUsername)
         val etUsername = view.findViewById<TextInputEditText>(R.id.etRegisterUsername)
         val loEmail = view.findViewById<TextInputLayout>(R.id.loRegisterEmail) // binding.username
-        val etEmail =
-            view.findViewById<TextInputEditText>(R.id.etRegisterEmail) // binding.username
+        val etEmail = view.findViewById<TextInputEditText>(R.id.etRegisterEmail) // binding.username
         val loPassword = view.findViewById<TextInputLayout>(R.id.loRegisterPassword)
         val etPassword = view.findViewById<TextInputEditText>(R.id.etRegisterPassword)
         val loConfirmPassword = view.findViewById<TextInputLayout>(R.id.loRegisterConfirmPassword)
@@ -55,30 +62,8 @@ class RegisterFragment : Fragment() {
         val btnRegister = view.findViewById<Button>(R.id.btn_register)
         val pbLoading = view.findViewById<CircularProgressIndicator>(R.id.pbLoading)
 
-        userViewModel.loginResult.observe(
-            // Observe changes in login result
-            viewLifecycleOwner,
-            Observer {
-                val loginResult = it ?: return@Observer
-//            Log.d(TAG, loginResult.toString())
-                pbLoading?.visibility = View.GONE
-                if (loginResult.error != null) {
-                    showLoginFailed(loginResult.error)
-                }
-                if (loginResult.success != null) {
-                    updateUiWithUser(loginResult.success)
-                    // NOTE: Commented for debugging
-//                    startActivity(Intent(this, MainActivity::class.java))
-                }
-                activity?.setResult(Activity.RESULT_OK)
+        auth = Firebase.auth
 
-                // NOTE: For debugging only, will allow continue even login failed
-                startActivity(Intent(activity, MainActivity::class.java))
-                // Complete and destroy login activity once successful
-                activity?.finish() // Do not allow user go back to sign in page
-
-            },
-        )
 
         // Listen to changes in Email input
         etUsername.setOnKeyListener { _, _, _ ->
@@ -127,29 +112,27 @@ class RegisterFragment : Fragment() {
             false
         }
 
-//        // Listen to Done action on keyboard
-//        etPassword.setOnEditorActionListener { _, actionId, _ ->
-//            when (actionId) {
-//                EditorInfo.IME_ACTION_DONE -> loginViewModel.login(
-//                    etEmail?.text.toString(),
-//                    etPassword.text.toString(),
-//                    sessionManager,
-//                )
-//            }
-//            false
-//        }
+        // Listen to Done action on keyboard
+        etPassword.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> register(
+                    etEmail.text.toString(),
+                    etPassword.text.toString(),
+                    etUsername.text.toString()
+                )
+            }
+            false
+        }
 
 
         // Listen to Login btn click event
         btnRegister?.setOnClickListener {
             // On login clicked
             //Verify Data validity
-            if (!userViewModel.isEmailValid(etEmail?.text!!) ||
-                !userViewModel.isPasswordValid(
+            if (!userViewModel.isEmailValid(etEmail?.text!!) || !userViewModel.isPasswordValid(
                     etPassword?.text!!
                 ) || !userViewModel.isUsernameValid(etUsername?.text!!) || !userViewModel.valuesAreEqual(
-                    etPassword.text!!,
-                    etConfirmPassword?.text!!
+                    etPassword.text!!, etConfirmPassword?.text!!
                 )
             ) {
                 return@setOnClickListener
@@ -158,18 +141,49 @@ class RegisterFragment : Fragment() {
             pbLoading?.visibility = View.VISIBLE
 
             // Call Register process
-            userViewModel.register(
-                etUsername.text.toString(),
+            register(
                 etEmail.text.toString(),
                 etPassword.text.toString(),
-                sessionManager,
+                etUsername.text.toString()
             )
+            pbLoading?.visibility = View.GONE
         }
         return view
     }
 
+    private fun register(email: String, password: String, username: String) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "createUserWithEmail:success")
+                    val user = auth.currentUser
+                    if (user != null) {
+                        val profileUpdates = userProfileChangeRequest {
+                            displayName = username
+//                                photoUri = Uri.parse("https://example.com/jane-q-user/profile.jpg")
+                        }
+                        user.updateProfile(profileUpdates)
+                            .addOnCompleteListener { task2 ->
+                                if (task2.isSuccessful) {
+                                    Log.d(TAG, "User profile updated.")
+                                }
+                            }
+
+                        updateUiWithUser(user)
+                        startActivity(Intent(activity, MainActivity::class.java))
+                        activity?.finish()
+                    }
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    showLoginFailed(R.string.authentication_failed)
+                }
+            }
+    }
+
     // Called when User login successful
-    private fun updateUiWithUser(model: LoggedInUserView) {
+    private fun updateUiWithUser(model: FirebaseUser) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
         // TODO : initiate successful logged in experience

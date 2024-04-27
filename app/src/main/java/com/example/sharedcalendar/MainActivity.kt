@@ -15,6 +15,8 @@ import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 private val TAG: String = MainActivity::class.java.name
 
@@ -26,8 +28,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sessionManager = SessionManager(this)
-        userViewModel =
-            ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
+        userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
+        val currentUser = Firebase.auth.currentUser
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
@@ -42,14 +44,12 @@ class MainActivity : AppCompatActivity() {
             val tvUsername: TextView = findViewById(R.id.tvSidebarUsername)
             val tvEmail: TextView = findViewById(R.id.tvSidebarEmail)
             // Update Sidebar username if current values are default
-            if (tvUsername.text == getString(R.string.default_sidebar_username) ||
-                tvEmail.text == getString(
+            if (tvUsername.text == getString(R.string.default_sidebar_username) || tvEmail.text == getString(
                     R.string.default_sidebar_email
                 )
             ) {
-                val user = sessionManager.getUser()
-                tvUsername.text = user?.username
-                tvEmail.text = user?.email
+                tvUsername.text = currentUser?.displayName
+                tvEmail.text = currentUser?.email
             }
         }
 
@@ -64,9 +64,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, SettingsActivity::class.java))
             } else if (menuItem.toString() == "Logout") {
                 // Call Logout process
-                userViewModel.logout(
-                    sessionManager = sessionManager
-                )
+                Firebase.auth.signOut()
                 startActivity(Intent(this, AuthActivity::class.java))
                 finish()
             } else if (menuItem.toString() == "Add Person to Calendar") {
