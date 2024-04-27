@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.models.Calendar
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -22,7 +23,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.util.TimeZone
 
 /**
  * A simple [Fragment] subclass.
@@ -116,9 +119,7 @@ class RegisterFragment : Fragment() {
         etPassword.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE -> register(
-                    etEmail.text.toString(),
-                    etPassword.text.toString(),
-                    etUsername.text.toString()
+                    etEmail.text.toString(), etPassword.text.toString(), etUsername.text.toString()
                 )
             }
             false
@@ -142,9 +143,7 @@ class RegisterFragment : Fragment() {
 
             // Call Register process
             register(
-                etEmail.text.toString(),
-                etPassword.text.toString(),
-                etUsername.text.toString()
+                etEmail.text.toString(), etPassword.text.toString(), etUsername.text.toString()
             )
             pbLoading?.visibility = View.GONE
         }
@@ -152,34 +151,45 @@ class RegisterFragment : Fragment() {
     }
 
     private fun register(email: String, password: String, username: String) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "createUserWithEmail:success")
-                    val user = auth.currentUser
-                    if (user != null) {
-                        val profileUpdates = userProfileChangeRequest {
-                            displayName = username
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.d(TAG, "createUserWithEmail:success")
+                val user = auth.currentUser
+                if (user != null) {
+                    val profileUpdates = userProfileChangeRequest {
+                        displayName = username
 //                                photoUri = Uri.parse("https://example.com/jane-q-user/profile.jpg")
-                        }
-                        user.updateProfile(profileUpdates)
-                            .addOnCompleteListener { task2 ->
-                                if (task2.isSuccessful) {
-                                    Log.d(TAG, "User profile updated.")
-                                }
-                            }
-
-                        updateUiWithUser(user)
-                        startActivity(Intent(activity, MainActivity::class.java))
-                        activity?.finish()
                     }
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    showLoginFailed(R.string.authentication_failed)
+                    user.updateProfile(profileUpdates).addOnCompleteListener { task2 ->
+                        if (task2.isSuccessful) {
+                            Log.d(TAG, "User profile updated.")
+                        }
+                    }
+
+                    createDefaultCalendar()
+                    updateUiWithUser(user)
+                    startActivity(Intent(activity, MainActivity::class.java))
+                    activity?.finish()
                 }
+            } else {
+                // If sign in fails, display a message to the user.
+                Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                showLoginFailed(R.string.authentication_failed)
             }
+        }
+    }
+
+    private fun createDefaultCalendar() {
+        val db = Firebase.firestore
+        val user = Firebase.auth.currentUser ?: return
+        val defaultCalendar = Calendar(user.email!!, "gray", TimeZone.getDefault().id, user.uid)
+        // Add a new document with a generated ID
+        db.collection("calendars").add(defaultCalendar).addOnSuccessListener { documentReference ->
+            Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Error adding document", e)
+        }
     }
 
     // Called when User login successful

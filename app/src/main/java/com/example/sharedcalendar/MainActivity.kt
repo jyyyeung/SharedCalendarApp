@@ -10,12 +10,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.data.SessionManager
+import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 private val TAG: String = MainActivity::class.java.name
@@ -23,19 +26,27 @@ private val TAG: String = MainActivity::class.java.name
 class MainActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
-
+    private lateinit var user: FirebaseUser
+    private lateinit var calendars: ArrayList<Calendar>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sessionManager = SessionManager(this)
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
-        val currentUser = Firebase.auth.currentUser
+
+        if (Firebase.auth.currentUser == null) {
+            startActivity(Intent(this, AuthActivity::class.java))
+            finish()
+        }
+        user = Firebase.auth.currentUser!!
+
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
+        calendars = getCalendars()
 
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
@@ -48,8 +59,8 @@ class MainActivity : AppCompatActivity() {
                     R.string.default_sidebar_email
                 )
             ) {
-                tvUsername.text = currentUser?.displayName
-                tvEmail.text = currentUser?.email
+                tvUsername.text = user.displayName
+                tvEmail.text = user.email
             }
         }
 
@@ -112,7 +123,22 @@ class MainActivity : AppCompatActivity() {
                 commit()
             }
         }
+    }
 
-
+    private fun getCalendars(): ArrayList<Calendar> {
+        val calendars = ArrayList<Calendar>()
+        val db = Firebase.firestore
+        db.collection("calendars").whereEqualTo("owner_id", user.uid)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    calendars.add(document.toObject(Calendar::class.java))
+                    Log.d(TAG, "${document.id} => ${document.data}")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents.", exception)
+            }
+        return calendars
     }
 }
