@@ -11,6 +11,7 @@ class EventViewModel : ViewModel() {
     val events: LiveData<List<Event>> = _events
 
     fun getEvents() {
+        // TODO: Get from Database instead of local
         val calendarEvents = listOf<Event>(
             Event(
                 0, 0, "Hangout", null, LocalDateTime.of(2024, 4, 27, 14, 0),

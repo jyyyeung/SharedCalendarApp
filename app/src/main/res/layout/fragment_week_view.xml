@@ -9,6 +9,7 @@
     android:orientation="vertical"
     tools:context=".WeekViewFragment">
 
+    <!-- See for more properties: https://github.com/thellmund/Android-Week-View/wiki/Public-API-->
     <com.alamkanak.weekview.WeekView
         android:id="@+id/weekView"
         android:layout_width="match_parent"
