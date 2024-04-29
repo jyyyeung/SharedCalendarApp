@@ -1,22 +1,16 @@
 package com.example.sharedcalendar
 
-import android.content.Intent
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.Button
+import android.widget.DatePicker
 import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.media.Image
-import android.view.Gravity
-import android.view.ViewGroup
-import android.view.Window
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.Toast
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
@@ -25,7 +19,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
@@ -74,57 +67,16 @@ class MainActivity : AppCompatActivity() {
                 commit()
             }
         }
-        val addEventBtn : ImageButton = findViewById(R.id.addEventBtn)
+
+        // When Click AddEvent Button
+        val addEventBtn: ImageButton = findViewById(R.id.addEventBtn)
         val bottomWindow = BottomSheetFragment()
-        addEventBtn.setOnClickListener(){
+        addEventBtn.setOnClickListener() {
             //showBottomWindow()
-            bottomWindow.show(supportFragmentManager,"BottomSheetDialogue")
+            bottomWindow.show(supportFragmentManager, "BottomSheetDialogue")
 
         }
-
-
-
-
 
 
     }
-/*
-    fun showBottomWindow(){
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.bottom_window)
-
-
-
-        //val text1Layout : LinearLayout = findViewById(R.id.bottom_window_text1_layout)
-        //val text2Layout : LinearLayout = findViewById(R.id.bottom_window_text2_layout)
-*//*
-        text1Layout.setOnClickListener(){
-            dialog.dismiss()
-            Toast.makeText(this, "Text1", Toast.LENGTH_SHORT).show()
-        }
-        text2Layout.setOnClickListener(){
-            dialog.dismiss()
-            Toast.makeText(this, "Text2", Toast.LENGTH_SHORT).show()
-        }*//*
-
-        dialog.show()
-        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.attributes?.windowAnimations = R.style.SlideAnimation
-        dialog.window?.setGravity(Gravity.BOTTOM)
-
-        fun onClick1(){
-            dialog.dismiss()
-            Toast.makeText(this, "Text1", Toast.LENGTH_SHORT).show()
-        }
-        fun onClick2(){
-            dialog.dismiss()
-            Toast.makeText(this, "Text2", Toast.LENGTH_SHORT).show()
-        }
-
-
-
-    }*/
-
 }

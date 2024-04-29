@@ -54,10 +54,5 @@
         android:layout_width="match_parent"
         android:layout_height="426dp"
         android:paddingBottom="10dp"></FrameLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="450dp"
-
-        ></FrameLayout>
 
 </LinearLayout>
