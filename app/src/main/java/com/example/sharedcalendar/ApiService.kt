@@ -72,7 +72,6 @@ interface ApiService {
     @GET("calendars")
     suspend fun getAllCalendars(): Response<List<Calendar>>
 
-
     /**
      * Create New Calendar.
      *
@@ -81,13 +80,11 @@ interface ApiService {
     @POST("calendars")
     suspend fun createNewCalendar(): Response<List<Calendar>>
 
-
     @GET("calendars/me")
     suspend fun getAllPersonalCalendars(): Response<List<Calendar>>
 
     @GET("calendars/shared")
     suspend fun getAllSharedCalendars(): Response<List<Calendar>>
-
 
     /**
      * Returns a calendar by id.
@@ -114,16 +111,24 @@ interface ApiService {
      * @return A list of all shares.
      */
     @GET("calendars/{calendar}/events")
-    suspend fun getAllCalendarEvents(@Path("calendar") calendarId: Int): Response<List<Event>>
+    suspend fun getAllCalendarEvents(
+        @Path("calendar") calendarId: Int,
+    ): Response<List<Event>>
 
     @POST("calendars/{calendar}/events")
-    suspend fun createNewCalendarEvent(@Path("calendar") calendarId: Int): Response<List<Event>>
+    suspend fun createNewCalendarEvent(
+        @Path("calendar") calendarId: Int,
+    ): Response<List<Event>>
 
     @GET("calendars/{calendar}/shares")
-    suspend fun getCalendarShares(@Path("calendar") calendarId: Int): Response<List<Share>>
+    suspend fun getCalendarShares(
+        @Path("calendar") calendarId: Int,
+    ): Response<List<Share>>
 
     @POST("calendars/{calendar}/shares")
-    suspend fun createCalendarShare(@Path("calendar") calendarId: Int): Response<List<Share>>
+    suspend fun createCalendarShare(
+        @Path("calendar") calendarId: Int,
+    ): Response<List<Share>>
 
     /**
      * Returns an event by id.
@@ -137,14 +142,13 @@ interface ApiService {
 
     @PATCH("events/{event}")
     suspend fun patchEventById(
-        @Path("event") eventId: Int
+        @Path("event") eventId: Int,
     ): Response<Event>
 
     @DELETE("events/{event}")
     suspend fun deleteEventById(
-        @Path("event") eventId: Int
+        @Path("event") eventId: Int,
     )
-
 
     /**
      * Returns a share by id.
@@ -167,23 +171,24 @@ interface ApiService {
     )
 
     @GET("user")
-    suspend fun getUser()
+    suspend fun getUser(): Response<User>
 
     @GET("users")
     suspend fun getUsers(): Response<List<User>>
 
     @GET("users/{user}")
     suspend fun getUserById(
-        @Path("user") userId: Int
+        @Path("user") userId: Int,
     ): Response<User>
 
-    @PATCH("users/{user}")
+    @PATCH("users/{user}/")
     suspend fun patchUserById(
-        @Path("user") userId: Int
+        @Path("user") userId: Int,
+        @Body updatedUser: Any,
     ): Response<User>
 
     @DELETE("users/{user}")
     suspend fun deleteUserById(
-        @Path("user") userId: Int
+        @Path("user") userId: Int,
     )
 }

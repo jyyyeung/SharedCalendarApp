@@ -1,32 +1,19 @@
 package com.example.sharedcalendar
 
-import android.os.Bundle
-import android.view.View
-import androidx.fragment.app.Fragment
-import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
-import com.example.sharedcalendar.databinding.CalendarDayBinding
-import com.example.sharedcalendar.databinding.CalendarEventBinding
-import com.example.sharedcalendar.databinding.CalendarHeaderBinding
-
-import com.kizitonwose.calendar.view.MonthDayBinder
-import com.kizitonwose.calendar.view.ViewContainer
-import java.io.Serializable
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.temporal.WeekFields
-import java.util.Locale
 import android.graphics.Typeface
+import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
-import android.view.ViewGroup
+import android.view.View
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.children
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.example.sharedcalendar.databinding.CalendarDayBinding
+import com.example.sharedcalendar.databinding.CalendarHeaderBinding
+import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.displayText
-import com.example.sharedcalendar.models.generateEvents
 import com.example.sharedcalendar.models.getColorCompat
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -34,30 +21,60 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.nextMonth
 import com.kizitonwose.calendar.core.previousMonth
+import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
-import java.time.Month
-import java.time.format.TextStyle
-import java.util.Date
+import com.kizitonwose.calendar.view.ViewContainer
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.YearMonth
+
 
 class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
+    private val viewModel by viewModels<EventViewModel>()
     private var selectedDate: LocalDate? = null
 
-    private val thisEvents = generateEvents().groupBy { it.startTime.toLocalDate() }
+    //            private val thisEvents = viewModel.getEvents(true).groupBy { it.startTime.toLocalDate() }
+    private var eventsThisMonth: Map<LocalDate, List<Event>>? = null
     lateinit var binding: FragmentMonthViewBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentMonthViewBinding.bind(view)
+        eventsThisMonth = viewModel.getGroupedEvents()
 
+        binding = FragmentMonthViewBinding.bind(view)
         val daysOfWeek = daysOfWeek()
         val currentMonth = YearMonth.now()
         val startMonth = currentMonth.minusMonths(200)
         val endMonth = currentMonth.plusMonths(200)
+
+        // Get Events from Database
+        viewModel.getEvents()
+
+        // Listen for Event Updates
+        viewModel.events.observe(viewLifecycleOwner) { events ->
+            // Update Event list upon updates
+            eventsThisMonth = buildList {
+                for (event in events) {
+                    currentMonth.atDay(event.startTime.dayOfMonth).also { date ->
+                        add(event)
+                    }
+                }
+            }.groupBy { it.startTime.toLocalDate() }
+            binding.MonthViewCalendar.notifyCalendarChanged()
+
+
+        }
+
         configureBinders(daysOfWeek)
+
+        // Setup Month View
         binding.MonthViewCalendar.setup(startMonth, endMonth, daysOfWeek.first())
+        // Scroll month view to current month
         binding.MonthViewCalendar.scrollToMonth(currentMonth)
 
+        // listen to month scroll action
         binding.MonthViewCalendar.monthScrollListener = { month ->
+            // Update Month + Year display text on top of month view
             binding.MonthYearText.text = month.yearMonth.displayText()
 
             selectedDate?.let {
@@ -65,12 +82,14 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                 binding.MonthViewCalendar.notifyDateChanged(it)
             }
         }
+        // Click listener for next month button
         binding.MonthYearNext.setOnClickListener {
             binding.MonthViewCalendar.findFirstVisibleMonth()?.let {
                 binding.MonthViewCalendar.smoothScrollToMonth(it.yearMonth.nextMonth)
             }
         }
 
+        // Click Listener for previous month button
         binding.MonthYearLast.setOnClickListener {
             binding.MonthViewCalendar.findFirstVisibleMonth()?.let {
                 binding.MonthViewCalendar.smoothScrollToMonth(it.yearMonth.previousMonth)
@@ -86,6 +105,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
             val binding = CalendarDayBinding.bind(view)
 
             init {
+                // On click listener for each day "cell"
                 view.setOnClickListener {
                     if (day.position == DayPosition.MonthDate) {
                         if (selectedDate != day.date) {
@@ -107,6 +127,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                 val context = container.binding.root.context
                 val textView = container.binding.calendarDayText
                 val layout = container.binding.calendarDayLayout
+                // Set Day of month for each day "cell"
                 textView.text = data.date.dayOfMonth.toString()
 
                 val eventTopView = container.binding.EventTop
@@ -118,13 +139,15 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                     textView.setTextColor(resources.getColor(R.color.black))
                     layout.setBackgroundResource(if (selectedDate == data.date) R.drawable.example_5_selected_bg else 0)
 
-                    val thisEvents = thisEvents[data.date]
-                    if (thisEvents != null){
-                        if(thisEvents.count() == 1){
-                            eventBottomView.setBackgroundColor(context.getColorCompat(thisEvents[0].color))
-                        }else{
-                            eventTopView.setBackgroundColor(context.getColorCompat(thisEvents[0].color))
-                            eventBottomView.setBackgroundColor(context.getColorCompat(thisEvents[1].color))
+                    val eventsThisDay = eventsThisMonth?.get(data.date)
+                    Log.i(TAG, eventsThisDay.toString())
+                    if (eventsThisDay != null) {
+                        // Indicate number of events today
+                        if (eventsThisDay.count() == 1) {
+                            eventBottomView.setBackgroundColor(context.getColorCompat(eventsThisDay[0].color))
+                        } else {
+                            eventTopView.setBackgroundColor(context.getColorCompat(eventsThisDay[0].color))
+                            eventBottomView.setBackgroundColor(context.getColorCompat(eventsThisDay[1].color))
                         }
                     }
                 } else {
@@ -138,6 +161,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
             val monthHeader = CalendarHeaderBinding.bind(view).monthHeader.root
         }
 
+        // Set font
         val typeFace = Typeface.create("sans-serif-light", Typeface.NORMAL)
         binding.MonthViewCalendar.monthHeaderBinder =
             object : MonthHeaderFooterBinder<MonthViewContainer> {
@@ -159,11 +183,10 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
     }
 
-
-
-
-
-
+    companion object {
+        private val TAG: String = MonthViewFragment::class.java.name
+    }
+    
 }
 
 

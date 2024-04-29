@@ -4,19 +4,19 @@
     android:orientation="horizontal"
     android:weightSum="7">
 
-    <include layout = "@layout/calendar_header_text"/>
+    <include layout="@layout/calendar_header_text" />
 
-    <include layout = "@layout/calendar_header_text"/>
+    <include layout="@layout/calendar_header_text" />
 
-    <include layout = "@layout/calendar_header_text"/>
+    <include layout="@layout/calendar_header_text" />
 
-    <include layout = "@layout/calendar_header_text"/>
+    <include layout="@layout/calendar_header_text" />
 
-    <include layout = "@layout/calendar_header_text"/>
+    <include layout="@layout/calendar_header_text" />
 
-    <include layout = "@layout/calendar_header_text"/>
+    <include layout="@layout/calendar_header_text" />
 
-    <include layout = "@layout/calendar_header_text"/>
+    <include layout="@layout/calendar_header_text" />
 
 
 </LinearLayout>

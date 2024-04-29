@@ -21,16 +21,17 @@
             android:padding="14dp">
 
             <ImageView
-                android:layout_width="36dp"
                 android:id="@+id/MonthYearLast"
+                android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginEnd="22dp"
                 android:layout_weight="1"
+                android:contentDescription="@string/previous_month"
                 android:src="@drawable/ic_chevron_left" />
 
             <TextView
-                android:layout_width="wrap_content"
                 android:id="@+id/MonthYearText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
@@ -39,11 +40,12 @@
                 tools:text="April 2024" />
 
             <ImageView
-                android:layout_width="36dp"
                 android:id="@+id/MonthYearNext"
+                android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginEnd="22dp"
                 android:layout_weight="1"
+                android:contentDescription="@string/next_month"
                 android:src="@drawable/ic_chevron_right" />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -57,8 +59,8 @@
             android:id="@+id/MonthViewCalendar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:cv_dayViewResource="@layout/calendar_day"
             app:cv_daySize="rectangle"
+            app:cv_dayViewResource="@layout/calendar_day"
             app:cv_monthHeaderResource="@layout/calendar_header"
             app:cv_outDateStyle="endOfGrid" />
 

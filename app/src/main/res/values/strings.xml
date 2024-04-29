@@ -9,6 +9,7 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_email">Not a email </string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
 
@@ -19,4 +20,33 @@
         <item>Peacock</item>
         <item>Graphite</item>
     </string-array>
+    <string name="go_to_register">Don\'t have an account? Sign Up</string>
+    <string name="register_heading">Register</string>
+    <string name="login_heading">Login</string>
+    <string name="register_failed">Register Failed</string>
+    <string name="action_register_short">register</string>
+    <string name="prompt_username">Username</string>
+    <string name="passwords_are_not_equal">Passwords are not equal</string>
+    <string name="default_sidebar_username">Username</string>
+    <string name="default_sidebar_email">UserEmail</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="pref_name_Title">Your Name</string>
+    <string name="pref_calendar_view_title">Default Calendar view</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="authentication_failed">Authentication Failed</string>
+    <string name="previous_month">Previous Month</string>
+    <string name="next_month">Next Month</string>
+    <string name="toggle_sidebar">Toggle Sidebar</string>
 </resources>
