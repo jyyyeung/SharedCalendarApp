@@ -49,6 +49,7 @@ class AuthActivity : AppCompatActivity() {
         // Skip Authentication Page if user has already logged in
         if (currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
     }
 

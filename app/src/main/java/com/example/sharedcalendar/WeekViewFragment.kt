@@ -18,7 +18,7 @@ class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
     // Reference API: https://github.com/thellmund/Android-Week-View/wiki/Public-API
     override fun onCreateEntity(item: Event): WeekViewEntity {
         // Setup each event passed to adapter
-        val entity = WeekViewEntity.Event.Builder(item).setId(item.id).setTitle(item.title)
+        val entity = WeekViewEntity.Event.Builder(item).setId(item.longId).setTitle(item.title)
             .setStartTime(item.startTime).setEndTime(item.endTime)
 
         item.description?.let { entity.setSubtitle(it) }

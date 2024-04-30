@@ -184,7 +184,7 @@ class RegisterFragment : Fragment() {
         val db = Firebase.firestore
         val user = Firebase.auth.currentUser ?: return
         val defaultCalendar = Calendar(
-            user.email!!, "gray", TimeZone.getDefault().id, user.uid, HashMap(), ArrayList()
+            null, user.email!!, "gray", TimeZone.getDefault().id, user.uid, HashMap(), ArrayList()
         )
         // Add a new document with a generated ID
         db.collection("calendars").add(defaultCalendar).addOnSuccessListener { documentReference ->

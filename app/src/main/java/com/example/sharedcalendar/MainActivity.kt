@@ -1,21 +1,18 @@
 package com.example.sharedcalendar
 
-import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.models.Calendar
+import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
@@ -26,6 +23,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
+import java.time.LocalDateTime
 
 private val TAG: String = MainActivity::class.java.name
 
@@ -57,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
         calendars = getCalendars()
+        getEvents()
 
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
@@ -137,32 +136,62 @@ class MainActivity : AppCompatActivity() {
                 commit()
             }
         }
-    }
-
         // When Click AddEvent Button
         val addEventBtn: ImageButton = findViewById(R.id.addEventBtn)
         val bottomWindow = BottomSheetFragment()
-        addEventBtn.setOnClickListener() {
+
+        addEventBtn.setOnClickListener {
             //showBottomWindow()
             bottomWindow.show(supportFragmentManager, "BottomSheetDialogue")
 
         }
+    }
+
+    fun getCalendarId(): String? {
+        return calendars[0].id
+    }
+
+    fun addEventToCalendar(event: Event?) {
+        if (event is Event) calendars[0].events.add(event)
+    }
 
 
     private fun getCalendars(): ArrayList<Calendar> {
         val calendars = ArrayList<Calendar>()
         val db = Firebase.firestore
-        db.collection("calendars").whereEqualTo("owner_id", user.uid)
-            .get()
+        db.collection("calendars").whereEqualTo("owner_id", user.uid).get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    calendars.add(document.toObject(Calendar::class.java))
+                    val calendar = document.toObject(Calendar::class.java)
+                    calendar.id = document.id
+                    calendars.add(calendar)
                     Log.d(TAG, "${document.id} => ${document.data}")
                 }
-            }
-            .addOnFailureListener { exception ->
+            }.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents.", exception)
             }
         return calendars
+    }
+
+    fun getEvents(): ArrayList<Event> {
+        val events = ArrayList<Event>()
+        val db = Firebase.firestore
+        db.collection("events")
+//            .whereEqualTo("owner_id", user.uid)
+            .get().addOnSuccessListener { result ->
+                for (document in result) {
+                    val event = document.toObject(Event::class.java)
+
+                    event.id = document.id
+                    event.startTime = LocalDateTime.parse(document.get("startTimestamp").toString())
+                    event.endTime = LocalDateTime.parse(document.get("endTimestamp").toString())
+
+                    events.add(event)
+                    Log.d(TAG, "${document.id} => ${document.data}")
+                }
+            }.addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents.", exception)
+            }
+        return events
     }
 }

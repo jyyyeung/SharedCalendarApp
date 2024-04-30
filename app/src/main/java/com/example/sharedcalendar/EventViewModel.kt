@@ -1,5 +1,7 @@
 package com.example.sharedcalendar
 
+
+//import java.time.LocalDateTime
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,19 +22,32 @@ class EventViewModel : ViewModel() {
         // TODO: Get from Database instead of local
         val calendarEvents = listOf<Event>(
             Event(
-                0, 0, "Hangout", null, LocalDateTime.of(2024, 4, 27, 14, 0),
-                LocalDateTime.of(2024, 4, 27, 15, 0), null, "Null", R.color.red_800,
-                false, false, null
+                "0",
+                "0",
+                "Hangout",
+                description = null,
+                startTime = LocalDateTime.of(2024, 4, 27, 14, 0),
+                endTime = LocalDateTime.of(2024, 4, 27, 15, 0),
+                location = null,
+                timezone = "Null",
+                color = "#F44336",
+                isAllDay = false,
+                isPrivate = false,
+                participants = null
             ),
             Event(
-                1, 0, "Hangout", null, LocalDateTime.of(2024, 4, 27, 21, 0),
-                LocalDateTime.of(2024, 4, 27, 22, 0), null, "Null", R.color.blue_800,
+                "1", "0", "Hangout", null, startTime = LocalDateTime.of(2024, 4, 27, 21, 0),
+                endTime = LocalDateTime.of(2024, 4, 27, 22, 0),
+                location = null, timezone = "Null",
+                color = "#D2E3FC",
                 isAllDay = false, isPrivate = false, participants = null
             ),
 
             Event(
-                2, 0, "Lesson", null, LocalDateTime.of(2024, 4, 29, 13, 0),
-                LocalDateTime.of(2024, 4, 29, 20, 0), null, "Null", R.color.brown_700,
+                "2", "0", "Lesson", null, startTime = LocalDateTime.of(2024, 4, 29, 13, 0),
+                endTime = LocalDateTime.of(2024, 4, 29, 20, 0),
+                location = null, timezone = "Null",
+                color = "#008489",
                 isAllDay = false, isPrivate = false, participants = null
             )
 

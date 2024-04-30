@@ -1,24 +1,37 @@
 package com.example.sharedcalendar.models
 
-import androidx.annotation.ColorRes
-import org.json.JSONObject
+import com.google.firebase.firestore.Exclude
+import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 import java.time.YearMonth
 
+//@Serializable
 data class Event(
-    var id: Long = 0,
-    var calendarId: Int,
-    var title: String,
+    @Exclude var id: String = "0",
+    @SerializedName("calendar_id") var calendarId: String = "",
+    var title: String = "",
     var description: String? = null,
-    var startTime: LocalDateTime,
-    var endTime: LocalDateTime,
+    @Exclude
+    @SerializedName("start_timestamp") var startTimestamp: String? = LocalDateTime.now().toString(),
+    @SerializedName("start_time") var startTime: LocalDateTime = LocalDateTime.now(),
+    @Exclude
+    @SerializedName("end_timestamp") var endTimestamp: String? = LocalDateTime.now().toString(),
+    @SerializedName("end_time") var endTime: LocalDateTime = LocalDateTime.now(),
     var location: String? = null,
-    var timezone: String,
-    @ColorRes val color: Int,
-    var isAllDay: Boolean? = false,
-    var isPrivate: Boolean? = false,
-    var participants: JSONObject? = null,
-)
+    var timezone: String = "",
+    val color: String = "#616161",
+    @field:JvmField @SerializedName("is_all_day") var isAllDay: Boolean? = false,
+    @field:JvmField @SerializedName("is_private") var isPrivate: Boolean? = false,
+    var participants: List<String>? = null,
+    @SerializedName("long_id") var longId: Long = 0,
+) {
+//    var startTime
+//        get() =
+//            _startTime
+//        set(value: String) {
+//            _startTime = LocalDateTime.parse(value)
+//        }
+}
 
 fun generateEvents(): List<Event> = buildList {
     val currentMonth = YearMonth.now()

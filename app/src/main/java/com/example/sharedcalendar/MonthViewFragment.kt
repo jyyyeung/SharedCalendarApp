@@ -1,11 +1,14 @@
 package com.example.sharedcalendar
 
+import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,7 +17,6 @@ import com.example.sharedcalendar.databinding.CalendarHeaderBinding
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.displayText
-import com.example.sharedcalendar.models.getColorCompat
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -37,6 +39,8 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
     //            private val thisEvents = viewModel.getEvents(true).groupBy { it.startTime.toLocalDate() }
     private var eventsThisMonth: Map<LocalDate, List<Event>>? = null
     lateinit var binding: FragmentMonthViewBinding
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         eventsThisMonth = viewModel.getGroupedEvents()
@@ -59,7 +63,9 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                         add(event)
                     }
                 }
-            }.groupBy { it.startTime.toLocalDate() }
+            }.groupBy {
+                it.startTime.toLocalDate()
+            }
             binding.MonthViewCalendar.notifyCalendarChanged()
 
 
@@ -144,10 +150,10 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                     if (eventsThisDay != null) {
                         // Indicate number of events today
                         if (eventsThisDay.count() == 1) {
-                            eventBottomView.setBackgroundColor(context.getColorCompat(eventsThisDay[0].color))
+                            eventBottomView.setBackgroundColor(Color.parseColor(eventsThisDay[0].color))
                         } else {
-                            eventTopView.setBackgroundColor(context.getColorCompat(eventsThisDay[0].color))
-                            eventBottomView.setBackgroundColor(context.getColorCompat(eventsThisDay[1].color))
+                            eventTopView.setBackgroundColor(Color.parseColor(eventsThisDay[0].color))
+                            eventBottomView.setBackgroundColor(Color.parseColor(eventsThisDay[1].color))
                         }
                     }
                 } else {
@@ -186,7 +192,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
     companion object {
         private val TAG: String = MonthViewFragment::class.java.name
     }
-    
+
 }
 
 
