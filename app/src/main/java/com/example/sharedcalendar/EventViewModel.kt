@@ -109,8 +109,8 @@ class EventViewModel : ViewModel() {
         val db = Firebase.firestore
         db.collection("calendars").whereEqualTo("owner_id", user.uid).get()
             .addOnSuccessListener { result ->
-                for (document in result) {
-                    db.collection("events").whereEqualTo("calendarId", document.id).get()
+                for (calendarDocument in result) {
+                    db.collection("events").whereEqualTo("calendarId", calendarDocument.id).get()
                         .addOnSuccessListener { result1 ->
                             for (document1 in result1) {
                                 val event = document1.toObject(Event::class.java)
@@ -120,6 +120,11 @@ class EventViewModel : ViewModel() {
                                     LocalDateTime.parse(document1.get("startTimestamp").toString())
                                 event.endTime =
                                     LocalDateTime.parse(document1.get("endTimestamp").toString())
+                                if (event.color.isEmpty() && calendarDocument.data.get("color")
+                                        .toString().isNotEmpty()
+                                ) {
+                                    event.color = calendarDocument.data.get("color").toString()
+                                }
                                 calendarEvents.add(event)
 
 //                                Log.wtf(TAG, "${document1.id} => $event => $calendarEvents")
