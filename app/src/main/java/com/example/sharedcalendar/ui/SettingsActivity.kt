@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
+import com.example.sharedcalendar.EventViewModel
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.data.UserDataSource
@@ -38,6 +41,8 @@ class SettingsActivity : AppCompatActivity(),
             supportFragmentManager.beginTransaction().replace(R.id.settings, SettingsFragment())
                 .commit()
         }
+
+
 
         sharedPrefs =
             SharedFirebasePreferences.getInstance(this, "app_settings", Context.MODE_PRIVATE)
@@ -90,9 +95,33 @@ class SettingsActivity : AppCompatActivity(),
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+        private val viewModel by viewModels<EventViewModel>()
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+            viewModel.getCalendars()
+
+
+            // Listen for Event Updates
+            viewModel.calendars.observe(this) { calendars ->
+
+                // Set Default Calendar Preference Values
+                val lpDefaultCalendar: ListPreference? =
+                    findPreference<ListPreference>("default_calendar")
+                val defaultCalendarEntries: Array<CharSequence>? =
+                    calendars?.map { c -> c.name }?.toTypedArray()
+                val defaultCalendarValues: Array<CharSequence>? =
+                    calendars?.map { c -> c.id.toString() }?.toTypedArray()
+
+                lpDefaultCalendar?.entries = defaultCalendarEntries
+                lpDefaultCalendar?.entryValues = defaultCalendarValues
+                if (defaultCalendarValues != null) {
+                    if (defaultCalendarValues.isNotEmpty()) lpDefaultCalendar?.setDefaultValue(
+                        calendars[0].id.toString()
+                    )
+                }
+
+            }
         }
 
     }

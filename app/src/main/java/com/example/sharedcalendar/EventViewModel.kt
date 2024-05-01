@@ -39,15 +39,16 @@ class EventViewModel : ViewModel() {
                 for (document in result) {
                     val calendar = document.toObject(Calendar::class.java)
                     calendar.id = document.id
+
                     calendar.events = getEventsByCalendar(document.id)
 
                     calendars.add(calendar)
                     Log.d(TAG, "${document.id} => ${document.data}")
                 }
+                _calendars.postValue(calendars)
             }.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents.", exception)
             }
-        _calendars.postValue(calendars)
         return calendars
     }
 

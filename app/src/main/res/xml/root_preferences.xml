@@ -15,6 +15,9 @@
             app:key="calendar_view"
             app:title="@string/pref_calendar_view_title"
             app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:key="default_calendar"
+            app:title="Default Calendar" />
 
         <!--        <ListPreference-->
         <!--            app:defaultValue="month"-->
