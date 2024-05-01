@@ -1,6 +1,5 @@
 package com.example.sharedcalendar
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -24,8 +23,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 
-private val TAG: String = MainActivity::class.java.name
-
 
 class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<EventViewModel>()
@@ -34,20 +31,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var user: FirebaseUser
     private lateinit var calendars: ArrayList<Calendar>
     private lateinit var prefs: SharedFirebasePreferences
+
+    companion object {
+        private val TAG: String = MainActivity::class.java.name
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         sessionManager = SessionManager(this)
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
-
-        prefs = SharedFirebasePreferences.getInstance(this, "app_settings", Context.MODE_PRIVATE)
-
 
         if (Firebase.auth.currentUser == null) {
             startActivity(Intent(this, AuthActivity::class.java))
             finish()
         }
         user = Firebase.auth.currentUser!!
+
+        prefs = SharedFirebasePreferences.getDefaultInstance(this)
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
@@ -111,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         // By default, the view fragment is month view fragment
         supportFragmentManager.beginTransaction().apply {
             // Set Default View based on user preferences
-            when (prefs.getString("default_view", "month")) {
+            when (prefs.getString("calendar_view", "month")) {
                 "week" -> replace(R.id.flFragment, weekViewFragment)
                 "month" -> replace(R.id.flFragment, monthViewFragment)
             }
