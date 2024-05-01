@@ -14,17 +14,29 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.Switch
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import com.example.sharedcalendar.models.Event
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
+import java.time.LocalTime
 import kotlin.random.Random
 
 
 class BottomSheetFragment : BottomSheetDialogFragment() {
+
+    lateinit var startDateTime: LocalDateTime
+    lateinit var endDateTime: LocalDateTime
+    lateinit var dateText: TextView
+    lateinit var timeText: TextView
+    lateinit var endDateText: TextView
+    lateinit var endTimeText: TextView
+    lateinit var switchBtn : Switch
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -38,53 +50,107 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //Handle Click on StartDate
-        val dateText = view.findViewById<TextView>(R.id.startDateTV)
+        dateText = view.findViewById<TextView>(R.id.startDateTV)
+        timeText = view.findViewById<TextView>(R.id.startTimeTV)
+        endDateText = view.findViewById<TextView>(R.id.endDateTV)
+        endTimeText = view.findViewById<TextView>(R.id.endTimeTV)
+        switchBtn = view.findViewById<Switch>(R.id.addDaySwitch)
+
+        //Handle Click on StartDate
         dateText.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 this.requireContext(),
                 OnDateSetListener { datePicker, year, month, day -> //Showing the picked value in the textView
-                    dateText.text = "$year.$month.$day"
+                    val adjMonth = month + 1
+                    dateText.text = "$year.$adjMonth.$day"
+                    if (timeText.text == "Time")
+                        startDateTime = LocalDateTime.of(year, adjMonth, day, 0, 0)
+                    else
+                        startDateTime = LocalDateTime.of(
+                            year,
+                            adjMonth,
+                            day,
+                            startDateTime.hour,
+                            startDateTime.minute
+                        )
+                    Log.d("StartDate", "StartDate: " + startDateTime.toString())
+                    dateCheck()
                 },
-                2023,
-                1,
-                20
+                (LocalDateTime.now().year),
+                (LocalDateTime.now().month.value - 1),
+                (LocalDateTime.now().dayOfMonth)
             )
 
             datePickerDialog.show()
         }
 
+
         //Handle Click on EndDate
-        val endDateText = view.findViewById<TextView>(R.id.endDateTV)
         endDateText.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 this.requireContext(),
                 OnDateSetListener { datePicker, year, month, day -> //Showing the picked value in the textView
-                    val monthAdj = month + 1
-                    endDateText.text = "$year.$monthAdj.$day"
+                    val adjMonth = month + 1
+                    endDateText.text = "$year.$adjMonth.$day"
+                    if (endTimeText.text == "Time")
+                        endDateTime = LocalDateTime.of(year, adjMonth, day, 0, 0)
+                    else
+                        endDateTime = LocalDateTime.of(
+                            year,
+                            adjMonth,
+                            day,
+                            endDateTime.hour,
+                            endDateTime.minute
+                        )
+                    Log.d("StartDate", "endDate: " + endDateTime.toString())
+                    dateCheck()
                 },
-                2023,
-                1,
-                20
+                (LocalDateTime.now().year),
+                (LocalDateTime.now().month.value - 1),
+                (LocalDateTime.now().dayOfMonth)
             )
 
             datePickerDialog.show()
         }
-
-        val timeText = view.findViewById<TextView>(R.id.startTimeTV)
+        //Handle Click on StartTime
         timeText.setOnClickListener {
             val timePickerDialog = TimePickerDialog(
                 this.requireContext(), OnTimeSetListener { TimePicker, hour, minute ->
                     timeText.text = "$hour:$minute"
+                    if (dateText.text == "Date")
+                        startDateTime = LocalDateTime.of(0, 1, 1, hour, minute)
+                    else
+                        startDateTime = LocalDateTime.of(
+                            startDateTime.year,
+                            startDateTime.month,
+                            startDateTime.dayOfMonth,
+                            hour,
+                            minute
+                        )
+                    dateCheck()
+                    Log.d("StartDate", "startDate: " + startDateTime.toString())
                 }, 15, 30, false
             )
             timePickerDialog.show()
         }
+
         //Handle Click on EndTime
-        val endTimeText = view.findViewById<TextView>(R.id.endTimeTV)
         endTimeText.setOnClickListener {
             val timePickerDialog = TimePickerDialog(
                 this.requireContext(), OnTimeSetListener { TimePicker, hour, minute ->
                     endTimeText.text = "$hour:$minute"
+                    if (endDateText.text == "Date")
+                        endDateTime = LocalDateTime.of(0, 1, 1, hour, minute)
+                    else
+                        endDateTime = LocalDateTime.of(
+                            endDateTime.year,
+                            endDateTime.month,
+                            endDateTime.dayOfMonth,
+                            hour,
+                            minute
+                        )
+                    dateCheck()
+                    Log.d("StartDate", "endDate: " + endDateTime.toString())
                 }, 15, 30, false
             )
             timePickerDialog.show()
@@ -98,9 +164,25 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             this.dismiss()
         }
 
+        //Switch
+        val switchBtn = view.findViewById<Switch>(R.id.addDaySwitch)
+        switchBtn.setOnClickListener{
+            if(switchBtn.isChecked)
+            {
+                timeText.visibility = View.INVISIBLE
+                endTimeText.visibility = View.INVISIBLE
+            }
+            else
+            {
+                timeText.visibility = View.VISIBLE
+                endTimeText.visibility = View.VISIBLE
+            }
+            dateCheck()
+        }
+
         // TODO: Caannot edit Description after new event input
-        // TODO: Do not allow new line in Event name
-        // TODO: Allow user to select if event is all day
+        // TODO: Do not allow new line in Event name - enter button now dismiss the keyboard
+        // TODO: Allow user to select if event is all day - done
         // TODO: (later) allow user to choose which calendar to add to
         // TODO: Validate input fields
         val etNewEventName = view.findViewById<EditText>(R.id.etNewEventName)
@@ -167,6 +249,52 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
         }
 
+
+    }
+
+    fun dateCheck() {
+        Log.d("dateCheck", "Checking Date")
+        val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
+        //Do nothing if not yet picked all date
+        if (dateText.text == "Date")
+        {
+            saveBtn?.setEnabled(false)
+            return
+        }
+        if(endDateText.text == "Date")
+        {
+            saveBtn?.setEnabled(false)
+            return
+        }
+        if(switchBtn.isChecked == false)
+        {
+            if(timeText.text == "Time")
+            {
+                saveBtn?.setEnabled(false)
+                return
+            }
+            if(endTimeText.text=="Time")
+            {
+                saveBtn?.setEnabled(false)
+                return
+            }
+        }
+
+
+        if(startDateTime.isAfter(endDateTime))
+        {
+            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
+
+            startDateLL?.setBackgroundColor(resources.getColor(R.color.highlight_red))
+            saveBtn?.setEnabled(false)
+        }
+        else
+        {
+            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
+            val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
+            startDateLL?.setBackgroundColor(resources.getColor(R.color.white))
+            saveBtn?.setEnabled(true)
+        }
 
     }
 
