@@ -19,7 +19,7 @@ data class Event(
     @SerializedName("end_time") var endTime: LocalDateTime = LocalDateTime.now(),
     var location: String? = null,
     var timezone: String = "",
-    val color: String = "#616161",
+    var color: String = "#616161",
     @field:JvmField @SerializedName("is_all_day") var isAllDay: Boolean? = false,
     @field:JvmField @SerializedName("is_private") var isPrivate: Boolean? = false,
     var participants: List<String>? = null,

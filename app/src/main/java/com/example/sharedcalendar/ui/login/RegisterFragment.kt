@@ -151,6 +151,11 @@ class RegisterFragment : Fragment() {
     }
 
     private fun register(email: String, password: String, username: String) {
+        val loUsername = view?.findViewById<TextInputLayout>(R.id.loRegisterUsername)
+        val loEmail = view?.findViewById<TextInputLayout>(R.id.loRegisterEmail) // binding.username
+        val loPassword = view?.findViewById<TextInputLayout>(R.id.loRegisterPassword)
+        val loConfirmPassword = view?.findViewById<TextInputLayout>(R.id.loRegisterConfirmPassword)
+
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 // Sign in success, update UI with the signed-in user's information
@@ -175,7 +180,12 @@ class RegisterFragment : Fragment() {
             } else {
                 // If sign in fails, display a message to the user.
                 Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                showLoginFailed(R.string.authentication_failed)
+                showLoginFailed(R.string.register_failed)
+//                loUsername?.error = " "
+                loEmail?.error = " "
+                if (task.exception.toString().contains("email")) loEmail?.error =
+                    task.exception?.localizedMessage
+
             }
         }
     }
@@ -197,7 +207,7 @@ class RegisterFragment : Fragment() {
     // Called when User login successful
     private fun updateUiWithUser(model: FirebaseUser) {
         val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
+        val displayName = model.displayName ?: model.email
         // TODO : initiate successful logged in experience
 
         Toast.makeText(

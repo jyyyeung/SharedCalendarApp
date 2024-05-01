@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
+import com.example.sharedcalendar.EventViewModel
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.data.UserDataSource
@@ -40,6 +42,8 @@ class SettingsActivity : AppCompatActivity(),
                 .commit()
         }
 
+
+
         sharedPrefs =
             SharedFirebasePreferences.getInstance(this, "app_settings", Context.MODE_PRIVATE)
         sharedPrefs.omitKeys("name")
@@ -63,37 +67,61 @@ class SettingsActivity : AppCompatActivity(),
         super.onStart()
         // Set up a listener whenever a key changes
         sharedPrefs.keepSynced(true)
-        PreferenceManager.getDefaultSharedPreferences(this)
-            ?.registerOnSharedPreferenceChangeListener(this)
+//        PreferenceManager.getDefaultSharedPreferences(this)
+//            ?.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onResume() {
         super.onResume()
         sharedPrefs.keepSynced(true)
         // Set up a listener whenever a key changes
-        PreferenceManager.getDefaultSharedPreferences(this)
-            ?.registerOnSharedPreferenceChangeListener(this)
+//        PreferenceManager.getDefaultSharedPreferences(this)
+//            ?.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onPause() {
         super.onPause()
         sharedPrefs.keepSynced(false)
         // Unregister the listener whenever a key changes
-        PreferenceManager.getDefaultSharedPreferences(this)
-            ?.unregisterOnSharedPreferenceChangeListener(this)
+//        PreferenceManager.getDefaultSharedPreferences(this)
+//            ?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         sharedPrefs.keepSynced(false)
-        PreferenceManager.getDefaultSharedPreferences(this)
-            ?.unregisterOnSharedPreferenceChangeListener(this)
+//        PreferenceManager.getDefaultSharedPreferences(this)
+//            ?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+        private val viewModel by viewModels<EventViewModel>()
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+            viewModel.getCalendars()
+
+
+            // Listen for Event Updates
+            viewModel.calendars.observe(this) { calendars ->
+
+                // Set Default Calendar Preference Values
+                val lpDefaultCalendar: ListPreference? =
+                    findPreference<ListPreference>("default_calendar")
+                val defaultCalendarEntries: Array<CharSequence>? =
+                    calendars?.map { c -> c.name }?.toTypedArray()
+                val defaultCalendarValues: Array<CharSequence>? =
+                    calendars?.map { c -> c.id.toString() }?.toTypedArray()
+
+                lpDefaultCalendar?.entries = defaultCalendarEntries
+                lpDefaultCalendar?.entryValues = defaultCalendarValues
+                if (defaultCalendarValues != null) {
+                    if (defaultCalendarValues.isNotEmpty()) lpDefaultCalendar?.setDefaultValue(
+                        calendars[0].id.toString()
+                    )
+                }
+
+            }
         }
 
     }

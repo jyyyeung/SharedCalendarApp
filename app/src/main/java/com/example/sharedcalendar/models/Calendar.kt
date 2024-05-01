@@ -10,5 +10,5 @@ data class Calendar(
     @SerializedName("owner_id")
     var ownerId: String = "",
     var shares: MutableMap<String, String>? = HashMap(),
-    var events: ArrayList<Event?> = ArrayList()
+    var events: ArrayList<Event> = ArrayList()
 )
