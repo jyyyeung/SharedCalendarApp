@@ -2,13 +2,10 @@ package com.example.sharedcalendar
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -40,7 +37,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
     private var eventsThisMonth: Map<LocalDate, List<Event>>? = null
     lateinit var binding: FragmentMonthViewBinding
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    //    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         eventsThisMonth = viewModel.getGroupedEvents()
@@ -52,13 +49,15 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         val endMonth = currentMonth.plusMonths(200)
 
         // Get Events from Database
-        viewModel.getEvents()
+        viewModel.getCurrentMonthEvents()
 
         // Listen for Event Updates
         viewModel.events.observe(viewLifecycleOwner) { events ->
+//            Log.i(TAG, events.toString())
             // Update Event list upon updates
             eventsThisMonth = buildList {
                 for (event in events) {
+//                    Log.i(TAG, event.toString())
                     currentMonth.atDay(event.startTime.dayOfMonth).also { date ->
                         add(event)
                     }
@@ -67,8 +66,6 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                 it.startTime.toLocalDate()
             }
             binding.MonthViewCalendar.notifyCalendarChanged()
-
-
         }
 
         configureBinders(daysOfWeek)
@@ -146,7 +143,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                     layout.setBackgroundResource(if (selectedDate == data.date) R.drawable.example_5_selected_bg else 0)
 
                     val eventsThisDay = eventsThisMonth?.get(data.date)
-                    Log.i(TAG, eventsThisDay.toString())
+//                    Log.i(TAG, eventsThisDay.toString())
                     if (eventsThisDay != null) {
                         // Indicate number of events today
                         if (eventsThisDay.count() == 1) {

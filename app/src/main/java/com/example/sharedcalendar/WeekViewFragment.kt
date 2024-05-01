@@ -1,6 +1,7 @@
 package com.example.sharedcalendar
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,7 +22,8 @@ class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
         val entity = WeekViewEntity.Event.Builder(item).setId(item.longId).setTitle(item.title)
             .setStartTime(item.startTime).setEndTime(item.endTime)
 
-        item.description?.let { entity.setSubtitle(it) }
+//        item.description?.let { entity.setSubtitle(it) }
+        Log.d("Week View Simple Adapter", "${entity.build()}")
 
         return entity.build()
     }
@@ -38,6 +40,9 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
     lateinit var binding: FragmentWeekViewBinding
     private val viewModel by viewModels<EventViewModel>()
 
+    companion object {
+        private val TAG: String = WeekViewFragment::class.java.name
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,11 +55,13 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
         weekView.adapter = adapter
 
         // Get Events from Database
-        viewModel.getEvents()
+        viewModel.getCurrentMonthEvents()
 
         // Listen for Event Updates
         viewModel.events.observe(viewLifecycleOwner) { events ->
+            Log.i(TAG, events.toString())
             // Update Event list upon updates
+
             adapter.submitList(events)
         }
 

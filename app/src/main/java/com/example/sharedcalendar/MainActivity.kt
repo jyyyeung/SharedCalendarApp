@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
@@ -20,15 +21,14 @@ import com.example.sharedcalendar.ui.login.UserViewModel
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
-import java.time.LocalDateTime
 
 private val TAG: String = MainActivity::class.java.name
 
 
 class MainActivity : AppCompatActivity() {
+    private val viewModel by viewModels<EventViewModel>()
     private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
@@ -54,8 +54,10 @@ class MainActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
-        calendars = getCalendars()
-        getEvents()
+
+        // TODO: Most likely do not need
+        calendars = viewModel.getCalendars()
+        viewModel.getEvents()
 
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
@@ -152,46 +154,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addEventToCalendar(event: Event?) {
+        // TODO: Update calendars from view model
         if (event is Event) calendars[0].events.add(event)
     }
 
 
-    private fun getCalendars(): ArrayList<Calendar> {
-        val calendars = ArrayList<Calendar>()
-        val db = Firebase.firestore
-        db.collection("calendars").whereEqualTo("owner_id", user.uid).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val calendar = document.toObject(Calendar::class.java)
-                    calendar.id = document.id
-                    calendars.add(calendar)
-                    Log.d(TAG, "${document.id} => ${document.data}")
-                }
-            }.addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents.", exception)
-            }
-        return calendars
-    }
-
-    fun getEvents(): ArrayList<Event> {
-        val events = ArrayList<Event>()
-        val db = Firebase.firestore
-        db.collection("events")
-//            .whereEqualTo("owner_id", user.uid)
-            .get().addOnSuccessListener { result ->
-                for (document in result) {
-                    val event = document.toObject(Event::class.java)
-
-                    event.id = document.id
-                    event.startTime = LocalDateTime.parse(document.get("startTimestamp").toString())
-                    event.endTime = LocalDateTime.parse(document.get("endTimestamp").toString())
-
-                    events.add(event)
-                    Log.d(TAG, "${document.id} => ${document.data}")
-                }
-            }.addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents.", exception)
-            }
-        return events
-    }
 }

@@ -24,7 +24,6 @@ class ApiClient(sessionManager: SessionManager) {
         return chain.request().newBuilder()
             .addHeader("Content-Type", "application/json")
             .addHeader("Accept", "application/json")
-//            .addHeader("Au", "application/json")
     }
 
     private val httpClient: OkHttpClient by lazy {

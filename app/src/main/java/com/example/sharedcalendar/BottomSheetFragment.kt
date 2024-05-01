@@ -36,6 +36,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
+        val today = LocalDateTime.now()
 
         //Handle Click on StartDate
         val dateText = view.findViewById<TextView>(R.id.startDateTV)
@@ -43,11 +44,12 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             val datePickerDialog = DatePickerDialog(
                 this.requireContext(),
                 OnDateSetListener { datePicker, year, month, day -> //Showing the picked value in the textView
-                    dateText.text = "$year.$month.$day"
+                    val monthAdj = month + 1
+                    dateText.text = "$year.$monthAdj.$day"
                 },
-                2023,
-                1,
-                20
+                today.year,
+                today.monthValue,
+                today.dayOfMonth
             )
 
             datePickerDialog.show()
@@ -62,9 +64,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                     val monthAdj = month + 1
                     endDateText.text = "$year.$monthAdj.$day"
                 },
-                2023,
-                1,
-                20
+                today.year,
+                today.monthValue,
+                today.dayOfMonth
             )
 
             datePickerDialog.show()
@@ -75,7 +77,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             val timePickerDialog = TimePickerDialog(
                 this.requireContext(), OnTimeSetListener { TimePicker, hour, minute ->
                     timeText.text = "$hour:$minute"
-                }, 15, 30, false
+                }, today.hour, 0, false
             )
             timePickerDialog.show()
         }
@@ -85,7 +87,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             val timePickerDialog = TimePickerDialog(
                 this.requireContext(), OnTimeSetListener { TimePicker, hour, minute ->
                     endTimeText.text = "$hour:$minute"
-                }, 15, 30, false
+                }, today.hour, 0, false
             )
             timePickerDialog.show()
         }
@@ -113,40 +115,23 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             val (sYear, sMonth, sDay) = dateText.text.split(".").map { it.toInt() }
             val (sHour, sMinute) = timeText.text.split(":").map { it.toInt() }
 
-            val (endYear, endMonth, endDay) = dateText.text.split(".").map { it.toInt() }
-            val (endHour, endMinute) = timeText.text.split(":").map { it.toInt() }
+            val (endYear, endMonth, endDay) = endDateText.text.split(".").map { it.toInt() }
+            val (endHour, endMinute) = endTimeText.text.split(":").map { it.toInt() }
 
             val newEvent = hashMapOf(
                 "longId" to Random.nextLong(),
                 "calendarId" to (activity as MainActivity).getCalendarId(),
                 "title" to etNewEventName.text.toString(),
                 "description" to etNewEventDescription.text.toString(),
-                "startTimestamp" to
-                        LocalDateTime.of(
-                            sYear, sMonth, sDay, sHour, sMinute
-                        ).toString(),
-                "endTimestamp" to
-                        LocalDateTime.of(
-                            endYear, endMonth, endDay, endHour, endMinute
-                        ).toString(),
+                "startTimestamp" to LocalDateTime.of(
+                    sYear, sMonth, sDay, sHour, sMinute
+                ).toString(),
+                "endTimestamp" to LocalDateTime.of(
+                    endYear, endMonth, endDay, endHour, endMinute
+                ).toString(),
                 "color" to selectedColor.code
             )
-//            val newEvent = Event(
-//                id = "",
-//                calendarId = (activity as MainActivity).getCalendarId() ?: "",
-//                title = etNewEventName.text.toString(),
-//                description = etNewEventDescription.text.toString(),
-//                startTime = LocalDateTime(
-//                    sYear, sMonth, sDay, sHour, sMinute
-//                ),
-//                endTime = LocalDateTime(
-//                    endYear, endMonth, endDay, endHour, endMinute
-//                ),
-//                color = selectedColor.code,
 //
-//                longId = Random.nextLong(),
-//            )
-
             val db = Firebase.firestore
             db.collection("events").add(newEvent).addOnSuccessListener { documentReference ->
                 Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")

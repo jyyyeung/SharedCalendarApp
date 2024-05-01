@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.NonNull
 
@@ -15,13 +14,13 @@ class SpinnerAdapter(context: Context, items: List<Color>) :
 
     @NonNull
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view : View = layoutInflater.inflate(R.layout.spinner_layout,null,true)
-        return view(view,position)
+        val view: View = layoutInflater.inflate(R.layout.spinner_layout, null, true)
+        return view(view, position)
 
     }
 
     private fun view(view: View, position: Int): View {
-        val color : Color = getItem(position)?: return view
+        val color: Color = getItem(position) ?: return view
         val colorText = view.findViewById<TextView>(R.id.colorText)
         val colorView = view.findViewById<View>(R.id.colorView)
         colorText?.text = color.name
@@ -32,8 +31,8 @@ class SpinnerAdapter(context: Context, items: List<Color>) :
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         var cv = convertView
-        if(cv == null)
-            cv = layoutInflater.inflate(R.layout.spinner_layout,parent,false)
-        return view(cv!!,position)
+        if (cv == null)
+            cv = layoutInflater.inflate(R.layout.spinner_layout, parent, false)
+        return view(cv!!, position)
     }
 }
