@@ -152,7 +152,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getCalendarId(): String? {
-        return calendars[0].id
+
+        return viewModel.calendars.value?.get(0)?.id
+//        return calendars[0].id
     }
 
     fun addEventToCalendar(event: Event?) {
