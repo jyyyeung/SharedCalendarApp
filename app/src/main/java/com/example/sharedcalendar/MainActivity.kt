@@ -86,6 +86,10 @@ class MainActivity : AppCompatActivity() {
                 finish()
             } else if (menuItem.toString() == "Add Person to Calendar") {
                 // TODO: Handle add person to calendar
+                // Create and show the dialog.
+                ShareCalendarFragment.display(supportFragmentManager)
+//                ft.addToBackStack(null)
+
             }
 //            menuItem.itemId
             drawerLayout.close()
