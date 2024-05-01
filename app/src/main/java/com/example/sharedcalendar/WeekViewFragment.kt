@@ -1,5 +1,6 @@
 package com.example.sharedcalendar
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -22,8 +23,13 @@ class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
         val entity = WeekViewEntity.Event.Builder(item).setId(item.longId).setTitle(item.title)
             .setStartTime(item.startTime).setEndTime(item.endTime)
 
-//        item.description?.let { entity.setSubtitle(it) }
-        Log.d("Week View Simple Adapter", "${entity.build()}")
+        if (item.color.isNotEmpty()) {
+            val entityStyle =
+                WeekViewEntity.Style.Builder().setBackgroundColor(Color.parseColor(item.color))
+                    .build()
+            entity.setStyle(entityStyle)
+        }
+        item.description?.let { entity.setSubtitle(it) }
 
         return entity.build()
     }
@@ -61,7 +67,6 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
         viewModel.events.observe(viewLifecycleOwner) { events ->
             Log.i(TAG, events.toString())
             // Update Event list upon updates
-
             adapter.submitList(events)
         }
 
