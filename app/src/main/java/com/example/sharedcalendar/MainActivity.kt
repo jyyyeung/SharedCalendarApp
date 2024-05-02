@@ -12,7 +12,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.models.Calendar
-import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
@@ -158,11 +157,6 @@ class MainActivity : AppCompatActivity() {
     fun getCalendarId(): String? {
         return viewModel.calendars.value?.get(0)?.id
 //        return calendars[0].id
-    }
-
-    fun addEventToCalendar(event: Event?) {
-        // TODO: Update calendars from view model
-        if (event is Event) calendars[0].events.add(event)
     }
 
 

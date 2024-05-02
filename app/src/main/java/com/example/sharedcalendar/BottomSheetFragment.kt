@@ -230,7 +230,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                         event.startTime =
                             LocalDateTime.parse(result.get("startTimestamp").toString())
                         event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
-                        (activity as MainActivity).addEventToCalendar(event)
+                        viewModel.addEventToCalendar(event)
                     }
                     this.dismiss()
                 }

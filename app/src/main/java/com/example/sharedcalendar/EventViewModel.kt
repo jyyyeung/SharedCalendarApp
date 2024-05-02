@@ -38,7 +38,7 @@ class EventViewModel : ViewModel() {
 
         if (event is Event) {
 
-//            calendars.value?.get(0)?.events?.add(event)
+            calendars.value?.get(0)?.events?.add(event)
             Log.i(TAG, calendars.toString())
 //            updatedCalendar = _calendars.value?.get(0)?.events?.add(event)
 //            _calendars.value =
