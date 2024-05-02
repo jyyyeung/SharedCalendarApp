@@ -26,20 +26,22 @@ fun Month.displayText(short: Boolean = true): String {
     return getDisplayName(style, Locale.ENGLISH)
 }
 
-fun Context.getColorCompat(@ColorRes color:Int) =
+fun Context.getColorCompat(@ColorRes color: Int) =
     ContextCompat.getColor(this, color)
 
-fun getWeekPageTitle(week: Week):String{
+fun getWeekPageTitle(week: Week): String {
     val firstDate = week.days.first().date
     val lastDate = week.days.last().date
-    return when{
-        firstDate.yearMonth == lastDate.yearMonth ->{
+    return when {
+        firstDate.yearMonth == lastDate.yearMonth -> {
             firstDate.yearMonth.displayText()
         }
+
         firstDate.year == lastDate.year -> {
             "${firstDate.month.displayText(short = false)} - ${lastDate.yearMonth.displayText()}"
         }
-        else ->{
+
+        else -> {
             "${firstDate.yearMonth.displayText()} - ${lastDate.yearMonth.displayText()}"
         }
     }

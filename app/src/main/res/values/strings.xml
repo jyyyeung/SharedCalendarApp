@@ -12,6 +12,14 @@
     <string name="invalid_email">Not a email </string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
+    <string name="color">dropDownMenu</string>
+    <string-array name="colors">
+        <item>Tomato</item>
+        <item>Sage</item>
+        <item>Peacock</item>
+        <item>Graphite</item>
+    </string-array>
     <string name="go_to_register">Don\'t have an account? Sign Up</string>
     <string name="register_heading">Register</string>
     <string name="login_heading">Login</string>
@@ -37,7 +45,6 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="authentication_failed">Authentication Failed</string>
     <string name="previous_month">Previous Month</string>
     <string name="next_month">Next Month</string>
     <string name="toggle_sidebar">Toggle Sidebar</string>
