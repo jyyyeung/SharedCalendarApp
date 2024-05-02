@@ -3,6 +3,7 @@ package com.example.sharedcalendar
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
@@ -53,7 +54,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
         // Listen for Event Updates
         viewModel.events.observe(viewLifecycleOwner) { events ->
-//            Log.i(TAG, events.toString())
+            Log.i(TAG, events.toString())
             // Update Event list upon updates
             eventsThisMonth = buildList {
                 for (event in events) {

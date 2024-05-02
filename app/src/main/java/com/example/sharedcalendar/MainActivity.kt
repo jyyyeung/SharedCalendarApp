@@ -156,7 +156,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getCalendarId(): String? {
-
         return viewModel.calendars.value?.get(0)?.id
 //        return calendars[0].id
     }

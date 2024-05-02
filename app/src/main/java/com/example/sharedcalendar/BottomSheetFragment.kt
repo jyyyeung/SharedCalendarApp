@@ -18,18 +18,18 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
-import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.viewModels
 import com.example.sharedcalendar.models.Event
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.LocalDateTime
-import java.time.LocalTime
 import kotlin.random.Random
 
 
 class BottomSheetFragment : BottomSheetDialogFragment() {
+    private val viewModel by viewModels<EventViewModel>()
     private lateinit var prefs: SharedFirebasePreferences
 
     lateinit var startDateTime: LocalDateTime
@@ -38,7 +38,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     lateinit var timeText: TextView
     lateinit var endDateText: TextView
     lateinit var endTimeText: TextView
-    lateinit var switchBtn : Switch
+    lateinit var switchBtn: Switch
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -171,14 +171,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
         //Switch
         val switchBtn = view.findViewById<Switch>(R.id.addDaySwitch)
-        switchBtn.setOnClickListener{
-            if(switchBtn.isChecked)
-            {
+        switchBtn.setOnClickListener {
+            if (switchBtn.isChecked) {
                 timeText.visibility = View.INVISIBLE
                 endTimeText.visibility = View.INVISIBLE
-            }
-            else
-            {
+            } else {
                 timeText.visibility = View.VISIBLE
                 endTimeText.visibility = View.VISIBLE
             }
@@ -250,44 +247,36 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         Log.d("dateCheck", "Checking Date")
         val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
         //Do nothing if not yet picked all date
-        if (dateText.text == "Date")
-        {
-            saveBtn?.setEnabled(false)
+        if (dateText.text == "Date") {
+            saveBtn?.isEnabled = false
             return
         }
-        if(endDateText.text == "Date")
-        {
-            saveBtn?.setEnabled(false)
+        if (endDateText.text == "Date") {
+            saveBtn?.isEnabled = false
             return
         }
-        if(switchBtn.isChecked == false)
-        {
-            if(timeText.text == "Time")
-            {
-                saveBtn?.setEnabled(false)
+        if (!switchBtn.isChecked) {
+            if (timeText.text == "Time") {
+                saveBtn?.isEnabled = false
                 return
             }
-            if(endTimeText.text=="Time")
-            {
-                saveBtn?.setEnabled(false)
+            if (endTimeText.text == "Time") {
+                saveBtn?.isEnabled = false
                 return
             }
         }
 
 
-        if(startDateTime.isAfter(endDateTime))
-        {
+        if (startDateTime.isAfter(endDateTime)) {
             val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
 
             startDateLL?.setBackgroundColor(resources.getColor(R.color.highlight_red))
-            saveBtn?.setEnabled(false)
-        }
-        else
-        {
+            saveBtn?.isEnabled = false
+        } else {
             val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
             val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
             startDateLL?.setBackgroundColor(resources.getColor(R.color.white))
-            saveBtn?.setEnabled(true)
+            saveBtn?.isEnabled = true
         }
 
     }

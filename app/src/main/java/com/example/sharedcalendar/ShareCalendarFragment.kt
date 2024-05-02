@@ -8,10 +8,12 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import com.example.sharedcalendar.models.Calendar
 
 
 class ShareCalendarFragment : DialogFragment() {
+    private val viewModel by viewModels<EventViewModel>()
     private var toolbar: Toolbar? = null
     private lateinit var calendars: ArrayList<Calendar>
     override fun onCreateView(
@@ -45,8 +47,7 @@ class ShareCalendarFragment : DialogFragment() {
             true
         }
 
-
-        calendars = MainActivity().getCalendars()
+        calendars = viewModel.getCalendars()
 //
 //        val selectCalendar: TextInputLayout = view.findViewById(R.id.selectCalendar)
 //        val dropdownSelectCalendar: MaterialAutoCompleteTextView =
