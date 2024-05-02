@@ -1,8 +1,8 @@
 package com.example.sharedcalendar
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
@@ -14,7 +14,6 @@ import com.example.sharedcalendar.databinding.CalendarHeaderBinding
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.displayText
-import com.example.sharedcalendar.models.getColorCompat
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -37,6 +36,8 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
     //            private val thisEvents = viewModel.getEvents(true).groupBy { it.startTime.toLocalDate() }
     private var eventsThisMonth: Map<LocalDate, List<Event>>? = null
     lateinit var binding: FragmentMonthViewBinding
+
+    //    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         eventsThisMonth = viewModel.getGroupedEvents()
@@ -48,21 +49,23 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         val endMonth = currentMonth.plusMonths(200)
 
         // Get Events from Database
-        viewModel.getEvents()
+        viewModel.getCurrentMonthEvents()
 
         // Listen for Event Updates
         viewModel.events.observe(viewLifecycleOwner) { events ->
+//            Log.i(TAG, events.toString())
             // Update Event list upon updates
             eventsThisMonth = buildList {
                 for (event in events) {
+//                    Log.i(TAG, event.toString())
                     currentMonth.atDay(event.startTime.dayOfMonth).also { date ->
                         add(event)
                     }
                 }
-            }.groupBy { it.startTime.toLocalDate() }
+            }.groupBy {
+                it.startTime.toLocalDate()
+            }
             binding.MonthViewCalendar.notifyCalendarChanged()
-
-
         }
 
         configureBinders(daysOfWeek)
@@ -140,14 +143,14 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                     layout.setBackgroundResource(if (selectedDate == data.date) R.drawable.example_5_selected_bg else 0)
 
                     val eventsThisDay = eventsThisMonth?.get(data.date)
-                    Log.i(TAG, eventsThisDay.toString())
+//                    Log.i(TAG, eventsThisDay.toString())
                     if (eventsThisDay != null) {
                         // Indicate number of events today
                         if (eventsThisDay.count() == 1) {
-                            eventBottomView.setBackgroundColor(context.getColorCompat(eventsThisDay[0].color))
+                            eventBottomView.setBackgroundColor(Color.parseColor(eventsThisDay[0].color))
                         } else {
-                            eventTopView.setBackgroundColor(context.getColorCompat(eventsThisDay[0].color))
-                            eventBottomView.setBackgroundColor(context.getColorCompat(eventsThisDay[1].color))
+                            eventTopView.setBackgroundColor(Color.parseColor(eventsThisDay[0].color))
+                            eventBottomView.setBackgroundColor(Color.parseColor(eventsThisDay[1].color))
                         }
                     }
                 } else {
@@ -186,7 +189,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
     companion object {
         private val TAG: String = MonthViewFragment::class.java.name
     }
-    
+
 }
 
 

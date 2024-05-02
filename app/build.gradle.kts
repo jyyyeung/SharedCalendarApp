@@ -3,6 +3,8 @@ plugins {
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
     id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization") version "1.9.23"
+
 }
 
 android {
@@ -51,6 +53,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.activity:activity:1.8.0")
     implementation("androidx.preference:preference:1.2.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
+    implementation("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.0.0-RC2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

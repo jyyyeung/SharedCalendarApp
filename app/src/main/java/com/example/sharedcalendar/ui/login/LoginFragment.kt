@@ -83,8 +83,7 @@ class LoginFragment : Fragment() {
         etPasswordInput.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE -> login(
-                    etEmailInput.text.toString(),
-                    etPasswordInput.text.toString()
+                    etEmailInput.text.toString(), etPasswordInput.text.toString()
                 )
             }
             false
@@ -95,8 +94,9 @@ class LoginFragment : Fragment() {
         btnLogin?.setOnClickListener {
             // On login clicked
             //Verify Data validity
-            if (!userViewModel.isEmailValid(etEmailInput?.text!!) ||
-                !userViewModel.isPasswordValid(etPasswordInput?.text!!)
+            if (!userViewModel.isEmailValid(etEmailInput?.text!!) || !userViewModel.isPasswordValid(
+                    etPasswordInput?.text!!
+                )
             ) {
                 return@setOnClickListener
             }
@@ -113,6 +113,8 @@ class LoginFragment : Fragment() {
 
 
     private fun login(email: String, password: String) {
+        val etPassword = view?.findViewById<TextInputLayout>(R.id.login_password)
+        val etEmail = view?.findViewById<TextInputLayout>(R.id.login_email) // binding.username
         auth.signInWithEmailAndPassword(
             email, password
         ).addOnCompleteListener { task ->
@@ -127,7 +129,10 @@ class LoginFragment : Fragment() {
             }
         }.addOnFailureListener { exception ->
             showLoginFailed(R.string.login_failed)
-            error("Login Failed, $exception.localizedMessage")
+            Log.i(TAG, "Login Failed, $exception.localizedMessage")
+            etEmail?.error = " "
+            etPassword?.error = "Invalid Email or Password"
+//            error("Login Failed, $exception.localizedMessage")
 //                Toast.makeText(applicationContext, exception.localizedMessage, Toast.LENGTH_LONG)
 //                    .show()
         }
