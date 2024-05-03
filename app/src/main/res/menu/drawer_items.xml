@@ -17,6 +17,11 @@
                 android:icon="@drawable/ic_person_add_24px"
                 android:title="Add Person to Calendar" />
             <item
+                android:id="@+id/manage_calendars"
+                android:checkable="false"
+                android:icon="@drawable/ic_person_add_24px"
+                android:title="Manage Calendars" />
+            <item
                 android:id="@+id/settings_item"
                 android:checkable="false"
                 android:icon="@drawable/ic_settings_24px"

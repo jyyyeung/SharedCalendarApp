@@ -6,16 +6,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
+import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.R
-import com.example.sharedcalendar.data.SessionManager
-import com.example.sharedcalendar.data.UserDataSource
-import com.example.sharedcalendar.data.UserRepository
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferencesContextWrapper
 
@@ -25,9 +26,7 @@ private val TAG: String = SettingsActivity::class.java.name
 class SettingsActivity : AppCompatActivity(),
 //    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
     SharedPreferences.OnSharedPreferenceChangeListener {
-    private lateinit var userRepository: UserRepository
     private lateinit var userViewModel: UserViewModel
-    private lateinit var sessionManager: SessionManager
     private lateinit var sharedPrefs: SharedFirebasePreferences
 
     override fun attachBaseContext(newBase: Context?) {
@@ -42,17 +41,11 @@ class SettingsActivity : AppCompatActivity(),
                 .commit()
         }
 
-
-
         sharedPrefs =
             SharedFirebasePreferences.getInstance(this, "app_settings", Context.MODE_PRIVATE)
         sharedPrefs.omitKeys("name")
 
-        userRepository = UserRepository(
-            dataSource = UserDataSource()
-        )
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
-        sessionManager = SessionManager(this)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -67,43 +60,36 @@ class SettingsActivity : AppCompatActivity(),
         super.onStart()
         // Set up a listener whenever a key changes
         sharedPrefs.keepSynced(true)
-//        PreferenceManager.getDefaultSharedPreferences(this)
-//            ?.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onResume() {
         super.onResume()
         sharedPrefs.keepSynced(true)
-        // Set up a listener whenever a key changes
-//        PreferenceManager.getDefaultSharedPreferences(this)
-//            ?.registerOnSharedPreferenceChangeListener(this)
     }
 
     override fun onPause() {
         super.onPause()
         sharedPrefs.keepSynced(false)
-        // Unregister the listener whenever a key changes
-//        PreferenceManager.getDefaultSharedPreferences(this)
-//            ?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         sharedPrefs.keepSynced(false)
-//        PreferenceManager.getDefaultSharedPreferences(this)
-//            ?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
-        private val viewModel by viewModels<FirebaseViewModel>()
+        private val firebaseViewModel by viewModels<FirebaseViewModel>()
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
-            viewModel.getCalendars()
+            firebaseViewModel.getCalendars()
+            val context = preferenceManager.context
+//            val calendarScreen = preferenceManager.createPreferenceScreen(context)
+            val screen = preferenceManager.preferenceScreen
 
 
             // Listen for Event Updates
-            viewModel.calendars.observe(this) { calendars ->
+            firebaseViewModel.calendars.observe(this) { calendars ->
 
                 // Set Default Calendar Preference Values
                 val lpDefaultCalendar: ListPreference? =
@@ -121,6 +107,23 @@ class SettingsActivity : AppCompatActivity(),
                     )
                 }
 
+                val calendarCategory = PreferenceCategory(context)
+                calendarCategory.key = "calendars"
+                calendarCategory.title = "Show Calendars"
+                screen.addPreference(calendarCategory)
+
+                // Allow enabling calendars
+                for (calendar in calendars) {
+                    val calendarPreference = CheckBoxPreference(context)
+                    calendarPreference.key = calendar.id.toString()
+                    calendarPreference.title = calendar.name
+                    if (calendar.ownerId != Firebase.auth.currentUser?.uid) {
+                        calendarPreference.summary =
+                            calendar.owner?.name ?: "Shared by another user"
+                    }
+
+                    calendarCategory.addPreference(calendarPreference)
+                }
             }
         }
 
@@ -132,7 +135,7 @@ class SettingsActivity : AppCompatActivity(),
         recreate()
 
         // Update Changed Settings in Database
-//        userViewModel.updateUserSettings(sessionManager, sharedPreferences, key)
+        userViewModel.updateUserSettings(sharedPreferences, key)
     }
 
 }

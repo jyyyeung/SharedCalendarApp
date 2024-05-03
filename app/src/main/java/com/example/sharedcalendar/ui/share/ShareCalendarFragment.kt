@@ -1,4 +1,4 @@
-package com.example.sharedcalendar
+package com.example.sharedcalendar.ui.share
 
 import android.os.Bundle
 import android.util.Log
@@ -13,8 +13,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import com.example.sharedcalendar.FirebaseViewModel
+import com.example.sharedcalendar.R
 import com.example.sharedcalendar.models.Calendar
-import com.example.sharedcalendar.ui.share.ShareViewModel
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.SetOptions

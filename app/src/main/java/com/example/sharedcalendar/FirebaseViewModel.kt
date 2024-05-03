@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.models.Event
+import com.example.sharedcalendar.models.User
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,17 +34,9 @@ class FirebaseViewModel : ViewModel() {
 
 
     fun addEventToCalendar(event: Event?) {
-//        val defaultCalendarId = prefs.getString("default_calendar", getCalendarId())
-        // TODO: Add event to default calendar set from prefs
-        // TODO: Update calendars from view model
-
         if (event is Event) {
-
             calendars.value?.get(0)?.events?.add(event)
             Log.i(TAG, calendars.toString())
-//            updatedCalendar = _calendars.value?.get(0)?.events?.add(event)
-//            _calendars.value =
-//            _events.value = _events.value.
         }
     }
 
@@ -55,7 +48,7 @@ class FirebaseViewModel : ViewModel() {
                 for (document in result) {
                     val calendar = document.toObject(Calendar::class.java)
                     calendar.id = document.id
-
+                    calendar.owner = getUserById(calendar.ownerId)
                     calendar.events = getEventsByCalendar(document.id)
 
                     calendars.add(calendar)
@@ -70,8 +63,6 @@ class FirebaseViewModel : ViewModel() {
 
     fun getCurrentMonthEvents(currentMonthOnly: Boolean = false) {
         Log.d(TAG, "getCurrentMonthEvents")
-//        getCalendars()
-//        val calendars = ArrayList<Calendar>()
         val calendarEvents = ArrayList<Event>()
 
         calendarEvents.add(
@@ -190,6 +181,20 @@ class FirebaseViewModel : ViewModel() {
                 Log.w(TAG, "Error getting documents.", exception)
             }
         return eventsList
+    }
+
+    private fun getUserById(
+        userId: String
+    ): User? {
+        var user: User? = null
+        val db = Firebase.firestore
+        db.collection("users").document(userId).get().addOnSuccessListener { result ->
+            user = result.toObject(User::class.java)
+            user?.id = result.id
+        }.addOnFailureListener { exception ->
+            Log.w(TAG, "Error getting user with specified ID. ", exception)
+        }
+        return user
     }
 
     private fun getEventsByCalendar(

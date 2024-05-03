@@ -5,46 +5,48 @@ import android.text.Editable
 import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
-import com.example.sharedcalendar.data.SessionManager
-import com.example.sharedcalendar.data.UserRepository
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 private val TAG: String = UserViewModel::class.java.name
 
 /**
  * ViewModel for the login screen.
- * @property userRepository The login repository to be used.
  * @constructor Creates a new instance of [UserViewModel].
- * @see UserRepository
  */
-class UserViewModel(
-    private val userRepository: UserRepository,
-) : ViewModel() {
+class UserViewModel : ViewModel() {
     fun updateUserSettings(
-        sessionManager: SessionManager,
         sharedPreferences: SharedPreferences?,
         key: String?
     ) {
         val user = Firebase.auth.currentUser
+        val db = Firebase.firestore
 
         if (key == "name") {
-            val profileUpdates = userProfileChangeRequest {
-                displayName = sharedPreferences?.getString(key, null)
+            val newName = sharedPreferences?.getString(key, null)
+            if (newName != null) {
+                val profileUpdates = userProfileChangeRequest {
+                    displayName = newName
+                }
+
+                user!!.updateProfile(profileUpdates)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d(TAG, "User profile updated.")
+                        }
+                    }
+
+                val docData = hashMapOf("name" to newName)
+                db.collection("users").document(user.uid).set(docData, SetOptions.merge())
             }
 
-            user!!.updateProfile(profileUpdates)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "User profile updated.")
-                    }
-                }
         }
 
 
     }
-
 
     private fun valueIsNotEmpty(value: Editable): Boolean {
         return value.isNotBlank()

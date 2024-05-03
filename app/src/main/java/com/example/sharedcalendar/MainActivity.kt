@@ -10,12 +10,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
+import com.example.sharedcalendar.ui.share.ShareCalendarFragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -25,7 +25,6 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 
 class MainActivity : AppCompatActivity() {
     private val firebaseViewModel by viewModels<FirebaseViewModel>()
-    private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
     private lateinit var calendars: ArrayList<Calendar>
@@ -40,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sessionManager = SessionManager(this)
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
 
         if (Firebase.auth.currentUser == null) {
@@ -96,7 +94,6 @@ class MainActivity : AppCompatActivity() {
                 // Create and show the dialog.
                 ShareCalendarFragment.display(supportFragmentManager)
 //                ft.addToBackStack(null)
-
             }
 //            menuItem.itemId
             drawerLayout.close()

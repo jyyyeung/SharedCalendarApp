@@ -9,6 +9,8 @@ data class Calendar(
     var color: String? = null,
     var timezone: String? = null,
     @SerializedName("owner_id") var ownerId: String = "",
+    @Exclude
+    @SerializedName("owner") var owner: User? = null,
     var shares: MutableMap<String, String>? = HashMap(),
     var events: ArrayList<Event> = ArrayList()
 )

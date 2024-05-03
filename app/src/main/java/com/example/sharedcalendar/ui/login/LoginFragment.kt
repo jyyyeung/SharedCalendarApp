@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
-import com.example.sharedcalendar.data.SessionManager
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -28,14 +27,11 @@ import com.google.firebase.auth.FirebaseUser
  * create an instance of this fragment.
  */
 class LoginFragment : Fragment() {
-
-    private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sessionManager = SessionManager(requireActivity())
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
         auth = FirebaseAuth.getInstance()
     }

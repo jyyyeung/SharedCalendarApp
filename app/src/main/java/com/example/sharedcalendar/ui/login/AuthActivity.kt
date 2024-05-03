@@ -11,7 +11,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
-import com.example.sharedcalendar.data.SessionManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -37,8 +36,6 @@ class AuthenticationPagerAdapter(
     }
 }
 
-private lateinit var sessionManager: SessionManager
-
 class AuthActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
@@ -58,8 +55,6 @@ class AuthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         // Initialize Firebase Auth
         auth = Firebase.auth
-
-        sessionManager = SessionManager(this)
 
         setContentView(R.layout.activity_auth)
 
