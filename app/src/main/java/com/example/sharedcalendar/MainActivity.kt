@@ -56,8 +56,13 @@ class MainActivity : AppCompatActivity() {
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
 
         // TODO: Most likely do not need
-        calendars = firebaseViewModel.getCalendars()
+        firebaseViewModel.getUserShares()
+        firebaseViewModel.getCalendars()
         firebaseViewModel.getEvents()
+
+        firebaseViewModel.userShares.observe(this) {
+            firebaseViewModel.getCalendars()
+        }
 
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {

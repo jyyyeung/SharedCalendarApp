@@ -82,11 +82,21 @@ class SettingsActivity : AppCompatActivity(),
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
-            firebaseViewModel.getCalendars()
+
+            firebaseViewModel.getUserShares()
+            firebaseViewModel.userShares.observe(this) {
+                firebaseViewModel.getCalendars()
+            }
+
             val context = preferenceManager.context
 //            val calendarScreen = preferenceManager.createPreferenceScreen(context)
             val screen = preferenceManager.preferenceScreen
 
+
+            val calendarCategory = PreferenceCategory(context)
+            calendarCategory.key = "calendars"
+            calendarCategory.title = "Show Calendars"
+            screen.addPreference(calendarCategory)
 
             // Listen for Event Updates
             firebaseViewModel.calendars.observe(this) { calendars ->
@@ -107,11 +117,7 @@ class SettingsActivity : AppCompatActivity(),
                     )
                 }
 
-                val calendarCategory = PreferenceCategory(context)
-                calendarCategory.key = "calendars"
-                calendarCategory.title = "Show Calendars"
-                screen.addPreference(calendarCategory)
-
+                calendarCategory.removeAll()
                 // Allow enabling calendars
                 for (calendar in calendars) {
                     val calendarPreference = CheckBoxPreference(context)

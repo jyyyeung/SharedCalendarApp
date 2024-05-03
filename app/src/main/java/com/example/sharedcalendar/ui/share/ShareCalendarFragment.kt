@@ -18,6 +18,7 @@ import com.example.sharedcalendar.R
 import com.example.sharedcalendar.models.Calendar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -28,8 +29,8 @@ class ShareCalendarFragment : DialogFragment() {
     private var toolbar: Toolbar? = null
     private lateinit var firebaseViewModel: FirebaseViewModel
     private lateinit var shareViewModel: ShareViewModel
-    private val rights: List<String> = listOf(
-        "Availability", "View", "Edit", "Admin"
+    private val scopes: List<String> = listOf(
+        "Availability", "View", "Edit", "Full"
     )
 
     override fun onCreateView(
@@ -47,9 +48,9 @@ class ShareCalendarFragment : DialogFragment() {
             view.findViewById(R.id.dropdownSelectCalendar)
         val shareUserEmail: TextInputLayout = view.findViewById(R.id.shareUserEmail)
         val etUserEmail: EditText = view.findViewById(R.id.etUserEmail)
-        val shareRights: TextInputLayout = view.findViewById(R.id.shareRights)
-        val dropdownShareRights: MaterialAutoCompleteTextView =
-            view.findViewById(R.id.dropdownShareRights)
+        val shareScope: TextInputLayout = view.findViewById(R.id.shareScope)
+        val dropdownShareScope: MaterialAutoCompleteTextView =
+            view.findViewById(R.id.dropdownShareScope)
 
         val calendarList = firebaseViewModel.calendars.value?.map { c -> c.name }?.toTypedArray()
         if (calendarList != null) {
@@ -63,10 +64,11 @@ class ShareCalendarFragment : DialogFragment() {
 
 
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            requireContext(), android.R.layout.simple_dropdown_item_1line, rights
+            requireContext(), android.R.layout.simple_dropdown_item_1line,
+            scopes
         )
-        dropdownShareRights.setText("Availability", false)
-        dropdownShareRights.setAdapter(adapter)
+        dropdownShareScope.setText("Availability", false)
+        dropdownShareScope.setAdapter(adapter)
 
         val btnShare: Button = view.findViewById(R.id.btnShare)
         btnShare.setOnClickListener {
@@ -91,29 +93,58 @@ class ShareCalendarFragment : DialogFragment() {
                 shareUserEmail.error = null
             }
 
-            if (dropdownShareRights.text.toString() !in rights) {
-                shareRights.error = "Invalid Share Right"
+            if (dropdownShareScope.text.toString() !in scopes) {
+                shareScope.error = "Invalid Share Scope"
                 return@setOnClickListener
             } else {
-                shareRights.error = null
+                shareScope.error = null
             }
 
             val userEmail: String = etUserEmail.text.toString()
 
             val shares = calendar?.shares ?: mutableMapOf()
 
-            shares[userEmail] = dropdownShareRights.text.toString()
+            shares[userEmail] = dropdownShareScope.text.toString()
 
-            val docData = hashMapOf("shares" to shares)
+            val calendarId = calendar?.id.toString()
+            val scope = dropdownShareScope.text.toString()
 
             // Save Share
             val db = Firebase.firestore
+            db.collection("shares")
+                .where(
+                    Filter.and(
+                        Filter.equalTo("calendarId", calendarId),
+                        Filter.equalTo("userEmail", userEmail)
+                    )
+                ).get().addOnSuccessListener { results ->
+                    Log.i(TAG, results.toString())
+                    if (results.isEmpty) {
+                        val newShare = hashMapOf(
+                            "calendarId" to calendarId,
+                            "userEmail" to userEmail,
+                            "scope" to scope
+                        )
+                        // Share does not exist
+                        db.collection("shares").add(newShare).addOnSuccessListener { result ->
+                            Log.d(TAG, "DocumentSnapshot successfully written!")
+                            this.dismiss()
+                        }.addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
 
-            db.collection("calendars").document(calendar?.id.toString())
-                .set(docData, SetOptions.merge()).addOnSuccessListener {
-                    Log.d(TAG, "DocumentSnapshot successfully written!")
-                    this.dismiss()
-                }.addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+                    } else {
+                        val share = results.documents[0]
+
+                        db.collection("shares").document(share.id)
+                            .set(
+                                hashMapOf("scope" to scope),
+                                SetOptions.merge()
+                            ).addOnSuccessListener {
+                                Log.d(TAG, "DocumentSnapshot successfully written!")
+                                this.dismiss()
+                            }.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+                    }
+                }
+
 
         }
 

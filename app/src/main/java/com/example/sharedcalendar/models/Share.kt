@@ -1,15 +1,18 @@
 package com.example.sharedcalendar.models
 
+import com.google.firebase.firestore.Exclude
+
 data class Share(
-    var id: Int = 0,
-    var calendarId: Int,
-    var userId: Int,
-    var permission: SharePermission? = SharePermission.READ,
+    @Exclude
+    var id: String = "",
+    var calendarId: String = "",
+    var userEmail: String = "",
+    var scope: String? = "View",
 )
 
-enum class SharePermission {
-    READ,
-    WRITE,
-    ADMIN,
-    AVAILABILITY,
+enum class ShareScope {
+    Availability,
+    View,
+    Edit,
+    Full,
 }
