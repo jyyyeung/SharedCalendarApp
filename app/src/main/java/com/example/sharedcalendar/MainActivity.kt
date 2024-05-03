@@ -11,6 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.ui.CalendarFragment
+import com.example.sharedcalendar.ui.ManageCalendarsActivity
 import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
@@ -96,6 +97,8 @@ class MainActivity : AppCompatActivity() {
                 // Create and show the dialog.
                 ShareCalendarFragment.display(supportFragmentManager)
 //                ft.addToBackStack(null)
+            } else if (menuItem.toString() == "Manage Calendars") {
+                startActivity(Intent(this, ManageCalendarsActivity::class.java))
             }
 //            menuItem.itemId
             drawerLayout.close()
