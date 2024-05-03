@@ -18,7 +18,7 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.models.Event
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.firestore.ktx.firestore
@@ -29,8 +29,9 @@ import kotlin.random.Random
 
 
 class BottomSheetFragment : BottomSheetDialogFragment() {
-    private val viewModel by viewModels<EventViewModel>()
+    //    private val eventViewModel by viewModels<EventViewModel>()
     private lateinit var prefs: SharedFirebasePreferences
+    private lateinit var firebaseViewModel: FirebaseViewModel
 
     lateinit var startDateTime: LocalDateTime
     lateinit var endDateTime: LocalDateTime
@@ -44,6 +45,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         prefs = SharedFirebasePreferences.getDefaultInstance(context)
+        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
         return inflater.inflate(R.layout.bottom_window, container, false)
     }
@@ -230,7 +232,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                         event.startTime =
                             LocalDateTime.parse(result.get("startTimestamp").toString())
                         event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
-                        viewModel.addEventToCalendar(event)
+                        firebaseViewModel.addEventToCalendar(event)
                     }
                     this.dismiss()
                 }

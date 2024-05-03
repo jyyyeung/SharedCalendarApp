@@ -15,9 +15,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 
-class EventViewModel : ViewModel() {
+class FirebaseViewModel : ViewModel() {
     companion object {
-        private val TAG: String = EventViewModel::class.java.name
+        private val TAG: String = FirebaseViewModel::class.java.name
     }
 
     private val _events = MutableLiveData<List<Event>>()

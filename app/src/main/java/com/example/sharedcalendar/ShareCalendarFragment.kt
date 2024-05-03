@@ -1,6 +1,7 @@
 package com.example.sharedcalendar
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -8,20 +9,25 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
-import com.example.sharedcalendar.models.Calendar
+import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.google.android.material.textfield.TextInputLayout
 
 
 class ShareCalendarFragment : DialogFragment() {
-    private val viewModel by viewModels<EventViewModel>()
+    //    private val viewModel by viewModels<EventViewModel>()
     private var toolbar: Toolbar? = null
-    private lateinit var calendars: ArrayList<Calendar>
+    private lateinit var firebaseViewModel: FirebaseViewModel
+
+    //    private lateinit var calendars: ArrayList<Calendar>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         val view: View = inflater.inflate(R.layout.fragment_share_calendar, container, false)
         toolbar = view.findViewById(R.id.toolbar)
+
+        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
         return view
     }
@@ -47,15 +53,21 @@ class ShareCalendarFragment : DialogFragment() {
             true
         }
 
-        calendars = viewModel.getCalendars()
+//        viewModel.getCalendars()
 //
-//        val selectCalendar: TextInputLayout = view.findViewById(R.id.selectCalendar)
-//        val dropdownSelectCalendar: MaterialAutoCompleteTextView =
-//            view.findViewById(R.id.dropdownSelectCalendar)
+        val selectCalendar: TextInputLayout = view.findViewById(R.id.selectCalendar)
+        val dropdownSelectCalendar: MaterialAutoCompleteTextView =
+            view.findViewById(R.id.dropdownSelectCalendar)
+        val calendarList = firebaseViewModel.calendars.value?.map { c -> c.name }?.toTypedArray()
+        if (calendarList != null) {
+            dropdownSelectCalendar.setSimpleItems(calendarList)
+        }
 //
-//        Log.i(TAG, calendars.toString())
+        firebaseViewModel.calendars.observe(this) { calendars ->
+            Log.i(TAG, calendars.toString())
+            dropdownSelectCalendar.setSimpleItems(calendars.map { c -> c.name }.toTypedArray())
+        }
 //
-//        dropdownSelectCalendar.setSimpleItems(calendars.map { c -> c.name }.toTypedArray())
 
     }
 

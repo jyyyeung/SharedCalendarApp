@@ -24,12 +24,13 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel by viewModels<EventViewModel>()
+    private val firebaseViewModel by viewModels<FirebaseViewModel>()
     private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
     private lateinit var calendars: ArrayList<Calendar>
     private lateinit var prefs: SharedFirebasePreferences
+
 
     companion object {
         private val TAG: String = MainActivity::class.java.name
@@ -57,8 +58,8 @@ class MainActivity : AppCompatActivity() {
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
 
         // TODO: Most likely do not need
-        calendars = viewModel.getCalendars()
-        viewModel.getEvents()
+        calendars = firebaseViewModel.getCalendars()
+        firebaseViewModel.getEvents()
 
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
@@ -155,7 +156,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getCalendarId(): String? {
-        return viewModel.calendars.value?.get(0)?.id
+        return firebaseViewModel.calendars.value?.get(0)?.id
 //        return calendars[0].id
     }
 

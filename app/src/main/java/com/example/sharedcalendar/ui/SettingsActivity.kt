@@ -8,7 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
-import com.example.sharedcalendar.EventViewModel
+import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.data.UserDataSource
@@ -95,7 +95,7 @@ class SettingsActivity : AppCompatActivity(),
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
-        private val viewModel by viewModels<EventViewModel>()
+        private val viewModel by viewModels<FirebaseViewModel>()
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
