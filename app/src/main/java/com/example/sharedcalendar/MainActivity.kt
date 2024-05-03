@@ -3,7 +3,6 @@ package com.example.sharedcalendar
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -11,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.models.Calendar
+import com.example.sharedcalendar.ui.CalendarFragment
 import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
@@ -99,57 +99,19 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.close()
             true
         }
+
+
         // END SIDEBAR NAVIGATION //
 
+        val calendarFragment = CalendarFragment()
 
-        // Change Fragment from month to week on button click
-        // Set variables for change view buttons
-        val weekBtn: Button = findViewById(R.id.weekBtn)
-        val monthBtn: Button = findViewById(R.id.monthBtn)
-
-        // Set variables for View Fragments
-        val monthViewFragment = MonthViewFragment()
-        val weekViewFragment = WeekViewFragment()
-
-        // By default, the view fragment is month view fragment
+        // By default, open the Calendar fragment
         supportFragmentManager.beginTransaction().apply {
-            // Set Default View based on user preferences
-            when (prefs.getString("calendar_view", "month")) {
-                "week" -> replace(R.id.flFragment, weekViewFragment)
-                "month" -> replace(R.id.flFragment, monthViewFragment)
-            }
+            replace(R.id.mainFragment, calendarFragment)
             commit()
         }
 
-        // When Click Month Button
-        monthBtn.setOnClickListener {
-            supportFragmentManager.beginTransaction().apply {
-                // Replace fragment with month view fragment
-                replace(R.id.flFragment, monthViewFragment)
-                addToBackStack(null)
-                // commit the change
-                commit()
-            }
-        }
-        // When Click Week Button
-        weekBtn.setOnClickListener {
-            supportFragmentManager.beginTransaction().apply {
-                // Replace fragment with week view fragment
-                replace(R.id.flFragment, weekViewFragment)
-                addToBackStack(null)
-                // Commit the changes
-                commit()
-            }
-        }
-        // When Click AddEvent Button
-        val addEventBtn: ImageButton = findViewById(R.id.addEventBtn)
-        val bottomWindow = BottomSheetFragment()
 
-        addEventBtn.setOnClickListener {
-            //showBottomWindow()
-            bottomWindow.show(supportFragmentManager, "BottomSheetDialogue")
-
-        }
     }
 
     fun getCalendarId(): String? {

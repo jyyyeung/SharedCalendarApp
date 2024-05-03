@@ -9,6 +9,7 @@
     tools:context=".MainActivity"
     tools:openDrawer="start">
 
+
     <include layout="@layout/activity_main_content" />
 
     <com.google.android.material.navigation.NavigationView
