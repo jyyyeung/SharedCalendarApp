@@ -49,7 +49,7 @@ class LoginFragment : Fragment() {
         // Set variables for views
         val etEmail = view.findViewById<TextInputLayout>(R.id.login_email) // binding.username
         val etEmailInput =
-            view.findViewById<TextInputEditText>(R.id.et_login_email) // binding.username
+            view.findViewById<TextInputEditText>(R.id.etUserEmail) // binding.username
         val etPassword = view.findViewById<TextInputLayout>(R.id.login_password)
         val etPasswordInput = view.findViewById<TextInputEditText>(R.id.et_login_password)
         val btnLogin = view.findViewById<Button>(R.id.btnLogin)

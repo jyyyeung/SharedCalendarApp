@@ -31,6 +31,7 @@ class FirebaseViewModel : ViewModel() {
 
     val user = Firebase.auth.currentUser!!
 
+
     fun addEventToCalendar(event: Event?) {
 //        val defaultCalendarId = prefs.getString("default_calendar", getCalendarId())
         // TODO: Add event to default calendar set from prefs
