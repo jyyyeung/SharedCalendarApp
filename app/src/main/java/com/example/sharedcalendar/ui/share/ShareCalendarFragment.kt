@@ -101,11 +101,6 @@ class ShareCalendarFragment : DialogFragment() {
             }
 
             val userEmail: String = etUserEmail.text.toString()
-
-            val shares = calendar?.shares ?: mutableMapOf()
-
-            shares[userEmail] = dropdownShareScope.text.toString()
-
             val calendarId = calendar?.id.toString()
             val scope = dropdownShareScope.text.toString()
 

@@ -62,8 +62,12 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
         val adapter = WeekViewSimpleAdapter()
         weekView.adapter = adapter
 
-        // Get Events from Database
-        firebaseViewModel.getCurrentMonthEvents()
+
+        firebaseViewModel.calendars.observe(requireActivity()) {
+            // Get Events from Database
+            firebaseViewModel.getCurrentMonthEvents()
+        }
+
 
         // Listen for Event Updates
         firebaseViewModel.events.observe(viewLifecycleOwner) { events ->

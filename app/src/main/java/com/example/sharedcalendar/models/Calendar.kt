@@ -11,6 +11,7 @@ data class Calendar(
     @SerializedName("owner_id") var ownerId: String = "",
     @Exclude
     @SerializedName("owner") var owner: User? = null,
-    var shares: MutableMap<String, String>? = HashMap(),
-    var events: ArrayList<Event> = ArrayList()
+    var events: ArrayList<Event> = ArrayList(),
+    @Exclude
+    var scope: String? = "Full"
 )

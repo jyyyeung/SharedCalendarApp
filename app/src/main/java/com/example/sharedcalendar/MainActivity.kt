@@ -55,10 +55,7 @@ class MainActivity : AppCompatActivity() {
         val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
 
-        // TODO: Most likely do not need
         firebaseViewModel.getUserShares()
-        firebaseViewModel.getCalendars()
-        firebaseViewModel.getEvents()
 
         firebaseViewModel.userShares.observe(this) {
             firebaseViewModel.getCalendars()
