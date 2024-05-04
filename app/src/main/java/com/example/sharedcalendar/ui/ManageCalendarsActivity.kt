@@ -175,9 +175,12 @@ fun ManageCalendarScreen(
                 )
             }
             composable(route = ManageCalendarScreens.Edit.name) {
-                EditCalendarScreen(
-                    modifier = Modifier.fillMaxSize(), calendar = calendar, firebaseViewModel
-                )
+                EditCalendarScreen(modifier = Modifier.fillMaxSize(),
+                    calendar = calendar,
+                    firebaseViewModel,
+                    onBackButtonClicked = {
+                        navController.navigateUp()
+                    })
             }
         }
     }
@@ -237,11 +240,8 @@ fun ViewCalendarScreen(
     onEditButtonClicked: (calendar: Calendar) -> Unit = {},
     firebaseViewModel: FirebaseViewModel = viewModel(),
 ) {
-    Text(text = calendar.name)
-
     val scrollState = rememberScrollState()
-    Spacer(modifier = Modifier.padding(top = 6.dp))
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
         BoxWithConstraints {
             Surface {
                 Column(
@@ -285,8 +285,10 @@ fun ViewCalendarScreen(
                             )
                         )
                     )
-                    Button(onClick = { onEditButtonClicked(calendar) }) {
-                        Text(text = "Edit Calendar")
+                    if (calendar.scope == "Full" || calendar.scope == "Edit") {
+                        Button(onClick = { onEditButtonClicked(calendar) }) {
+                            Text(text = "Edit Calendar")
+                        }
                     }
                 }
 
@@ -311,11 +313,9 @@ fun CalendarListItem(
             )
         },
         leadingContent = {
-            Icon(
-                ImageVector.vectorResource(R.drawable.ic_baseline_circle_24),
+            Icon(ImageVector.vectorResource(R.drawable.ic_baseline_circle_24),
                 contentDescription = null,
-                tint = calendar.color?.let { HexToJetpackColor.getColor(it) } ?: Color.Gray
-            )
+                tint = calendar.color?.let { HexToJetpackColor.getColor(it) } ?: Color.Gray)
         },
         modifier = Modifier.clickable { onItemClicked(calendar) },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -335,8 +335,6 @@ fun SelectCalendarList(
         ) { i ->
             CalendarListItem(calendars[i], onItemClicked)
         }
-
-
     }
 }
 

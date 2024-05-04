@@ -12,5 +12,7 @@ data class Calendar(
     var owner: User? = null,
     var events: ArrayList<Event> = ArrayList(),
     @Exclude
-    var scope: String? = "Full"
+    var scope: String? = "Full",
+    var isDefault: Boolean = false,
+    var description: String = ""
 )

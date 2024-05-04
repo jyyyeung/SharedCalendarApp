@@ -201,6 +201,8 @@ class RegisterFragment : Fragment() {
             "color" to "#7886CB",
             "timezone" to TimeZone.currentSystemDefault().id,
             "ownerId" to user.uid,
+            "isDefault" to true,
+            "description" to "Default Calendar for account ${user.email}"
         )
         // Add a new document with a generated ID
         db.collection("calendars").add(defaultCalendar).addOnSuccessListener { documentReference ->
