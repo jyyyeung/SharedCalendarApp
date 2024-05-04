@@ -53,4 +53,7 @@
     <string name="edit_calendar_screen">Edit Calendar</string>
     <string name="select_calendar_screen">Select Calendar to Manage</string>
     <string name="view_calendar_screen">View Calendar Details</string>
+    <string name="create_calendar_screen">Create New Calendar</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
 </resources>
