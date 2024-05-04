@@ -2,10 +2,10 @@ package com.example.sharedcalendar.ui
 
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.compose.setContent
-import androidx.activity.viewModels
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -47,6 +47,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -55,6 +56,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -72,34 +76,53 @@ import com.google.firebase.ktx.Firebase
 import java.util.TimeZone
 
 enum class ManageCalendarScreens(@StringRes val title: Int) {
-    Select(title = R.string.select_calendar_screen), Edit(title = R.string.edit_calendar_screen), View(
+    Select(title = R.string.select_calendar_screen),
+    Edit(title = R.string.edit_calendar_screen), View(
         title = R.string.view_calendar_screen
     ),
     Create(title = R.string.create_calendar_screen),
 }
 
-class ManageCalendarsActivity : AppCompatActivity() {
-    private val firebaseViewModel by viewModels<FirebaseViewModel>()
+class ManageCalendarsFragment : Fragment() {
+    private lateinit var firebaseViewModel: FirebaseViewModel
     private val viewModel by viewModels<ManageCalendarsViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        firebaseViewModel.getUserShares()
-        firebaseViewModel.userShares.observe(this) {
-            firebaseViewModel.getCalendars()
-        }
+        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+    }
 
-        setContent {
-            MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-                ) {
-                    ManageCalendarScreen(firebaseViewModel, viewModel)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                MaterialTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        ManageCalendarScreen(firebaseViewModel, viewModel, exitFragment = {
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.mainFragment, CalendarFragment())
+                                commit()
+                            }
+                        })
+                    }
                 }
-            }
 
+            }
         }
+//        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    companion object {
+        private val TAG: String? = ManageCalendarsFragment::class.java.name
+
     }
 }
+
 
 @Composable
 fun DoseFAB(navController: NavController) {
@@ -122,7 +145,8 @@ fun DoseFAB(navController: NavController) {
 fun ManageCalendarScreen(
     firebaseViewModel: FirebaseViewModel,
     viewModel: ManageCalendarsViewModel,
-    navController: NavHostController = rememberNavController()
+    exitFragment: () -> Unit,
+    navController: NavHostController = rememberNavController(),
 ) {
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -144,9 +168,12 @@ fun ManageCalendarScreen(
                 })
         },
         topBar = {
-            ManageCalendarsAppBar(currentScreen = currentScreen,
+            ManageCalendarsAppBar(
+                currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() })
+                navigateUp = { navController.navigateUp() },
+                exitFragment = exitFragment
+            )
         }) { innerPadding ->
         val calendar by viewModel.calendar.collectAsState()
 
@@ -195,7 +222,8 @@ fun ManageCalendarsAppBar(
     currentScreen: ManageCalendarScreens,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    exitFragment: () -> Unit
 ) {
     TopAppBar(title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -203,14 +231,17 @@ fun ManageCalendarsAppBar(
         ),
         modifier = modifier,
         navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back Button"
-                    )
-                }
+//            if (canNavigateBack) {
+            IconButton(onClick = {
+                if (canNavigateBack) navigateUp()
+                else exitFragment()
+            }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back Button"
+                )
             }
+//            }
         })
 }
 

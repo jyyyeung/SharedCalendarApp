@@ -28,7 +28,6 @@ class CalendarFragment : Fragment() {
         super.onCreate(savedInstanceState)
         prefs = SharedFirebasePreferences.getDefaultInstance(activity)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
-
     }
 
     override fun onCreateView(
