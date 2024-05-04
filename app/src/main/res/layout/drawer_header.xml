@@ -3,7 +3,7 @@
     android:id="@+id/nvDrawerHeader"
     android:layout_width="match_parent"
     android:layout_height="120dp"
-    android:background="#D1D1D1"
+    android:background="@color/dusty_blue"
     android:gravity="bottom"
     android:orientation="vertical">
 
@@ -30,7 +30,7 @@
         android:gravity="bottom"
         android:text="@string/default_sidebar_username"
         android:textAppearance="?attr/textAppearanceHeadlineSmall"
-        android:textColor="?attr/colorOnSurface" />
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/tvSidebarEmail"
@@ -41,7 +41,7 @@
         android:layout_marginBottom="24dp"
         android:text="@string/default_sidebar_email"
         android:textAppearance="?attr/textAppearanceTitleSmall"
-        android:textColor="?attr/colorOnSurfaceVariant" />
+        android:textColor="@color/white" />
 
 
 </LinearLayout>
