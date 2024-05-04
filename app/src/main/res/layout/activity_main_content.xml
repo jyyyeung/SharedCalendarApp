@@ -52,7 +52,7 @@
     <FrameLayout
         android:id="@+id/flFragment"
         android:layout_width="match_parent"
-        android:layout_height="426dp"
+        android:layout_height="match_parent"
         android:paddingBottom="10dp"></FrameLayout>
 
 </LinearLayout>
