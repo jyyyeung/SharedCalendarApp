@@ -67,10 +67,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/time_icon"/>
+                android:src="@drawable/time_icon" />
 
             <TextView
                 android:layout_width="0dp"
@@ -95,19 +96,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
         android:background="@color/white"
+        android:orientation="horizontal"
         android:padding="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <View
                 android:layout_width="30dp"
-                android:layout_height="30dp"/>
+                android:layout_height="30dp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/startDateTV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -122,10 +124,10 @@
                 android:id="@+id/startTimeTV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textAlignment="textEnd"
                 android:layout_weight="1"
                 android:clickable="true"
                 android:text="Time"
+                android:textAlignment="textEnd"
                 android:textColor="@color/black"
                 android:textSize="16dp" />
         </LinearLayout>
@@ -145,9 +147,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <View
                 android:layout_width="30dp"
-                android:layout_height="30dp"/>
+                android:layout_height="30dp" />
 
             <TextView
                 android:id="@+id/endDateTV"
@@ -166,20 +169,57 @@
                 android:layout_marginLeft="30dp"
                 android:layout_weight="1"
                 android:text="Time"
-                android:textColor="@color/black"
                 android:textAlignment="textEnd"
+                android:textColor="@color/black"
                 android:textSize="16dp" />
         </LinearLayout>
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray"/>
+        android:background="@android:color/darker_gray" />
+
     <LinearLayout
-        android:id="@+id/bottom_window_Color_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <View
+                android:id="@+id/colorWindow"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/sage_green"/>
+
+            <TextView
+                android:id="@+id/colorTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:clickable="true"
+                android:layout_weight="1"
+                android:text="Color"
+                android:textColor="@color/black"
+                android:textSize="16dp" />
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_window_Color_layout"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
         android:orientation="horizontal"
         android:padding="10dp"
         android:paddingBottom="30dp">
@@ -187,8 +227,9 @@
         <Spinner
             android:id="@+id/colorSpinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
+            android:layout_height="1dp"
+            android:background="@drawable/window_block"
+            android:clickable="false"
             android:spinnerMode="dialog" />
 
     </LinearLayout>
@@ -222,8 +263,8 @@
         <Button
             android:id="@+id/cancelBtn"
             android:layout_width="wrap_content"
-            android:layout_gravity="bottom"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:background="@color/gray"
             android:text="Cancel" />
 
@@ -232,8 +273,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:enabled="false"
             android:background="@color/gray"
+            android:enabled="false"
             android:text="Save" />
     </LinearLayout>
 
