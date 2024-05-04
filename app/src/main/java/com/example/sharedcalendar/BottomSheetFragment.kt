@@ -18,11 +18,16 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.FragmentManager
 import com.example.sharedcalendar.models.Event
+import com.google.android.gms.dynamic.SupportFragmentWrapper
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import org.w3c.dom.Text
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -87,6 +92,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             )
 
             datePickerDialog.show()
+
+            /*val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("test")
+                .build()
+                datePicker.show(parentFragmentManager,"tag")*/
         }
 
 
@@ -185,6 +195,15 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             dateCheck()
         }
 
+
+        //Color select
+        val colorText = view.findViewById<TextView>(R.id.colorTextView)
+        colorText.setOnClickListener {
+            val spinner = view?.findViewById<Spinner>(R.id.colorSpinner)
+            spinner?.performClick()
+
+        }
+
         // TODO: Caannot edit Description after new event input
         // TODO: Do not allow new line in Event name - enter button now dismiss the keyboard
         // TODO: Allow user to select if event is all day - done
@@ -242,6 +261,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             }
 
         }
+
 
 
     }
@@ -302,12 +322,19 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     fun loadColor() {
         selectedColor = ColorList().default
         val spinner = view?.findViewById<Spinner>(R.id.colorSpinner)
+        val colorTextView = view?.findViewById<TextView>(R.id.colorTextView)
+        val ColorView = view?.findViewById<View>(R.id.colorWindow)
+
+
         spinner?.adapter = SpinnerAdapter(requireContext(), ColorList().Colors())
         spinner?.setSelection(ColorList().colorPosition(selectedColor), false)
         spinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
+                colorTextView?.text = ColorList().Colors()[position].name
+                ColorList().Colors()[position].name
+                ColorView?.background?.setTint(android.graphics.Color.parseColor(ColorList().Colors()[position].code))
                 selectedColor = ColorList().Colors()[position]
             }
 

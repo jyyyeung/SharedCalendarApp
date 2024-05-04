@@ -1,6 +1,8 @@
 package com.example.sharedcalendar
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +16,7 @@ class SpinnerAdapter(context: Context, items: List<Color>) :
 
     @NonNull
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view: View = layoutInflater.inflate(R.layout.spinner_layout, null, true)
+        val view: View = layoutInflater.inflate(R.layout.blank_layout, null, true)
         return view(view, position)
 
     }
@@ -23,8 +25,8 @@ class SpinnerAdapter(context: Context, items: List<Color>) :
         val color: Color = getItem(position) ?: return view
         val colorText = view.findViewById<TextView>(R.id.colorText)
         val colorView = view.findViewById<View>(R.id.colorView)
-        colorText?.text = color.name
         colorView?.background?.setTint(android.graphics.Color.parseColor(color.code))
+        colorText?.text = color.name
 
         return view
     }
