@@ -103,12 +103,10 @@ class ManageCalendarsFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        ManageCalendarScreen(firebaseViewModel, viewModel, exitFragment = {
-                            requireActivity().supportFragmentManager.beginTransaction().apply {
-                                replace(R.id.mainFragment, CalendarFragment())
-                                commit()
-                            }
-                        })
+                        ManageCalendarScreen(
+                            firebaseViewModel, viewModel
+                        )
+
                     }
                 }
 
@@ -145,7 +143,6 @@ fun DoseFAB(navController: NavController) {
 fun ManageCalendarScreen(
     firebaseViewModel: FirebaseViewModel,
     viewModel: ManageCalendarsViewModel,
-    exitFragment: () -> Unit,
     navController: NavHostController = rememberNavController(),
 ) {
     // Get current back stack entry
@@ -171,8 +168,7 @@ fun ManageCalendarScreen(
             ManageCalendarsAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
-                exitFragment = exitFragment
+                navigateUp = { navController.navigateUp() }
             )
         }) { innerPadding ->
         val calendar by viewModel.calendar.collectAsState()
@@ -223,7 +219,6 @@ fun ManageCalendarsAppBar(
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    exitFragment: () -> Unit
 ) {
     TopAppBar(title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -231,17 +226,14 @@ fun ManageCalendarsAppBar(
         ),
         modifier = modifier,
         navigationIcon = {
-//            if (canNavigateBack) {
-            IconButton(onClick = {
-                if (canNavigateBack) navigateUp()
-                else exitFragment()
-            }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back Button"
-                )
+            if (canNavigateBack) {
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back Button"
+                    )
+                }
             }
-//            }
         })
 }
 
