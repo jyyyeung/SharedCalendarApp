@@ -8,6 +8,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.Share
@@ -16,6 +17,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -67,167 +69,182 @@ class FirebaseViewModel : ViewModel() {
         }
     }
 
+    init {
+        getUserShares()
+    }
+
     fun getUserShares() {
-        Log.i(TAG, "getUserShares()")
-        val shares = ArrayList<Share>()
-        val db = Firebase.firestore
-        db.collection("shares").whereEqualTo("userEmail", user.email).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val share = document.toObject(Share::class.java)
-                    share.id = document.id
-                    shares.add(share)
-                    calendarsSharedWithUser.add(share.calendarId)
-                    Log.d(TAG, "${document.id} => ${document.data}")
+        viewModelScope.launch {
+            Log.i(TAG, "getUserShares()")
+            val shares = ArrayList<Share>()
+            val db = Firebase.firestore
+            db.collection("shares").whereEqualTo("userEmail", user.email).get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        val share = document.toObject(Share::class.java)
+                        share.id = document.id
+                        shares.add(share)
+                        calendarsSharedWithUser.add(share.calendarId)
+                        Log.d(TAG, "${document.id} => ${document.data}")
+                    }
+                    Log.i(TAG, calendarsSharedWithUser.toString())
+                    _userShares.postValue(shares)
+                }.addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting shares.", exception)
                 }
-                Log.i(TAG, calendarsSharedWithUser.toString())
-                _userShares.postValue(shares)
-            }.addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting shares.", exception)
-            }
+        }
     }
 
     fun getCalendars() {
-        Log.i(TAG, "getCalendars()")
-        val db = Firebase.firestore
+        viewModelScope.launch {
 
-        val calendars1 = ArrayList<Calendar>()
-        db.collection("calendars").whereEqualTo("ownerId", user.uid).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val calendar = document.toObject(Calendar::class.java)
-                    calendar.id = document.id
-                    calendar.owner = null
-                    calendar.scope = "Full"
-                    calendar.events = getEventsByCalendar(document.id, "Full")
+            Log.i(TAG, "getCalendars()")
+            val db = Firebase.firestore
 
-                    calendars1.add(calendar)
-                    Log.d(TAG, "${document.id} => ${document.data}")
-                }
-                _userCalendars.postValue(calendars1)
-            }.addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents.", exception)
-            }
-
-        val calendars2 = ArrayList<Calendar>()
-        if (calendarsSharedWithUser.isNotEmpty()) {
-            Log.i(TAG, "Getting calendar shares")
-            db.collection("calendars").whereIn(FieldPath.documentId(), calendarsSharedWithUser)
-                .get().addOnSuccessListener { result ->
+            val calendars1 = ArrayList<Calendar>()
+            db.collection("calendars").whereEqualTo("ownerId", user.uid).get()
+                .addOnSuccessListener { result ->
                     for (document in result) {
                         val calendar = document.toObject(Calendar::class.java)
                         calendar.id = document.id
-                        calendar.owner = getUserById(calendar.ownerId)
-                        val scope = userShares.value?.filter { c -> c.calendarId == document.id }
-                            ?.toTypedArray()?.get(0)?.scope
-                        calendar.events = getEventsByCalendar(document.id, scope)
-                        calendar.scope = scope
+                        calendar.owner = null
+                        calendar.scope = "Full"
+                        calendar.events = getEventsByCalendar(document.id, "Full")
 
-                        Log.d(TAG, "Shared with me: ${document.id} => ${document.data}")
-                        calendars2.add(calendar)
+                        calendars1.add(calendar)
+                        Log.d(TAG, "${document.id} => ${document.data}")
                     }
-                    _sharedCalendars.postValue(calendars2)
+                    _userCalendars.postValue(calendars1)
+                }.addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents.", exception)
                 }
+
+            val calendars2 = ArrayList<Calendar>()
+            if (calendarsSharedWithUser.isNotEmpty()) {
+                Log.i(TAG, "Getting calendar shares")
+                db.collection("calendars").whereIn(FieldPath.documentId(), calendarsSharedWithUser)
+                    .get().addOnSuccessListener { result ->
+                        for (document in result) {
+                            val calendar = document.toObject(Calendar::class.java)
+                            calendar.id = document.id
+                            calendar.owner = getUserById(calendar.ownerId)
+                            val scope =
+                                userShares.value?.filter { c -> c.calendarId == document.id }
+                                    ?.toTypedArray()?.get(0)?.scope
+                            calendar.events = getEventsByCalendar(document.id, scope)
+                            calendar.scope = scope
+
+                            Log.d(TAG, "Shared with me: ${document.id} => ${document.data}")
+                            calendars2.add(calendar)
+                        }
+                        _sharedCalendars.postValue(calendars2)
+                    }
+            }
         }
     }
 
     fun getCurrentMonthEvents(currentMonthOnly: Boolean = false) {
         Log.d(TAG, "getCurrentMonthEvents")
-        val calendarEvents = ArrayList<Event>()
+        viewModelScope.launch {
 
-        calendarEvents.add(
-            Event(
-                "0",
-                "0",
-                "Hangout",
-                description = null,
-                startTime = LocalDateTime.of(2024, 5, 3, 14, 0),
-                endTime = LocalDateTime.of(2024, 5, 3, 15, 0),
-                location = null,
-                timezone = "Null",
-                color = "#F44336",
-                isAllDay = false,
-                isPrivate = false,
-                participants = null
+            val calendarEvents = ArrayList<Event>()
+
+            calendarEvents.add(
+                Event(
+                    "0",
+                    "0",
+                    "Hangout",
+                    description = null,
+                    startTime = LocalDateTime.of(2024, 5, 3, 14, 0),
+                    endTime = LocalDateTime.of(2024, 5, 3, 15, 0),
+                    location = null,
+                    timezone = "Null",
+                    color = "#F44336",
+                    isAllDay = false,
+                    isPrivate = false,
+                    participants = null
+                )
             )
-        )
-        calendarEvents.add(
-            Event(
-                "1",
-                "0",
-                "Hangout",
-                null,
-                startTime = LocalDateTime.of(2024, 5, 2, 21, 0),
-                endTime = LocalDateTime.of(2024, 5, 2, 22, 0),
-                location = null,
-                timezone = "Null",
-                color = "#D2E3FC",
-                isAllDay = false,
-                isPrivate = false,
-                participants = null
+            calendarEvents.add(
+                Event(
+                    "1",
+                    "0",
+                    "Hangout",
+                    null,
+                    startTime = LocalDateTime.of(2024, 5, 2, 21, 0),
+                    endTime = LocalDateTime.of(2024, 5, 2, 22, 0),
+                    location = null,
+                    timezone = "Null",
+                    color = "#D2E3FC",
+                    isAllDay = false,
+                    isPrivate = false,
+                    participants = null
+                )
             )
-        )
 
-        calendarEvents.add(
-            Event(
-                "2",
-                "0",
-                "Lesson",
-                null,
-                startTime = LocalDateTime.of(2024, 5, 1, 13, 0),
-                endTime = LocalDateTime.of(2024, 5, 1, 20, 0),
-                location = null,
-                timezone = "Null",
-                color = "#008489",
-                isAllDay = false,
-                isPrivate = false,
-                participants = null
+            calendarEvents.add(
+                Event(
+                    "2",
+                    "0",
+                    "Lesson",
+                    null,
+                    startTime = LocalDateTime.of(2024, 5, 1, 13, 0),
+                    endTime = LocalDateTime.of(2024, 5, 1, 20, 0),
+                    location = null,
+                    timezone = "Null",
+                    color = "#008489",
+                    isAllDay = false,
+                    isPrivate = false,
+                    participants = null
+                )
             )
-        )
 
-        val db = Firebase.firestore
-        Log.i(TAG, "Calendars to find events for $calendars")
-        if (calendars.value?.isNotEmpty() == true) {
-            for (calendar in calendars.value!!) {
-                Log.i(TAG, "Finding Events for Calendar ${calendar.name}")
-                db.collection("events").whereEqualTo("calendarId", calendar.id).get()
-                    .addOnSuccessListener { result ->
-                        for (document in result) {
-                            val event = document.toObject(Event::class.java)
+            val db = Firebase.firestore
+            Log.i(TAG, "Calendars to find events for $calendars")
+            if (calendars.value?.isNotEmpty() == true) {
+                for (calendar in calendars.value!!) {
+                    Log.i(TAG, "Finding Events for Calendar ${calendar.name}")
+                    db.collection("events").whereEqualTo("calendarId", calendar.id).get()
+                        .addOnSuccessListener { result ->
+                            for (document in result) {
+                                val event = document.toObject(Event::class.java)
 
-                            event.id = document.id
+                                event.id = document.id
 
-                            if (calendar.scope == "Availability") {
-                                event.title = "Busy"
-                                event.description = ""
+                                if (calendar.scope == "Availability") {
+                                    event.title = "Busy"
+                                    event.description = ""
+                                }
+
+                                event.startTime =
+                                    LocalDateTime.parse(document.get("startTimestamp").toString())
+                                event.endTime =
+                                    LocalDateTime.parse(document.get("endTimestamp").toString())
+                                if (event.color.isEmpty() && calendar.color.toString()
+                                        .isNotEmpty()
+                                ) {
+                                    event.color = calendar.color.toString()
+                                }
+                                calendarEvents.add(event)
+                                _events.postValue(calendarEvents)
                             }
-
-                            event.startTime =
-                                LocalDateTime.parse(document.get("startTimestamp").toString())
-                            event.endTime =
-                                LocalDateTime.parse(document.get("endTimestamp").toString())
-                            if (event.color.isEmpty() && calendar.color.toString().isNotEmpty()) {
-                                event.color = calendar.color.toString()
-                            }
-                            calendarEvents.add(event)
-                            _events.postValue(calendarEvents)
+                        }.addOnFailureListener { exception ->
+                            Log.w(TAG, "Error getting documents.", exception)
                         }
-                    }.addOnFailureListener { exception ->
-                        Log.w(TAG, "Error getting documents.", exception)
-                    }
-                //                    Log.i(TAG, "${document.id} => $events=> $calendarEvents")
+                    //                    Log.i(TAG, "${document.id} => $events=> $calendarEvents")
 
 
+                }
             }
-        }
 
-        if (currentMonthOnly) {
-            val currentMonth = YearMonth.now()
-            // TODO: Query only events from this month
-        }
+            if (currentMonthOnly) {
+                val currentMonth = YearMonth.now()
+                // TODO: Query only events from this month
+            }
 
 //        _events.postValue(calendarEvents.toList())
 
+        }
     }
 
 
@@ -278,13 +295,15 @@ class FirebaseViewModel : ViewModel() {
         }
         var user: User? = null
         val db = Firebase.firestore
-        db.collection("users").document(userId).get().addOnSuccessListener { result ->
-            user = result.toObject(User::class.java)
-            user?.id = result.id
-            if (user != null) _users[userId] = user!!
+        viewModelScope.launch {
+            db.collection("users").document(userId).get().addOnSuccessListener { result ->
+                user = result.toObject(User::class.java)
+                user?.id = result.id
+                if (user != null) _users[userId] = user!!
 //            _users.postValue(users)
-        }.addOnFailureListener { exception ->
-            Log.w(TAG, "Error getting user with specified ID. ", exception)
+            }.addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting user with specified ID. ", exception)
+            }
         }
         return user
     }
@@ -299,29 +318,32 @@ class FirebaseViewModel : ViewModel() {
 //            val currentMonth = YearMonth.now()
 //            //  Query only events from this month
 //        }
-        db.collection("events").whereEqualTo("calendarId", calendarId).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val event = document.toObject(Event::class.java)
+        viewModelScope.launch {
+            db.collection("events").whereEqualTo("calendarId", calendarId).get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        val event = document.toObject(Event::class.java)
 
-                    event.id = document.id
+                        event.id = document.id
 
-                    if (scope == "Availability") {
-                        event.title = "Busy"
-                        event.description = ""
+                        if (scope == "Availability") {
+                            event.title = "Busy"
+                            event.description = ""
+                        }
+
+                        event.startTime =
+                            LocalDateTime.parse(document.get("startTimestamp").toString())
+                        event.endTime = LocalDateTime.parse(document.get("endTimestamp").toString())
+                        eventArrayList.add(event)
+
+                        Log.wtf(TAG, "${document.id} => $event => $eventArrayList")
                     }
-
-                    event.startTime = LocalDateTime.parse(document.get("startTimestamp").toString())
-                    event.endTime = LocalDateTime.parse(document.get("endTimestamp").toString())
-                    eventArrayList.add(event)
-
-                    Log.wtf(TAG, "${document.id} => $event => $eventArrayList")
+                }.addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents.", exception)
                 }
-            }.addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents.", exception)
-            }
-        // TODO: event array list returns before on successListener is called
-        Log.wtf(TAG, eventArrayList.toString())
+            // TODO: event array list returns before on successListener is called
+            Log.wtf(TAG, eventArrayList.toString())
+        }
         return eventArrayList
     }
 
