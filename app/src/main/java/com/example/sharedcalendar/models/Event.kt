@@ -3,7 +3,6 @@ package com.example.sharedcalendar.models
 import com.google.firebase.firestore.Exclude
 import java.time.LocalDateTime
 
-//@Serializable
 data class Event(
     @Exclude var id: String = "0",
     var calendarId: String = "",
