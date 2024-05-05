@@ -66,11 +66,12 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
 
             <ImageView
                 android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_height="match_parent"
                 android:src="@drawable/time_icon" />
 
             <TextView
@@ -81,12 +82,15 @@
                 android:text="All-day"
                 android:textSize="16dp" />
 
-            <Switch
-                android:id="@+id/addDaySwitch"
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/swIsAllDay"
+                style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_weight="1" />
+                android:layout_marginStart="30dp"
+                android:layout_weight="1"
+                android:checked="false"
+                android:maxHeight="16dp" />
 
         </LinearLayout>
     </LinearLayout>
@@ -156,22 +160,22 @@
                 android:id="@+id/endDateTV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_weight="1"
                 android:text="Date"
                 android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/endTimeTV"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_weight="1"
                 android:text="Time"
                 android:textAlignment="textEnd"
                 android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -184,35 +188,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:padding="10dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="10dp">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <View
                 android:id="@+id/colorWindow"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:background="@drawable/sage_green"/>
+                android:background="@drawable/sage_green" />
 
             <TextView
                 android:id="@+id/colorTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_weight="1"
                 android:clickable="true"
                 android:paddingTop="5dp"
-                android:layout_weight="1"
                 android:text="Color"
                 android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
         </LinearLayout>
-
-
 
 
     </LinearLayout>
@@ -232,11 +235,10 @@
             android:background="@drawable/window_block"
             android:clickable="false"
             android:spinnerMode="dialog" />
-
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/bottom_window_Discription_layout"
+        android:id="@+id/bottom_window_Description_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -250,9 +252,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
+            android:autofillHints=""
             android:hint="Description"
             android:textColor="@color/black"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
     </LinearLayout>
 

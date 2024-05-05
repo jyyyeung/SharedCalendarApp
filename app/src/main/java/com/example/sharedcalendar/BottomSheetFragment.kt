@@ -16,26 +16,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
-import android.widget.Switch
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
-import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.FragmentManager
 import com.example.sharedcalendar.models.Event
-import com.google.android.gms.dynamic.SupportFragmentWrapper
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import org.w3c.dom.Text
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.LocalDateTime
 import kotlin.random.Random
 
 
 class BottomSheetFragment : BottomSheetDialogFragment() {
-    //    private val eventViewModel by viewModels<EventViewModel>()
     private lateinit var prefs: SharedFirebasePreferences
     private lateinit var firebaseViewModel: FirebaseViewModel
 
@@ -45,7 +38,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     lateinit var timeText: TextView
     lateinit var endDateText: TextView
     lateinit var endTimeText: TextView
-    lateinit var switchBtn: Switch
+    lateinit var swIsAllDay: MaterialSwitch
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -67,7 +60,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         timeText = view.findViewById<TextView>(R.id.startTimeTV)
         endDateText = view.findViewById<TextView>(R.id.endDateTV)
         endTimeText = view.findViewById<TextView>(R.id.endTimeTV)
-        switchBtn = view.findViewById<Switch>(R.id.addDaySwitch)
+        swIsAllDay = view.findViewById(R.id.swIsAllDay)
 
         //Handle Click on StartDate
         dateText.setOnClickListener {
@@ -76,16 +69,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 OnDateSetListener { datePicker, year, month, day -> //Showing the picked value in the textView
                     val adjMonth = month + 1
                     dateText.text = "$year.$adjMonth.$day"
-                    if (timeText.text == "Time")
-                        startDateTime = LocalDateTime.of(year, adjMonth, day, 0, 0)
-                    else
-                        startDateTime = LocalDateTime.of(
-                            year,
-                            adjMonth,
-                            day,
-                            startDateTime.hour,
-                            startDateTime.minute
-                        )
+                    if (timeText.text == "Time") startDateTime =
+                        LocalDateTime.of(year, adjMonth, day, 0, 0)
+                    else startDateTime = LocalDateTime.of(
+                        year, adjMonth, day, startDateTime.hour, startDateTime.minute
+                    )
                     Log.d("StartDate", "StartDate: " + startDateTime.toString())
                     dateCheck()
                 },
@@ -110,16 +98,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 OnDateSetListener { datePicker, year, month, day -> //Showing the picked value in the textView
                     val adjMonth = month + 1
                     endDateText.text = "$year.$adjMonth.$day"
-                    if (endTimeText.text == "Time")
-                        endDateTime = LocalDateTime.of(year, adjMonth, day, 0, 0)
-                    else
-                        endDateTime = LocalDateTime.of(
-                            year,
-                            adjMonth,
-                            day,
-                            endDateTime.hour,
-                            endDateTime.minute
-                        )
+                    if (endTimeText.text == "Time") endDateTime =
+                        LocalDateTime.of(year, adjMonth, day, 0, 0)
+                    else endDateTime = LocalDateTime.of(
+                        year, adjMonth, day, endDateTime.hour, endDateTime.minute
+                    )
                     Log.d("StartDate", "endDate: " + endDateTime.toString())
                     dateCheck()
                 },
@@ -135,16 +118,15 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             val timePickerDialog = TimePickerDialog(
                 this.requireContext(), OnTimeSetListener { TimePicker, hour, minute ->
                     timeText.text = "$hour:$minute"
-                    if (dateText.text == "Date")
-                        startDateTime = LocalDateTime.of(0, 1, 1, hour, minute)
-                    else
-                        startDateTime = LocalDateTime.of(
-                            startDateTime.year,
-                            startDateTime.month,
-                            startDateTime.dayOfMonth,
-                            hour,
-                            minute
-                        )
+                    if (dateText.text == "Date") startDateTime =
+                        LocalDateTime.of(0, 1, 1, hour, minute)
+                    else startDateTime = LocalDateTime.of(
+                        startDateTime.year,
+                        startDateTime.month,
+                        startDateTime.dayOfMonth,
+                        hour,
+                        minute
+                    )
                     dateCheck()
                     Log.d("StartDate", "startDate: " + startDateTime.toString())
                 }, 15, 30, false
@@ -157,16 +139,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             val timePickerDialog = TimePickerDialog(
                 this.requireContext(), OnTimeSetListener { TimePicker, hour, minute ->
                     endTimeText.text = "$hour:$minute"
-                    if (endDateText.text == "Date")
-                        endDateTime = LocalDateTime.of(0, 1, 1, hour, minute)
-                    else
-                        endDateTime = LocalDateTime.of(
-                            endDateTime.year,
-                            endDateTime.month,
-                            endDateTime.dayOfMonth,
-                            hour,
-                            minute
-                        )
+                    if (endDateText.text == "Date") endDateTime =
+                        LocalDateTime.of(0, 1, 1, hour, minute)
+                    else endDateTime = LocalDateTime.of(
+                        endDateTime.year, endDateTime.month, endDateTime.dayOfMonth, hour, minute
+                    )
                     dateCheck()
                     Log.d("StartDate", "endDate: " + endDateTime.toString())
                 }, 15, 30, false
@@ -183,9 +160,8 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         //Switch
-        val switchBtn = view.findViewById<Switch>(R.id.addDaySwitch)
-        switchBtn.setOnClickListener {
-            if (switchBtn.isChecked) {
+        swIsAllDay.setOnClickListener {
+            if (swIsAllDay.isChecked) {
                 timeText.visibility = View.INVISIBLE
                 endTimeText.visibility = View.INVISIBLE
             } else {
@@ -199,14 +175,13 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         //Color select
         val colorText = view.findViewById<TextView>(R.id.colorTextView)
         colorText.setOnClickListener {
-            val spinner = view?.findViewById<Spinner>(R.id.colorSpinner)
+            val spinner = view.findViewById<Spinner>(R.id.colorSpinner)
             spinner?.performClick()
 
         }
 
-        // TODO: Caannot edit Description after new event input
+        // TODO: Cannot edit Description after new event input
         // TODO: Do not allow new line in Event name - enter button now dismiss the keyboard
-        // TODO: Allow user to select if event is all day - done
         // TODO: (later) allow user to choose which calendar to add to
         // TODO: Validate input fields
         val etNewEventName = view.findViewById<EditText>(R.id.etNewEventName)
@@ -214,13 +189,25 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         //Save Button
         val saveBtn = view.findViewById<Button>(R.id.saveBtn)
         saveBtn.setOnClickListener {
-            //TODO:Save data to database
 
-            val (sYear, sMonth, sDay) = dateText.text.split(".").map { it.toInt() }
-            val (sHour, sMinute) = timeText.text.split(":").map { it.toInt() }
+            var startHour = 0
+            var startMinute = 0
+            var endHour = 0
+            var endMinute = 0
+
+            val (startYear, startMonth, startDay) = dateText.text.split(".").map { it.toInt() }
+            if (!swIsAllDay.isChecked) {
+                val (sHour, sMinute) = timeText.text.split(":").map { it.toInt() }
+                startHour = sHour
+                startMinute = sMinute
+            }
 
             val (endYear, endMonth, endDay) = endDateText.text.split(".").map { it.toInt() }
-            val (endHour, endMinute) = endTimeText.text.split(":").map { it.toInt() }
+            if (!swIsAllDay.isChecked) {
+                val (eHour, eMinute) = endTimeText.text.split(":").map { it.toInt() }
+                endHour = eHour
+                endMinute = eMinute
+            }
 
             var defaultCalendar = prefs.getString("default_calendar", null)
             if (defaultCalendar.isNullOrBlank()) {
@@ -233,8 +220,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 "calendarId" to defaultCalendar,
                 "title" to etNewEventName.text.toString(),
                 "description" to etNewEventDescription.text.toString(),
+                "isAllDay" to swIsAllDay.isActivated,
                 "startTimestamp" to LocalDateTime.of(
-                    sYear, sMonth, sDay, sHour, sMinute
+                    startYear, startMonth, startDay, startHour, startMinute
                 ).toString(),
                 "endTimestamp" to LocalDateTime.of(
                     endYear, endMonth, endDay, endHour, endMinute
@@ -254,6 +242,8 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                         event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
                         firebaseViewModel.addEventToCalendar(event)
                     }
+                    firebaseViewModel.getCurrentMonthEvents()
+
                     this.dismiss()
                 }
             }.addOnFailureListener { e ->
@@ -261,7 +251,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             }
 
         }
-
 
 
     }
@@ -278,7 +267,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             saveBtn?.isEnabled = false
             return
         }
-        if (!switchBtn.isChecked) {
+        if (!swIsAllDay.isChecked) {
             if (timeText.text == "Time") {
                 saveBtn?.isEnabled = false
                 return

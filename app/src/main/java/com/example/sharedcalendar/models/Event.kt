@@ -17,7 +17,7 @@ data class Event(
     var location: String? = null,
     var timezone: String = "",
     var color: String = "#616161",
-    @field:JvmField var isAllDay: Boolean? = false,
+    @field:JvmField var isAllDay: Boolean = false,
     @field:JvmField var isPrivate: Boolean? = false,
     var participants: List<String>? = null,
     var longId: Long = 0,

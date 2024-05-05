@@ -21,7 +21,7 @@ class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
     override fun onCreateEntity(item: Event): WeekViewEntity {
         // Setup each event passed to adapter
         val entity = WeekViewEntity.Event.Builder(item).setId(item.longId).setTitle(item.title)
-            .setStartTime(item.startTime).setEndTime(item.endTime)
+            .setStartTime(item.startTime).setEndTime(item.endTime).setAllDay(item.isAllDay)
 
         if (item.color.isNotEmpty()) {
             val entityStyle =
