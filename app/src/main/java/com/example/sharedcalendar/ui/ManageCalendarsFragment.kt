@@ -11,19 +11,14 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -51,7 +46,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -70,10 +64,8 @@ import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.HexToJetpackColor
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.feature.editcalendar.EditCalendarScreen
+import com.example.sharedcalendar.feature.editcalendar.ViewCalendarScreen
 import com.example.sharedcalendar.models.Calendar
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import java.util.TimeZone
 
 enum class ManageCalendarScreens(@StringRes val title: Int) {
     Select(title = R.string.select_calendar_screen),
@@ -89,6 +81,9 @@ class ManageCalendarsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+        firebaseViewModel.calendars.observe(requireActivity()) {
+            firebaseViewModel.getShares(it)
+        }
     }
 
     override fun onCreateView(
@@ -117,7 +112,6 @@ class ManageCalendarsFragment : Fragment() {
 
     companion object {
         private val TAG: String? = ManageCalendarsFragment::class.java.name
-
     }
 }
 
@@ -185,7 +179,7 @@ fun ManageCalendarScreen(
                     onItemClicked = {
                         viewModel.setCalendar(it)
                         navController.navigate(ManageCalendarScreens.View.name)
-                    },
+                    }
                 )
             }
             composable(route = ManageCalendarScreens.View.name) {
@@ -243,80 +237,14 @@ fun ProfileProperty(label: String, value: String) {
         HorizontalDivider(modifier = Modifier.padding(bottom = 4.dp))
         Text(
             text = label,
-//            modifier = Modifier.height(24.dp),
+            modifier = Modifier.height(24.dp),
             style = MaterialTheme.typography.bodyLarge,
         )
         Text(
             text = value,
-//            modifier = Modifier.height(24.dp),
+            modifier = Modifier.height(24.dp),
             style = MaterialTheme.typography.bodyMedium, overflow = TextOverflow.Visible
         )
-    }
-}
-
-
-@Composable
-@Preview
-fun ViewCalendarScreen(
-    modifier: Modifier = Modifier,
-    @PreviewParameter(CalendarPreviewParameterProvider::class) calendar: Calendar,
-    onEditButtonClicked: (calendar: Calendar) -> Unit = {},
-    firebaseViewModel: FirebaseViewModel = viewModel(),
-) {
-    val scrollState = rememberScrollState()
-    Column(modifier = modifier.padding(16.dp)) {
-        BoxWithConstraints {
-            Surface {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState),
-                ) {
-
-                    // Title
-                    Column(
-                        modifier = Modifier.padding(
-                            start = 16.dp, end = 16.dp, bottom = 16.dp, top = 16.dp
-                        )
-                    ) {
-                        Text(
-                            text = calendar.name,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    val currentUser = Firebase.auth.currentUser
-                    // Calendar Details
-                    ProfileProperty(
-                        "Timezone", calendar.timezone ?: TimeZone.getDefault().toString()
-                    )
-                    ProfileProperty(
-                        "Owner", when (calendar.ownerId == currentUser?.uid) {
-                            true -> currentUser?.displayName ?: "You own this calendar"
-                            false -> calendar.owner?.name ?: firebaseViewModel.users.value?.get(
-                                calendar.ownerId
-                            )?.name ?: "Shared By Unknown User"
-                        }
-                    )
-                    ProfileProperty("Access Scope", calendar.scope.toString())
-
-                    Spacer(
-                        Modifier.height(
-                            (this@BoxWithConstraints.maxHeight - 320.dp).coerceAtLeast(
-                                0.dp
-                            )
-                        )
-                    )
-                    if (calendar.scope == "Full" || calendar.scope == "Edit") {
-                        Button(onClick = { onEditButtonClicked(calendar) }) {
-                            Text(text = "Edit Calendar")
-                        }
-                    }
-                }
-
-            }
-        }
     }
 }
 
@@ -325,7 +253,11 @@ fun ViewCalendarScreen(
 @Composable
 fun CalendarListItem(
     @PreviewParameter(CalendarPreviewParameterProvider::class) calendar: Calendar,
-    onItemClicked: (calendar: Calendar) -> Unit = { ManageCalendarsViewModel().setCalendar(calendar) },
+    onItemClicked: (calendar: Calendar) -> Unit = {
+        ManageCalendarsViewModel().setCalendar(
+            calendar
+        )
+    },
 ) {
     ListItem(
         headlineContent = {

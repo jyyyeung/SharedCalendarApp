@@ -2,6 +2,8 @@ package com.example.sharedcalendar.ui
 
 import androidx.lifecycle.ViewModel
 import com.example.sharedcalendar.models.Calendar
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,12 +17,11 @@ class ManageCalendarsViewModel : ViewModel() {
     private val _calendar = MutableStateFlow(Calendar())
     val calendar: StateFlow<Calendar> = _calendar.asStateFlow()
 
-    /**
-     * Set the [desiredFlavor] of cupcakes for this order's state.
-     * Only 1 flavor can be selected for the whole order.
-     */
+    private val db = Firebase.firestore
+
     fun setCalendar(calendar: Calendar) {
         _calendar.update { calendar }
     }
+
 
 }

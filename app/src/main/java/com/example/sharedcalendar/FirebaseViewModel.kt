@@ -63,6 +63,11 @@ class FirebaseViewModel : ViewModel() {
     private val _users = MutableLiveData<MutableMap<String, User>>()
     val users: LiveData<MutableMap<String, User>> = _users
 
+    private val _shares = MutableLiveData(mutableMapOf<String, ArrayList<Share>>())
+    val shares: LiveData<MutableMap<String, ArrayList<Share>>> = _shares
+
+    private val db = Firebase.firestore
+
 
     fun addEventToCalendar(event: Event?) {
         if (event is Event) {
@@ -91,18 +96,42 @@ class FirebaseViewModel : ViewModel() {
 
             val db = Firebase.firestore
 
-            db.collection("calendars").document(calendarId).delete()
-                .addOnSuccessListener {
-                    Log.i(TAG, "Calendar deleted")
-                    db.collection("events").whereEqualTo("calendarId", calendarId).get()
-                        .addOnSuccessListener { results ->
-                            for (event in results.documents) {
-                                db.collection("events").document(event.id).delete()
-                            }
+            db.collection("calendars").document(calendarId).delete().addOnSuccessListener {
+                Log.i(TAG, "Calendar deleted")
+                db.collection("events").whereEqualTo("calendarId", calendarId).get()
+                    .addOnSuccessListener { results ->
+                        for (event in results.documents) {
+                            db.collection("events").document(event.id).delete()
                         }
-                }.addOnFailureListener { exception ->
-                    Log.w(TAG, "Error deleting calendar.", exception)
-                }
+                    }
+            }.addOnFailureListener { exception ->
+                Log.w(TAG, "Error deleting calendar.", exception)
+            }
+        }
+    }
+
+    fun getShares(calendars: List<Calendar>) {
+        val newShares = shares.value
+        viewModelScope.launch(Dispatchers.IO) {
+            for (calendar in calendars) {
+                val sharesList = arrayListOf<Share>()
+                db.collection("shares").whereEqualTo("calendarId", calendar.id).get()
+                    .addOnSuccessListener { result ->
+                        for (share in result.documents) {
+                            val shareEntry = share.toObject(Share::class.java)!!
+                            shareEntry.id = share.id
+                            sharesList.add(shareEntry)
+                            Log.d(TAG, "${share.id} => ${share.data}")
+                        }
+                        newShares?.set(calendar.id.toString(), sharesList)
+                        _shares.postValue(newShares)
+                    }.addOnFailureListener { exception ->
+                        Log.w(TAG, "Error getting calendar shares.", exception)
+
+                    }
+                Log.d(TAG, newShares.toString())
+            }
+
         }
     }
 
@@ -114,7 +143,6 @@ class FirebaseViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "getUserShares()")
             val shares = ArrayList<Share>()
-            val db = Firebase.firestore
             db.collection("shares").whereEqualTo("userEmail", user.email).get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
