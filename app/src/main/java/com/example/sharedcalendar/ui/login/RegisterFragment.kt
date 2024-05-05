@@ -14,8 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
-import com.example.sharedcalendar.data.SessionManager
-import com.example.sharedcalendar.models.Calendar
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -25,7 +23,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.util.TimeZone
+import kotlinx.datetime.TimeZone
 
 /**
  * A simple [Fragment] subclass.
@@ -33,7 +31,6 @@ import java.util.TimeZone
  * create an instance of this fragment.
  */
 class RegisterFragment : Fragment() {
-    private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
     private lateinit var auth: FirebaseAuth
 
@@ -43,7 +40,6 @@ class RegisterFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sessionManager = SessionManager(requireActivity())
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
     }
 
@@ -172,7 +168,15 @@ class RegisterFragment : Fragment() {
                         }
                     }
 
+                    // Add user public information to users database
+                    val userDetails = hashMapOf(
+                        "name" to username, "email" to email
+                    )
+                    Firebase.firestore.collection("users").document(user.uid).set(userDetails)
+
+                    // Create default calendar for user
                     createDefaultCalendar()
+
                     updateUiWithUser(user)
                     startActivity(Intent(activity, MainActivity::class.java))
                     activity?.finish()
@@ -181,7 +185,6 @@ class RegisterFragment : Fragment() {
                 // If sign in fails, display a message to the user.
                 Log.w(TAG, "createUserWithEmail:failure", task.exception)
                 showLoginFailed(R.string.register_failed)
-//                loUsername?.error = " "
                 loEmail?.error = " "
                 if (task.exception.toString().contains("email")) loEmail?.error =
                     task.exception?.localizedMessage
@@ -193,8 +196,13 @@ class RegisterFragment : Fragment() {
     private fun createDefaultCalendar() {
         val db = Firebase.firestore
         val user = Firebase.auth.currentUser ?: return
-        val defaultCalendar = Calendar(
-            null, user.email!!, "gray", TimeZone.getDefault().id, user.uid, HashMap(), ArrayList()
+        val defaultCalendar = hashMapOf(
+            "name" to user.email,
+            "color" to "#7886CB",
+            "timezone" to TimeZone.currentSystemDefault().id,
+            "ownerId" to user.uid,
+            "isDefault" to true,
+            "description" to "Default Calendar for account ${user.email}"
         )
         // Add a new document with a generated ID
         db.collection("calendars").add(defaultCalendar).addOnSuccessListener { documentReference ->

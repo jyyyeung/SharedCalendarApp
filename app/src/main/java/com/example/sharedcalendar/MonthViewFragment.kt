@@ -3,12 +3,13 @@ package com.example.sharedcalendar
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.databinding.CalendarDayBinding
 import com.example.sharedcalendar.databinding.CalendarHeaderBinding
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
@@ -30,8 +31,9 @@ import java.time.YearMonth
 
 class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
-    private val viewModel by viewModels<EventViewModel>()
+    private lateinit var firebaseViewModel: FirebaseViewModel
     private var selectedDate: LocalDate? = null
+
 
     //            private val thisEvents = viewModel.getEvents(true).groupBy { it.startTime.toLocalDate() }
     private var eventsThisMonth: Map<LocalDate, List<Event>>? = null
@@ -40,7 +42,9 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
     //    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        eventsThisMonth = viewModel.getGroupedEvents()
+        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+
+        eventsThisMonth = firebaseViewModel.getGroupedEvents()
 
         binding = FragmentMonthViewBinding.bind(view)
         val daysOfWeek = daysOfWeek()
@@ -49,11 +53,11 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         val endMonth = currentMonth.plusMonths(200)
 
         // Get Events from Database
-        viewModel.getCurrentMonthEvents()
+        firebaseViewModel.getCurrentMonthEvents()
 
         // Listen for Event Updates
-        viewModel.events.observe(viewLifecycleOwner) { events ->
-//            Log.i(TAG, events.toString())
+        firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
+            Log.i(TAG, events.toString())
             // Update Event list upon updates
             eventsThisMonth = buildList {
                 for (event in events) {

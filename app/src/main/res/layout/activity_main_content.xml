@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#B9B9B9"
+        app:layout_constraintTop_toTopOf="parent">
         <ImageButton
             android:id="@+id/drawerLayoutToggle"
             android:layout_width="wrap_content"
@@ -34,23 +37,13 @@
             android:background="@drawable/round_button"
             android:text="Month" />
 
-        <ImageButton
-            android:id="@+id/addEventBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="#00000000"
-            android:paddingRight="20dp"
-            app:srcCompat="@drawable/round_add_circle_24" />
-
-
     </androidx.appcompat.widget.Toolbar>
 
-
     <FrameLayout
-        android:id="@+id/flFragment"
+        android:id="@+id/mainFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="10dp"></FrameLayout>
-
-</LinearLayout>
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"
+        android:paddingBottom="10dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,20 +3,20 @@ package com.example.sharedcalendar
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import com.example.sharedcalendar.data.SessionManager
 import com.example.sharedcalendar.models.Calendar
-import com.example.sharedcalendar.models.Event
+import com.example.sharedcalendar.ui.CalendarFragment
+import com.example.sharedcalendar.ui.ManageCalendarsFragment
 import com.example.sharedcalendar.ui.SettingsActivity
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
+import com.example.sharedcalendar.ui.share.ShareCalendarFragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -25,12 +25,12 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel by viewModels<EventViewModel>()
-    private lateinit var sessionManager: SessionManager
+    private val firebaseViewModel by viewModels<FirebaseViewModel>()
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
     private lateinit var calendars: ArrayList<Calendar>
     private lateinit var prefs: SharedFirebasePreferences
+
 
     companion object {
         private val TAG: String = MainActivity::class.java.name
@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sessionManager = SessionManager(this)
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
 
         if (Firebase.auth.currentUser == null) {
@@ -57,9 +56,11 @@ class MainActivity : AppCompatActivity() {
         val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
 
-        // TODO: Most likely do not need
-        calendars = viewModel.getCalendars()
-        viewModel.getEvents()
+        firebaseViewModel.getUserShares()
+
+        firebaseViewModel.userShares.observe(this) {
+            firebaseViewModel.getCalendars()
+        }
 
         // If Click on Burger, Open drawer Layout
         buttonDrawerToggle.setOnClickListener {
@@ -93,73 +94,40 @@ class MainActivity : AppCompatActivity() {
                 finish()
             } else if (menuItem.toString() == "Add Person to Calendar") {
                 // TODO: Handle add person to calendar
+                // Create and show the dialog.
+                ShareCalendarFragment.display(supportFragmentManager)
+//                ft.addToBackStack(null)
+            } else if (menuItem.toString() == "Manage Calendars") {
+                supportFragmentManager.beginTransaction().apply {
+                    replace(
+                        R.id.mainFragment,
+                        ManageCalendarsFragment()
+                    )
+                    commit()
+                }
             }
 //            menuItem.itemId
             drawerLayout.close()
             true
         }
+
+
         // END SIDEBAR NAVIGATION //
 
+        val calendarFragment = CalendarFragment()
 
-        // Change Fragment from month to week on button click
-        // Set variables for change view buttons
-        val weekBtn: Button = findViewById(R.id.weekBtn)
-        val monthBtn: Button = findViewById(R.id.monthBtn)
-
-        // Set variables for View Fragments
-        val monthViewFragment = MonthViewFragment()
-        val weekViewFragment = WeekViewFragment()
-
-        // By default, the view fragment is month view fragment
+        // By default, open the Calendar fragment
         supportFragmentManager.beginTransaction().apply {
-            // Set Default View based on user preferences
-            when (prefs.getString("calendar_view", "month")) {
-                "week" -> replace(R.id.flFragment, weekViewFragment)
-                "month" -> replace(R.id.flFragment, monthViewFragment)
-            }
+            replace(R.id.mainFragment, calendarFragment)
             commit()
         }
 
-        // When Click Month Button
-        monthBtn.setOnClickListener {
-            supportFragmentManager.beginTransaction().apply {
-                // Replace fragment with month view fragment
-                replace(R.id.flFragment, monthViewFragment)
-                addToBackStack(null)
-                // commit the change
-                commit()
-            }
-        }
-        // When Click Week Button
-        weekBtn.setOnClickListener {
-            supportFragmentManager.beginTransaction().apply {
-                // Replace fragment with week view fragment
-                replace(R.id.flFragment, weekViewFragment)
-                addToBackStack(null)
-                // Commit the changes
-                commit()
-            }
-        }
-        // When Click AddEvent Button
-        val addEventBtn: ImageButton = findViewById(R.id.addEventBtn)
-        val bottomWindow = BottomSheetFragment()
 
-        addEventBtn.setOnClickListener {
-            //showBottomWindow()
-            bottomWindow.show(supportFragmentManager, "BottomSheetDialogue")
-
-        }
     }
 
     fun getCalendarId(): String? {
-
-        return viewModel.calendars.value?.get(0)?.id
+        return firebaseViewModel.calendars.value?.get(0)?.id
 //        return calendars[0].id
-    }
-
-    fun addEventToCalendar(event: Event?) {
-        // TODO: Update calendars from view model
-        if (event is Event) calendars[0].events.add(event)
     }
 
 

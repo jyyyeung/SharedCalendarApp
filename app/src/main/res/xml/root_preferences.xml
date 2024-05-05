@@ -18,30 +18,7 @@
         <ListPreference
             app:key="default_calendar"
             app:title="Default Calendar" />
-
-        <!--        <ListPreference-->
-        <!--            app:defaultValue="month"-->
-        <!--            app:entries="@array/timezone_entries"-->
-        <!--            app:entryValues="@array/timezone_values"-->
-        <!--            app:key="calendar_timezone"-->
-        <!--            app:title="@string/pref_timezone_title"-->
-        <!--            app:useSimpleSummaryProvider="true" />-->
-
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header">
-
-        <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
-
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
-
-    </PreferenceCategory>
 
 </PreferenceScreen>

@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
-import com.example.sharedcalendar.data.SessionManager
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -28,14 +27,11 @@ import com.google.firebase.auth.FirebaseUser
  * create an instance of this fragment.
  */
 class LoginFragment : Fragment() {
-
-    private lateinit var sessionManager: SessionManager
     private lateinit var userViewModel: UserViewModel
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sessionManager = SessionManager(requireActivity())
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
         auth = FirebaseAuth.getInstance()
     }
@@ -49,7 +45,7 @@ class LoginFragment : Fragment() {
         // Set variables for views
         val etEmail = view.findViewById<TextInputLayout>(R.id.login_email) // binding.username
         val etEmailInput =
-            view.findViewById<TextInputEditText>(R.id.et_login_email) // binding.username
+            view.findViewById<TextInputEditText>(R.id.etUserEmail) // binding.username
         val etPassword = view.findViewById<TextInputLayout>(R.id.login_password)
         val etPasswordInput = view.findViewById<TextInputEditText>(R.id.et_login_password)
         val btnLogin = view.findViewById<Button>(R.id.btnLogin)

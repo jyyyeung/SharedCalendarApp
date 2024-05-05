@@ -9,7 +9,7 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_email">Not a email </string>
+    <string name="invalid_email">Not an email</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
 
@@ -48,4 +48,12 @@
     <string name="previous_month">Previous Month</string>
     <string name="next_month">Next Month</string>
     <string name="toggle_sidebar">Toggle Sidebar</string>
+
+    <!-- Screens -->
+    <string name="edit_calendar_screen">Edit Calendar</string>
+    <string name="select_calendar_screen">Select Calendar to Manage</string>
+    <string name="view_calendar_screen">View Calendar Details</string>
+    <string name="create_calendar_screen">Create New Calendar</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
 </resources>

@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.alamkanak.weekview.WeekView
 import com.alamkanak.weekview.WeekViewEntity
 import com.alamkanak.weekview.jsr310.WeekViewSimpleAdapterJsr310
@@ -44,7 +44,7 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
     private lateinit var selectedDate: LocalDate
     private val dateFormatter = DateTimeFormatter.ofPattern("dd")
     lateinit var binding: FragmentWeekViewBinding
-    private val viewModel by viewModels<EventViewModel>()
+    private lateinit var firebaseViewModel: FirebaseViewModel
 
     companion object {
         private val TAG: String = WeekViewFragment::class.java.name
@@ -55,16 +55,22 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
         binding = FragmentWeekViewBinding.bind(view)
         selectedDate = LocalDate.now()
 
+        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+
         val weekView = view.findViewById<WeekView>(R.id.weekView)
 
         val adapter = WeekViewSimpleAdapter()
         weekView.adapter = adapter
 
-        // Get Events from Database
-        viewModel.getCurrentMonthEvents()
+
+        firebaseViewModel.calendars.observe(requireActivity()) {
+            // Get Events from Database
+            firebaseViewModel.getCurrentMonthEvents()
+        }
+
 
         // Listen for Event Updates
-        viewModel.events.observe(viewLifecycleOwner) { events ->
+        firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
             Log.i(TAG, events.toString())
             // Update Event list upon updates
             adapter.submitList(events)
