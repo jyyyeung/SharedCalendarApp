@@ -48,4 +48,6 @@
     <color name="gray">#888</color>
     <color name="blue">#0000FF</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="hawkes_blue">#d8e2ff</color>
+    <color name="dusty_blue">#445c94</color>
 </resources>

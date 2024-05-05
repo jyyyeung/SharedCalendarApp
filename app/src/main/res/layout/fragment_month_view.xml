@@ -13,17 +13,16 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/example_4_grey_past">
+        android:background="@color/hawkes_blue">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="14dp">
-
+            android:layout_height="37dp"
+            android:gravity="center">
             <ImageView
                 android:id="@+id/MonthYearLast"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_marginEnd="22dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/previous_month"
@@ -34,15 +33,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fontFamily="sans-serif-black"
                 android:gravity="center"
-                android:textSize="22sp"
+                android:textSize="14dp"
                 tools:text="April 2024" />
 
             <ImageView
                 android:id="@+id/MonthYearNext"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_marginEnd="22dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/next_month"
