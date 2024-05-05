@@ -9,7 +9,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.ui.CalendarFragment
 import com.example.sharedcalendar.ui.ManageCalendarsFragment
 import com.example.sharedcalendar.ui.SettingsActivity
@@ -28,7 +27,6 @@ class MainActivity : AppCompatActivity() {
     private val firebaseViewModel by viewModels<FirebaseViewModel>()
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
-    private lateinit var calendars: ArrayList<Calendar>
     private lateinit var prefs: SharedFirebasePreferences
 
 

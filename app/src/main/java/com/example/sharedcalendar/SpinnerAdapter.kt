@@ -1,20 +1,16 @@
 package com.example.sharedcalendar
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.annotation.NonNull
 
 class SpinnerAdapter(context: Context, items: List<Color>) :
     ArrayAdapter<Color>(context, 0, items) {
-    val layoutInflater = LayoutInflater.from(context)
+    private val layoutInflater = LayoutInflater.from(context)
 
-    @NonNull
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View = layoutInflater.inflate(R.layout.blank_layout, null, true)
         return view(view, position)

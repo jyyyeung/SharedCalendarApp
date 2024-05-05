@@ -14,7 +14,6 @@ import com.alamkanak.weekview.jsr310.setStartTime
 import com.example.sharedcalendar.databinding.FragmentWeekViewBinding
 import com.example.sharedcalendar.models.Event
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
     // Reference API: https://github.com/thellmund/Android-Week-View/wiki/Public-API
@@ -42,8 +41,7 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
 //        get() = binding.WeeklyToolbar
 
     private lateinit var selectedDate: LocalDate
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd")
-    lateinit var binding: FragmentWeekViewBinding
+    private lateinit var binding: FragmentWeekViewBinding
     private lateinit var firebaseViewModel: FirebaseViewModel
 
     companion object {

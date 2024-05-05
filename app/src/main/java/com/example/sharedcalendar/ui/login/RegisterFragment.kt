@@ -216,7 +216,6 @@ class RegisterFragment : Fragment() {
     private fun updateUiWithUser(model: FirebaseUser) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName ?: model.email
-        // TODO : initiate successful logged in experience
 
         Toast.makeText(
             requireActivity().application,

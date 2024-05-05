@@ -51,9 +51,6 @@ class FirebaseViewModel : ViewModel() {
             addSource(sharedCalendars, observer)
         }
 
-    private val _eventsByCalendar = MutableLiveData<MutableList<Event>>()
-    val eventsByCalendar: LiveData<MutableList<Event>> = _eventsByCalendar
-
     private val _userShares = MutableLiveData<MutableList<Share>>()
     val userShares: LiveData<MutableList<Share>> = _userShares
 
@@ -213,57 +210,6 @@ class FirebaseViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
 
             val calendarEvents = ArrayList<Event>()
-
-            calendarEvents.add(
-                Event(
-                    "0",
-                    "0",
-                    "Hangout",
-                    description = null,
-                    startTime = LocalDateTime.of(2024, 5, 3, 14, 0),
-                    endTime = LocalDateTime.of(2024, 5, 3, 15, 0),
-                    location = null,
-                    timezone = "Null",
-                    color = "#F44336",
-                    isAllDay = false,
-                    isPrivate = false,
-                    participants = null
-                )
-            )
-            calendarEvents.add(
-                Event(
-                    "1",
-                    "0",
-                    "Hangout",
-                    null,
-                    startTime = LocalDateTime.of(2024, 5, 2, 21, 0),
-                    endTime = LocalDateTime.of(2024, 5, 2, 22, 0),
-                    location = null,
-                    timezone = "Null",
-                    color = "#D2E3FC",
-                    isAllDay = false,
-                    isPrivate = false,
-                    participants = null
-                )
-            )
-
-            calendarEvents.add(
-                Event(
-                    "2",
-                    "0",
-                    "Lesson",
-                    null,
-                    startTime = LocalDateTime.of(2024, 5, 1, 13, 0),
-                    endTime = LocalDateTime.of(2024, 5, 1, 20, 0),
-                    location = null,
-                    timezone = "Null",
-                    color = "#008489",
-                    isAllDay = false,
-                    isPrivate = false,
-                    participants = null
-                )
-            )
-
             val db = Firebase.firestore
             Log.i(TAG, "Calendars to find events for $calendars")
             if (calendars.value?.isNotEmpty() == true) {
@@ -296,9 +242,6 @@ class FirebaseViewModel : ViewModel() {
                         }.addOnFailureListener { exception ->
                             Log.w(TAG, "Error getting documents.", exception)
                         }
-                    //                    Log.i(TAG, "${document.id} => $events=> $calendarEvents")
-
-
                 }
             }
 
@@ -338,7 +281,6 @@ class FirebaseViewModel : ViewModel() {
                 user = result.toObject(User::class.java)
                 user?.id = result.id
                 if (user != null) _users[userId] = user!!
-//            _users.postValue(users)
             }.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting user with specified ID. ", exception)
             }
