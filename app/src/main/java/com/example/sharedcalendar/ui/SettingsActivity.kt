@@ -79,13 +79,18 @@ class SettingsActivity : AppCompatActivity(),
 
     class SettingsFragment : PreferenceFragmentCompat() {
         private val firebaseViewModel by viewModels<FirebaseViewModel>()
+        private lateinit var sharedPrefs: SharedFirebasePreferences
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+            sharedPrefs = SharedFirebasePreferences.getInstance(
+                activity, "app_settings", Context.MODE_PRIVATE
+            )
 
+            val calendarPrefs = sharedPrefs.all.filterKeys { it.contains("calendar") }
             firebaseViewModel.getUserShares()
             firebaseViewModel.userShares.observe(this) {
-                firebaseViewModel.getCalendars()
+                firebaseViewModel.getCalendars(calendarPrefs)
             }
 
             val context = preferenceManager.context
@@ -120,8 +125,9 @@ class SettingsActivity : AppCompatActivity(),
                 calendarCategory.removeAll()
                 // Allow enabling calendars
                 for (calendar in calendars) {
+
                     val calendarPreference = CheckBoxPreference(context)
-                    calendarPreference.key = calendar.id.toString()
+                    calendarPreference.key = "calendar/${calendar.id.toString()}"
                     calendarPreference.title = calendar.name
                     if (calendar.ownerId != Firebase.auth.currentUser?.uid) {
                         calendarPreference.summary =

@@ -32,7 +32,6 @@ class FirebaseViewModel : ViewModel() {
     private val _events = MutableLiveData<MutableList<Event>>()
     val events: LiveData<MutableList<Event>> = _events
 
-
     private val _userCalendars = MutableLiveData<MutableList<Calendar>>()
     val userCalendars: LiveData<MutableList<Calendar>> = _userCalendars
 
@@ -62,6 +61,9 @@ class FirebaseViewModel : ViewModel() {
 
     private val _shares = MutableLiveData(mutableMapOf<String, ArrayList<Share>>())
     val shares: LiveData<MutableMap<String, ArrayList<Share>>> = _shares
+
+    private val _enabledCalendars = MutableLiveData<MutableList<String>>()
+    val enabledCalendars: LiveData<MutableList<String>> = _enabledCalendars
 
     private val db = Firebase.firestore
 
@@ -157,26 +159,42 @@ class FirebaseViewModel : ViewModel() {
         }
     }
 
-    fun getCalendars() {
+    fun getCalendars(calendarPrefs: Map<String, Any?>) {
         viewModelScope.launch(Dispatchers.IO) {
 
             Log.i(TAG, "getCalendars()")
             val db = Firebase.firestore
 
             val calendars1 = ArrayList<Calendar>()
+            val calendarsEnabled = ArrayList<String>()
             db.collection("calendars").whereEqualTo("ownerId", user.uid).get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
+
                         val calendar = document.toObject(Calendar::class.java)
                         calendar.id = document.id
                         calendar.owner = null
                         calendar.scope = "Full"
                         calendar.events = getEventsByCalendar(document.id, "Full")
+                        // Check if calendar is enabled in preferences
+                        val calendarKey = "calendar/${document.id}"
+                        if (!calendarPrefs.containsKey(calendarKey) || calendarPrefs.getValue(
+                                calendarKey
+                            ) == true
+                        ) {
+                            Log.i(
+                                TAG, calendarPrefs.getValue(
+                                    calendarKey
+                                ).toString()
+                            )
+                            calendarsEnabled.add(document.id)
+                        }
 
                         calendars1.add(calendar)
                         Log.d(TAG, "${document.id} => ${document.data}")
                     }
                     _userCalendars.postValue(calendars1)
+                    _enabledCalendars.postValue(calendarsEnabled)
                 }.addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents.", exception)
                 }
@@ -196,10 +214,20 @@ class FirebaseViewModel : ViewModel() {
                             calendar.events = getEventsByCalendar(document.id, scope)
                             calendar.scope = scope
 
+                            // Check if calendar is enabled in preferences
+                            val calendarKey = "calendar/${document.id}"
+                            if (!calendarPrefs.containsKey(calendarKey) || calendarPrefs.getValue(
+                                    calendarKey
+                                ) == true
+                            ) {
+                                calendarsEnabled.add(document.id)
+                            }
+
                             Log.d(TAG, "Shared with me: ${document.id} => ${document.data}")
                             calendars2.add(calendar)
                         }
                         _sharedCalendars.postValue(calendars2)
+                        _enabledCalendars.postValue(calendarsEnabled)
                     }
             }
         }
@@ -341,7 +369,6 @@ class FirebaseViewModel : ViewModel() {
             }
         }.groupBy { it.startTime.toLocalDate() }
     }
-
 
 }
 

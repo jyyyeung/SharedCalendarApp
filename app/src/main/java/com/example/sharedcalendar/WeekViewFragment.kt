@@ -2,7 +2,6 @@ package com.example.sharedcalendar
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +12,7 @@ import com.alamkanak.weekview.jsr310.setEndTime
 import com.alamkanak.weekview.jsr310.setStartTime
 import com.example.sharedcalendar.databinding.FragmentWeekViewBinding
 import com.example.sharedcalendar.models.Event
+import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.LocalDate
 
 class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
@@ -27,6 +27,7 @@ class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
                 WeekViewEntity.Style.Builder().setBackgroundColor(Color.parseColor(item.color))
                     .build()
             entity.setStyle(entityStyle)
+
         }
         item.description?.let { entity.setSubtitle(it) }
 
@@ -43,6 +44,7 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
     private lateinit var selectedDate: LocalDate
     private lateinit var binding: FragmentWeekViewBinding
     private lateinit var firebaseViewModel: FirebaseViewModel
+    private lateinit var prefs: SharedFirebasePreferences
 
     companion object {
         private val TAG: String = WeekViewFragment::class.java.name
@@ -52,6 +54,8 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentWeekViewBinding.bind(view)
         selectedDate = LocalDate.now()
+
+        val prefs = SharedFirebasePreferences.getDefaultInstance(activity)
 
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
@@ -69,9 +73,14 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
 
         // Listen for Event Updates
         firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
-            Log.i(TAG, events.toString())
+            val enabledCalendarIds =
+                if (firebaseViewModel.enabledCalendars.value?.isNotEmpty() == true) firebaseViewModel.enabledCalendars.value else mutableListOf()
+
+            val filtered = events.filter { enabledCalendarIds!!.contains(it.calendarId) }
             // Update Event list upon updates
-            adapter.submitList(events)
+
+            adapter.submitList(filtered)
+
         }
     }
 }

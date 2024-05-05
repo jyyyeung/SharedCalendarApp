@@ -56,8 +56,11 @@ class MainActivity : AppCompatActivity() {
 
         firebaseViewModel.getUserShares()
 
+        val calendarPrefs = prefs.all.filterKeys { it.contains("calendar") }
+        Log.i("Calendar Prefs", calendarPrefs.toString())
+
         firebaseViewModel.userShares.observe(this) {
-            firebaseViewModel.getCalendars()
+            firebaseViewModel.getCalendars(calendarPrefs)
         }
 
         // If Click on Burger, Open drawer Layout
@@ -98,8 +101,7 @@ class MainActivity : AppCompatActivity() {
             } else if (menuItem.toString() == "Manage Calendars") {
                 supportFragmentManager.beginTransaction().apply {
                     replace(
-                        R.id.mainFragment,
-                        ManageCalendarsFragment()
+                        R.id.mainFragment, ManageCalendarsFragment()
                     )
                     commit()
                 }
