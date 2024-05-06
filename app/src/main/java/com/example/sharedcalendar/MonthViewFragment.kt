@@ -24,6 +24,7 @@ import com.kizitonwose.calendar.core.previousMonth
 import com.kizitonwose.calendar.view.MonthDayBinder
 import com.kizitonwose.calendar.view.MonthHeaderFooterBinder
 import com.kizitonwose.calendar.view.ViewContainer
+import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -38,13 +39,16 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
     //            private val thisEvents = viewModel.getEvents(true).groupBy { it.startTime.toLocalDate() }
     private var eventsThisMonth: Map<LocalDate, List<Event>>? = null
     lateinit var binding: FragmentMonthViewBinding
+    private lateinit var prefs: SharedFirebasePreferences
 
     //    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+        prefs = SharedFirebasePreferences.getDefaultInstance(activity)
+        val calendarPrefs = prefs.all.filterKeys { it.contains("calendar") }
 
-        eventsThisMonth = firebaseViewModel.getGroupedEvents()
+        eventsThisMonth = firebaseViewModel.getGroupedEvents(calendarPrefs)
 
         binding = FragmentMonthViewBinding.bind(view)
         val daysOfWeek = daysOfWeek()

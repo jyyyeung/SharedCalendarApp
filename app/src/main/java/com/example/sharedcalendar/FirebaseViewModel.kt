@@ -159,6 +159,15 @@ class FirebaseViewModel : ViewModel() {
         }
     }
 
+
+    private fun isCalendarEnabled(calendarPrefs: Map<String, Any?>, calendarId: String): Boolean {
+
+        val calendarKey = "calendar/${calendarId}"
+        return !calendarPrefs.containsKey(calendarKey) || calendarPrefs.getValue(
+            calendarKey
+        ) == true
+    }
+
     fun getCalendars(calendarPrefs: Map<String, Any?>) {
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -177,18 +186,9 @@ class FirebaseViewModel : ViewModel() {
                         calendar.scope = "Full"
                         calendar.events = getEventsByCalendar(document.id, "Full")
                         // Check if calendar is enabled in preferences
-                        val calendarKey = "calendar/${document.id}"
-                        if (!calendarPrefs.containsKey(calendarKey) || calendarPrefs.getValue(
-                                calendarKey
-                            ) == true
-                        ) {
-                            Log.i(
-                                TAG, calendarPrefs.getValue(
-                                    calendarKey
-                                ).toString()
-                            )
+                        if (isCalendarEnabled(calendarPrefs, document.id))
                             calendarsEnabled.add(document.id)
-                        }
+
 
                         calendars1.add(calendar)
                         Log.d(TAG, "${document.id} => ${document.data}")
@@ -355,7 +355,7 @@ class FirebaseViewModel : ViewModel() {
         return eventArrayList
     }
 
-    fun getGroupedEvents(): Map<LocalDate, List<Event>>? {
+    fun getGroupedEvents(calendarPrefs: Map<String, Any?>): Map<LocalDate, List<Event>>? {
         val currentMonth = YearMonth.now()
 //        val events = getEvents()
         if (_events.value == null) {
@@ -363,9 +363,10 @@ class FirebaseViewModel : ViewModel() {
         }
         return buildList {
             for (event in _events.value!!) {
-                currentMonth.atDay(event.startTime.dayOfMonth).also { date ->
-                    add(event)
-                }
+                if (isCalendarEnabled(calendarPrefs, event.calendarId))
+                    currentMonth.atDay(event.startTime.dayOfMonth).also {
+                        add(event)
+                    }
             }
         }.groupBy { it.startTime.toLocalDate() }
     }
