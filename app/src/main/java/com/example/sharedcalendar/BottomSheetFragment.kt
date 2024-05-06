@@ -275,6 +275,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 saveBtn?.isEnabled = false
                 return
             }
+        } else{
+            startDateTime = LocalDateTime.of(startDateTime.year,startDateTime.month,startDateTime.dayOfMonth,0,0)
+            endDateTime = LocalDateTime.of(endDateTime.year, endDateTime.month, endDateTime.dayOfMonth, 0, 0)
         }
 
 
