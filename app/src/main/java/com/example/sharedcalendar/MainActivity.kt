@@ -104,6 +104,12 @@ class MainActivity : AppCompatActivity() {
                     )
                     commit()
                 }
+            } else if (menuItem.toString() == "Home") {
+                // By default, open the Calendar fragment
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.mainFragment, CalendarFragment())
+                    commit()
+                }
             }
 //            menuItem.itemId
             drawerLayout.close()

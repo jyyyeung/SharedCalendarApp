@@ -216,11 +216,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
 
             val newEvent = hashMapOf(
-                "longId" to Random.nextLong(),
+                "longId" to Random.nextLong(until = Long.MAX_VALUE),
                 "calendarId" to defaultCalendar,
                 "title" to etNewEventName.text.toString(),
                 "description" to etNewEventDescription.text.toString(),
-                "isAllDay" to swIsAllDay.isActivated,
+                "isAllDay" to swIsAllDay.isChecked,
                 "startTimestamp" to LocalDateTime.of(
                     startYear, startMonth, startDay, startHour, startMinute
                 ).toString(),
