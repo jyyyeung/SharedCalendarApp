@@ -13,6 +13,6 @@ data class Calendar(
     var events: ArrayList<Event> = ArrayList(),
     @Exclude
     var scope: String? = "Full",
-    var isDefault: Boolean = false,
+    @field:JvmField var isDefault: Boolean = false,
     var description: String = ""
 )

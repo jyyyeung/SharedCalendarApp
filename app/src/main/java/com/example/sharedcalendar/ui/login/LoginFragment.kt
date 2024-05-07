@@ -120,8 +120,8 @@ class LoginFragment : Fragment() {
                     updateUiWithUser(user)
                     Log.i(TAG, user.toString())
                 }
+                activity?.finishAffinity()
                 startActivity(Intent(activity, MainActivity::class.java))
-                activity?.finish()
             }
         }.addOnFailureListener { exception ->
             showLoginFailed(R.string.login_failed)

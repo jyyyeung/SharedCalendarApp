@@ -41,8 +41,8 @@ class MainActivity : AppCompatActivity() {
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
 
         if (Firebase.auth.currentUser == null) {
+            finishAffinity()
             startActivity(Intent(this, AuthActivity::class.java))
-            finish()
         }
         user = Firebase.auth.currentUser!!
 
@@ -70,13 +70,8 @@ class MainActivity : AppCompatActivity() {
             val tvUsername: TextView = findViewById(R.id.tvSidebarUsername)
             val tvEmail: TextView = findViewById(R.id.tvSidebarEmail)
             // Update Sidebar username if current values are default
-            if (tvUsername.text == getString(R.string.default_sidebar_username) || tvEmail.text == getString(
-                    R.string.default_sidebar_email
-                )
-            ) {
-                tvUsername.text = user.displayName
-                tvEmail.text = user.email
-            }
+            tvUsername.text = user.displayName
+            tvEmail.text = user.email
         }
 
 

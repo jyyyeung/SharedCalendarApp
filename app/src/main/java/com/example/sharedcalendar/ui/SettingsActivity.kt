@@ -118,29 +118,24 @@ class SettingsActivity : AppCompatActivity(),
 
     class SettingsFragment(private val sharedPrefs: SharedFirebasePreferences) :
         PreferenceFragmentCompat() {
-        //        private lateinit var firebaseViewModel: FirebaseViewModel
         private val firebaseViewModel by viewModels<FirebaseViewModel>()
-//        private lateinit var sharedPrefs: SharedFirebasePreferences
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-            val calendarPrefs = sharedPrefs.all.filterKeys { it.contains("calendar") }
+            val calendarPrefs = sharedPrefs.all.filterKeys { it.contains("calendar|") }
             firebaseViewModel.getUserShares()
             firebaseViewModel.userShares.observe(this) {
                 firebaseViewModel.getCalendars(calendarPrefs)
             }
 
             val context = preferenceManager.context
-//            val calendarScreen = preferenceManager.createPreferenceScreen(context)
             val screen = preferenceManager.preferenceScreen
-
 
             val calendarCategory = PreferenceCategory(context)
             calendarCategory.key = "calendars"
             calendarCategory.title = "Show Calendars"
             screen.addPreference(calendarCategory)
-
 
             // Listen for Event Updates
             firebaseViewModel.calendars.observe(this) { calendars ->
@@ -153,11 +148,14 @@ class SettingsActivity : AppCompatActivity(),
 
                 lpDefaultCalendar?.entries = defaultCalendarEntries
                 lpDefaultCalendar?.entryValues = defaultCalendarValues
-//                if (defaultCalendarValues != null) {
-//                    if (defaultCalendarValues.isNotEmpty()) lpDefaultCalendar?.setDefaultValue(
-//                        calendars[0].id.toString()
-//                    )
-//                }
+                if (!defaultCalendarValues.isNullOrEmpty() &&
+                    sharedPrefs.getString(
+                        "default_calendar",
+                        null
+                    ) == null
+                ) {
+                    lpDefaultCalendar?.setDefaultValue(calendars.filter { c -> c.isDefault }[0].id.toString())
+                }
 
                 calendarCategory.removeAll()
                 // Allow enabling calendars
@@ -165,8 +163,8 @@ class SettingsActivity : AppCompatActivity(),
                     val calendarPreference = CheckBoxPreference(context)
                     calendarPreference.key = "calendar|${calendar.id.toString()}"
                     calendarPreference.title = calendar.name
-//                    calendarPreference.isChecked =
-//                        sharedPrefs.getBoolean("calendar|${calendar.id.toString()}", true)
+                    calendarPreference.isChecked =
+                        sharedPrefs.getBoolean("calendar|${calendar.id.toString()}", true)
                     if (calendar.ownerId != Firebase.auth.currentUser?.uid) {
                         calendarPreference.summary =
                             calendar.owner?.name ?: "Shared by another user"
@@ -198,13 +196,12 @@ class SettingsActivity : AppCompatActivity(),
     override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
         Log.i(TAG, "Changed $firebaseAuth ${firebaseAuth.currentUser?.uid}")
         if (firebaseAuth.currentUser != null) {
-            sharedPrefs =
-//                SharedFirebasePreferences.getInstance(this, "app_settings", Context.MODE_PRIVATE)
-                SharedFirebasePreferences.getDefaultInstance(this)
-            Log.i(TAG, "Shared Prefs auth state changed ${sharedPrefs.all}")
+            sharedPrefs = SharedFirebasePreferences.getDefaultInstance(this)
             sharedPrefs.keepSynced(true)
             sharedPrefs.registerOnSharedPreferenceChangeListener(this)
-            sharedPrefs.omitKeys("name")
+//            sharedPrefs.omitKeys("name")
+            sharedPrefs.edit().putString("name", firebaseAuth.currentUser!!.displayName).apply()
+            Log.i(TAG, "Shared Prefs auth state changed ${sharedPrefs.all}")
             sharedPrefs.pull().addOnPullCompleteListener(object :
                 SharedFirebasePreferences.OnPullCompleteListener {
                 override fun onPullSucceeded(preferences: SharedFirebasePreferences) {

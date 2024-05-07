@@ -45,8 +45,8 @@ class AuthActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         // Skip Authentication Page if user has already logged in
         if (currentUser != null) {
+            finishAffinity()
             startActivity(Intent(this, MainActivity::class.java))
-            finish()
         }
     }
 

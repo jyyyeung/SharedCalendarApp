@@ -36,7 +36,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -299,7 +298,7 @@ fun SelectCalendarScreen(
     firebaseViewModel: FirebaseViewModel = viewModel(),
     onItemClicked: (calendar: Calendar) -> Unit = { },
 ) {
-    val calendars = firebaseViewModel.calendars.observeAsState()
+//    val calendars = firebaseViewModel.calendars.observeAsState()
     // API call
 //    LaunchedEffect(key1 = Unit) {
 //        firebaseViewModel.getCalendars()
@@ -307,13 +306,11 @@ fun SelectCalendarScreen(
 ////            firebaseViewModel.getCalendars()
 ////        }
 //    }
-
+    val calendars = firebaseViewModel.getStaticCalendars()
 
     Log.i("Calendar List", calendars.toString())
 
-    calendars.value?.toList()?.let {
-        SelectCalendarList(
-            calendars = it, onItemClicked = onItemClicked, modifier = modifier
-        )
-    }
+    SelectCalendarList(
+        calendars = calendars, onItemClicked = onItemClicked, modifier = modifier
+    )
 }
