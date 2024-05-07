@@ -69,6 +69,8 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
             firebaseViewModel.getCurrentMonthEvents()
         }
 
+        firebaseViewModel.getCurrentMonthEvents()
+
 
         // Listen for Event Updates
         firebaseViewModel.events.observe(viewLifecycleOwner) { events ->

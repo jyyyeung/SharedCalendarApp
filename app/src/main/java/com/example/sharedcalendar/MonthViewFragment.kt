@@ -52,6 +52,10 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         val startMonth = currentMonth.minusMonths(200)
         val endMonth = currentMonth.plusMonths(200)
 
+        firebaseViewModel.calendars.observe(requireActivity()) {
+            firebaseViewModel.getCurrentMonthEvents()
+        }
+
         // Get Events from Database
         firebaseViewModel.getCurrentMonthEvents()
 
