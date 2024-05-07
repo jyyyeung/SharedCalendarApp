@@ -162,7 +162,7 @@ class FirebaseViewModel : ViewModel() {
 
     private fun isCalendarEnabled(calendarPrefs: Map<String, Any?>, calendarId: String): Boolean {
 
-        val calendarKey = "calendar/${calendarId}"
+        val calendarKey = "calendar|${calendarId}"
         return !calendarPrefs.containsKey(calendarKey) || calendarPrefs.getValue(
             calendarKey
         ) == true
@@ -215,7 +215,7 @@ class FirebaseViewModel : ViewModel() {
                             calendar.scope = scope
 
                             // Check if calendar is enabled in preferences
-                            val calendarKey = "calendar/${document.id}"
+                            val calendarKey = "calendar|${document.id}"
                             if (!calendarPrefs.containsKey(calendarKey) || calendarPrefs.getValue(
                                     calendarKey
                                 ) == true

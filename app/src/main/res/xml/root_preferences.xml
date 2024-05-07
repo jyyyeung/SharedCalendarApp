@@ -17,7 +17,8 @@
             app:useSimpleSummaryProvider="true" />
         <ListPreference
             app:key="default_calendar"
-            app:title="Default Calendar" />
+            app:title="Default Calendar"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
 

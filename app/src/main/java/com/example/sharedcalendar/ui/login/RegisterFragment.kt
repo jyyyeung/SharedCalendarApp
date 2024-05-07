@@ -24,6 +24,7 @@ import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.datetime.TimeZone
+import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 
 /**
  * A simple [Fragment] subclass.
@@ -33,6 +34,7 @@ import kotlinx.datetime.TimeZone
 class RegisterFragment : Fragment() {
     private lateinit var userViewModel: UserViewModel
     private lateinit var auth: FirebaseAuth
+    private lateinit var sharedPrefs: SharedFirebasePreferences
 
     companion object {
         private val TAG: String? = RegisterFragment::class.java.name
@@ -41,6 +43,7 @@ class RegisterFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
+
     }
 
     override fun onCreateView(
@@ -154,10 +157,16 @@ class RegisterFragment : Fragment() {
 
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                // Sign in success, update UI with the signed-in user's information
+                // Register success, update UI with the signed-in user's information
                 Log.d(TAG, "createUserWithEmail:success")
                 val user = auth.currentUser
                 if (user != null) {
+                    // Get Shared Preferences
+                    sharedPrefs =
+                        SharedFirebasePreferences.getDefaultInstance(activity)
+                    Log.i(TAG, sharedPrefs.all.toString())
+                    sharedPrefs.pull()
+
                     val profileUpdates = userProfileChangeRequest {
                         displayName = username
 //                                photoUri = Uri.parse("https://example.com/jane-q-user/profile.jpg")
@@ -167,6 +176,7 @@ class RegisterFragment : Fragment() {
                             Log.d(TAG, "User profile updated.")
                         }
                     }
+                    sharedPrefs.edit().putString("name", username).apply()
 
                     // Add user public information to users database
                     val userDetails = hashMapOf(
@@ -207,6 +217,10 @@ class RegisterFragment : Fragment() {
         // Add a new document with a generated ID
         db.collection("calendars").add(defaultCalendar).addOnSuccessListener { documentReference ->
             Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+            // Set Default calendar in preferences to created calendar
+            sharedPrefs.edit().putString("default_calendar", documentReference.id).apply()
+            sharedPrefs.edit().putBoolean("calendar|${documentReference.id}", true).apply()
+            sharedPrefs.push()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Error adding document", e)
         }

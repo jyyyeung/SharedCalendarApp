@@ -17,6 +17,7 @@ import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
 import com.example.sharedcalendar.ui.share.ShareCalendarFragment
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -28,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
     private lateinit var prefs: SharedFirebasePreferences
-
 
     companion object {
         private val TAG: String = MainActivity::class.java.name
@@ -90,9 +90,13 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, SettingsActivity::class.java))
             } else if (menuItem.toString() == "Logout") {
                 // Call Logout process
-                Firebase.auth.signOut()
-                startActivity(Intent(this, AuthActivity::class.java))
-                finish()
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(this, AuthActivity::class.java).run {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
+                finishAffinity()
             } else if (menuItem.toString() == "Add Person to Calendar") {
                 // TODO: Handle add person to calendar
                 // Create and show the dialog.

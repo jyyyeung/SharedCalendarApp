@@ -46,7 +46,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         super.onViewCreated(view, savedInstanceState)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
         prefs = SharedFirebasePreferences.getDefaultInstance(activity)
-        val calendarPrefs = prefs.all.filterKeys { it.contains("calendar") }
+        val calendarPrefs = prefs.all.filterKeys { it.contains("calendar|") }
 
         eventsThisMonth = firebaseViewModel.getGroupedEvents(calendarPrefs)
 

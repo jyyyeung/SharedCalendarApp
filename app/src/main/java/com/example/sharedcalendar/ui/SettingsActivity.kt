@@ -3,6 +3,8 @@ package com.example.sharedcalendar.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -15,19 +17,24 @@ import com.example.sharedcalendar.R
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferencesContextWrapper
 
-private val TAG: String = SettingsActivity::class.java.name
 
+private val TAG: String = SettingsActivity::class.java.name
 
 class SettingsActivity : AppCompatActivity(),
 //    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+    FirebaseAuth.AuthStateListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
+
     private lateinit var userViewModel: UserViewModel
     private lateinit var sharedPrefs: SharedFirebasePreferences
+
+    private lateinit var userId: String
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(SharedFirebasePreferencesContextWrapper(newBase))
@@ -36,21 +43,33 @@ class SettingsActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().replace(R.id.settings, SettingsFragment())
-                .commit()
-        }
 
-        sharedPrefs =
-            SharedFirebasePreferences.getInstance(this, "app_settings", Context.MODE_PRIVATE)
-        sharedPrefs.omitKeys("name")
+        userId = FirebaseAuth.getInstance().uid.toString()
+
+        FirebaseAuth.getInstance().addAuthStateListener(this)
+//        sharedPrefs = SharedFirebasePreferences.getDefaultInstance(this)
+//        sharedPrefs.omitKeys("name")
+//        Log.i(TAG, "46 true $userId ${sharedPrefs.all}")
+//        sharedPrefs.keepSynced(true)
+
+//        if (savedInstanceState == null) {
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.settings, SettingsFragment(sharedPrefs))
+//            .commitAllowingStateLoss()
+//        }
+
 
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val tbSettingsToolbar: MaterialToolbar = findViewById(R.id.tbSettingsToolbar)
+        val tbSettingsToolbar: MaterialToolbar =
+            findViewById(com.example.sharedcalendar.R.id.tbSettingsToolbar)
         tbSettingsToolbar.setNavigationOnClickListener {
+            if (this::sharedPrefs.isInitialized) {
+                Log.i(TAG, "61 false $userId ${sharedPrefs.all}")
+                sharedPrefs.unregisterOnSharedPreferenceChangeListener(this)
+            }
             finish()
         }
 
@@ -58,34 +77,53 @@ class SettingsActivity : AppCompatActivity(),
 
     override fun onStart() {
         super.onStart()
+//        if (FirebaseAuth.getInstance().uid != userId) {
+//            sharedPrefs = SharedFirebasePreferences.getDefaultInstance(this)
+//            sharedPrefs.omitKeys("name")
+//        }
         // Set up a listener whenever a key changes
-        sharedPrefs.keepSynced(true)
+        if (this::sharedPrefs.isInitialized) {
+            Log.i(TAG, "75 true $userId ${sharedPrefs.all}")
+            sharedPrefs.keepSynced(true)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        sharedPrefs.keepSynced(true)
+//        if (FirebaseAuth.getInstance().uid != userId) {
+//            sharedPrefs = SharedFirebasePreferences.getDefaultInstance(this)
+//            sharedPrefs.omitKeys("name")
+//        }
+        if (this::sharedPrefs.isInitialized) {
+            Log.i(TAG, "85 true $userId ${sharedPrefs.all}")
+            sharedPrefs.keepSynced(true)
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        sharedPrefs.keepSynced(false)
+        if (this::sharedPrefs.isInitialized) {
+            Log.i(TAG, "91 false $userId ${sharedPrefs.all}")
+            sharedPrefs.keepSynced(false)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        sharedPrefs.keepSynced(false)
+        if (this::sharedPrefs.isInitialized) {
+            Log.i(TAG, "97 false $userId ${sharedPrefs.all}")
+            sharedPrefs.unregisterOnSharedPreferenceChangeListener(this)
+        }
     }
 
-    class SettingsFragment : PreferenceFragmentCompat() {
+    class SettingsFragment(private val sharedPrefs: SharedFirebasePreferences) :
+        PreferenceFragmentCompat() {
+        //        private lateinit var firebaseViewModel: FirebaseViewModel
         private val firebaseViewModel by viewModels<FirebaseViewModel>()
-        private lateinit var sharedPrefs: SharedFirebasePreferences
+//        private lateinit var sharedPrefs: SharedFirebasePreferences
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
-            sharedPrefs = SharedFirebasePreferences.getInstance(
-                activity, "app_settings", Context.MODE_PRIVATE
-            )
 
             val calendarPrefs = sharedPrefs.all.filterKeys { it.contains("calendar") }
             firebaseViewModel.getUserShares()
@@ -103,12 +141,11 @@ class SettingsActivity : AppCompatActivity(),
             calendarCategory.title = "Show Calendars"
             screen.addPreference(calendarCategory)
 
+
             // Listen for Event Updates
             firebaseViewModel.calendars.observe(this) { calendars ->
-
                 // Set Default Calendar Preference Values
-                val lpDefaultCalendar: ListPreference? =
-                    findPreference<ListPreference>("default_calendar")
+                val lpDefaultCalendar: ListPreference? = findPreference("default_calendar")
                 val defaultCalendarEntries: Array<CharSequence>? =
                     calendars?.map { c -> c.name }?.toTypedArray()
                 val defaultCalendarValues: Array<CharSequence>? =
@@ -116,19 +153,20 @@ class SettingsActivity : AppCompatActivity(),
 
                 lpDefaultCalendar?.entries = defaultCalendarEntries
                 lpDefaultCalendar?.entryValues = defaultCalendarValues
-                if (defaultCalendarValues != null) {
-                    if (defaultCalendarValues.isNotEmpty()) lpDefaultCalendar?.setDefaultValue(
-                        calendars[0].id.toString()
-                    )
-                }
+//                if (defaultCalendarValues != null) {
+//                    if (defaultCalendarValues.isNotEmpty()) lpDefaultCalendar?.setDefaultValue(
+//                        calendars[0].id.toString()
+//                    )
+//                }
 
                 calendarCategory.removeAll()
                 // Allow enabling calendars
                 for (calendar in calendars) {
-
                     val calendarPreference = CheckBoxPreference(context)
-                    calendarPreference.key = "calendar/${calendar.id.toString()}"
+                    calendarPreference.key = "calendar|${calendar.id.toString()}"
                     calendarPreference.title = calendar.name
+//                    calendarPreference.isChecked =
+//                        sharedPrefs.getBoolean("calendar|${calendar.id.toString()}", true)
                     if (calendar.ownerId != Firebase.auth.currentUser?.uid) {
                         calendarPreference.summary =
                             calendar.owner?.name ?: "Shared by another user"
@@ -138,16 +176,55 @@ class SettingsActivity : AppCompatActivity(),
                 }
             }
         }
-
     }
 
     override fun onSharedPreferenceChanged(
         sharedPreferences: SharedPreferences?, key: String?
     ) {
-        recreate()
+//        recreate()
+//        showView()
 
         // Update Changed Settings in Database
         userViewModel.updateUserSettings(sharedPreferences, key)
+    }
+
+//    private fun showView() {
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.settings, SettingsFragment())
+//            .commitAllowingStateLoss()
+////        findViewById<View>(com.example.sharedcalendar.R.id.progessBar).visibility = View.GONE
+//    }
+
+    override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
+        Log.i(TAG, "Changed $firebaseAuth ${firebaseAuth.currentUser?.uid}")
+        if (firebaseAuth.currentUser != null) {
+            sharedPrefs =
+//                SharedFirebasePreferences.getInstance(this, "app_settings", Context.MODE_PRIVATE)
+                SharedFirebasePreferences.getDefaultInstance(this)
+            Log.i(TAG, "Shared Prefs auth state changed ${sharedPrefs.all}")
+            sharedPrefs.keepSynced(true)
+            sharedPrefs.registerOnSharedPreferenceChangeListener(this)
+            sharedPrefs.omitKeys("name")
+            sharedPrefs.pull().addOnPullCompleteListener(object :
+                SharedFirebasePreferences.OnPullCompleteListener {
+                override fun onPullSucceeded(preferences: SharedFirebasePreferences) {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.settings, SettingsFragment(sharedPrefs))
+                        .commitAllowingStateLoss()
+//                    showView()
+//                    recreate()
+                }
+
+                override fun onPullFailed(e: Exception) {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.settings, SettingsFragment(sharedPrefs))
+                        .commitAllowingStateLoss()
+//                    showView()
+//                    recreate()
+                    Toast.makeText(this@SettingsActivity, "Fetch failed", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
     }
 
 }

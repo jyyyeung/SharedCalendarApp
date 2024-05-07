@@ -12,7 +12,6 @@ import com.alamkanak.weekview.jsr310.setEndTime
 import com.alamkanak.weekview.jsr310.setStartTime
 import com.example.sharedcalendar.databinding.FragmentWeekViewBinding
 import com.example.sharedcalendar.models.Event
-import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.LocalDate
 
 class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
@@ -44,7 +43,7 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
     private lateinit var selectedDate: LocalDate
     private lateinit var binding: FragmentWeekViewBinding
     private lateinit var firebaseViewModel: FirebaseViewModel
-    private lateinit var prefs: SharedFirebasePreferences
+//    private lateinit var prefs: SharedFirebasePreferences
 
     companion object {
         private val TAG: String = WeekViewFragment::class.java.name
@@ -55,7 +54,7 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
         binding = FragmentWeekViewBinding.bind(view)
         selectedDate = LocalDate.now()
 
-        val prefs = SharedFirebasePreferences.getDefaultInstance(activity)
+//        val prefs = SharedFirebasePreferences.getDefaultInstance(activity)
 
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
