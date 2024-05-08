@@ -70,6 +70,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                         else LocalDateTime.of(
                             year, adjMonth, day, startDateTime.hour, startDateTime.minute
                         )
+                    if (endDateText.text == "Date"){
+                        endDateTime = LocalDateTime.of(startDateTime.year,startDateTime.month,startDateTime.dayOfMonth,0,0)
+                        endDateText.text = "${startDateTime.year}.${startDateTime.month.value}.${startDateTime.dayOfMonth}"
+                    }
+
                     Log.d("StartDate", "StartDate: $startDateTime")
                     dateCheck()
                 },
