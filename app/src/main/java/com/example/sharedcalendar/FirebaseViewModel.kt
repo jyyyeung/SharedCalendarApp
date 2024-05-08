@@ -376,6 +376,24 @@ class FirebaseViewModel : ViewModel() {
             }
         }.groupBy { it.startTime.toLocalDate() }
     }
+
+    fun deleteShare(share: Share) {
+        val shareId = share.id
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.i(TAG, "deleteCalendar()")
+
+            val db = Firebase.firestore
+
+            db.collection("shares").document(shareId).delete().addOnSuccessListener {
+                Log.i(TAG, "share deleted")
+
+                calendars.value?.let { it1 -> getShares(it1) }
+
+            }.addOnFailureListener { exception ->
+                Log.w(TAG, "Error deleting Share.", exception)
+            }
+        }
+    }
 //
 //    fun updatePreferences(sharedPreferences: SharedPreferences?) {
 //

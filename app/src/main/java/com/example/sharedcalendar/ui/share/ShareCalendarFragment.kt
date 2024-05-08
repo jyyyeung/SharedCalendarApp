@@ -18,6 +18,8 @@ import com.example.sharedcalendar.R
 import com.example.sharedcalendar.models.Calendar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -89,9 +91,13 @@ class ShareCalendarFragment : DialogFragment() {
             if (!shareViewModel.isEmailValid(etUserEmail.text)) {
                 shareUserEmail.error = getString(R.string.invalid_email)
                 return@setOnClickListener
+            } else if (etUserEmail.text.toString() == FirebaseAuth.getInstance().currentUser?.email) {
+                shareUserEmail.error = "You cannot share with yourself"
+                return@setOnClickListener
             } else {
                 shareUserEmail.error = null
             }
+
 
             if (dropdownShareScope.text.toString() !in scopes) {
                 shareScope.error = "Invalid Share Scope"
@@ -138,6 +144,8 @@ class ShareCalendarFragment : DialogFragment() {
                                 this.dismiss()
                             }.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
                     }
+                    firebaseViewModel.getShares(firebaseViewModel.calendars.value!!)
+
                 }
 
 

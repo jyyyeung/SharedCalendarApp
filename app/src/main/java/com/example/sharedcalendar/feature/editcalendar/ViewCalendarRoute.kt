@@ -8,23 +8,33 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -61,6 +71,12 @@ fun ViewCalendarScreen(
 ) {
     val scrollState = rememberScrollState()
     val shares by firebaseViewModel.shares.observeAsState()
+    val shouldShowDialog = remember { mutableStateOf(false) } // 1
+    val rememberShare: MutableState<Share> = remember { mutableStateOf(Share()) }
+    if (shouldShowDialog.value) {
+        MyAlertDialog(shouldShowDialog = shouldShowDialog, rememberShare, firebaseViewModel)
+    }
+
 //    Column(modifier = modifier.padding(16.dp)) {
 //        BoxWithConstraints {
     Surface {
@@ -111,7 +127,10 @@ fun ViewCalendarScreen(
                 CalendarSharesList(
                     shares = it,
                     firebaseViewModel = firebaseViewModel,
-                    modifier = Modifier.wrapContentHeight()
+                    modifier = Modifier.wrapContentHeight(),
+                    shouldShowDialog,
+                    rememberShare,
+                    calendar.scope ?: "View"
                 )
             }
 
@@ -142,27 +161,66 @@ fun ViewCalendarScreen(
                         text = "Edit Calendar", color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-//                Button(
-//                    onClick = { /*TODO*/ },
-//                    modifier = Modifier.weight(1f),
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = MaterialTheme.colorScheme.surfaceBright
-//                    )
-//                ) {
-//                    Text(
-//                        text = "Delete Calendar", color = MaterialTheme.colorScheme.onSurface
-//                    )
-//                }
 
             }
         }
-//            }
-//        }
     }
+
+
 }
 
 @Composable
-fun CalendarShareListItem(share: Share) {
+fun MyAlertDialog(
+    shouldShowDialog: MutableState<Boolean>,
+    share: MutableState<Share>,
+    firebaseViewModel: FirebaseViewModel
+) {
+    if (shouldShowDialog.value) { // 2
+        AlertDialog(
+            // 3
+            onDismissRequest = { // 4
+                shouldShowDialog.value = false
+            },
+            // 5
+            title = { Text(text = "Delete Share") },
+            text = { Text(text = "Are you share you want to remove share with ${share.value.userEmail} of scope ${share.value.scope}?") },
+            icon = { Icon(Icons.Default.Delete, contentDescription = "Delete") },
+            confirmButton = { // 6
+                TextButton(
+                    onClick = {
+                        shouldShowDialog.value = false
+                        firebaseViewModel.deleteShare(share.value)
+                    },
+
+                    ) {
+                    Text(
+                        text = "Delete",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        shouldShowDialog.value = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            },
+
+            )
+    }
+}
+
+
+@Composable
+fun CalendarShareListItem(
+    share: Share,
+    shouldShowDialog: MutableState<Boolean>,
+    rememberShare: MutableState<Share>,
+    scope: String
+) {
     ListItem(headlineContent = { Text(share.userEmail) },
         supportingContent = { share.scope?.let { Text(it) } },
         leadingContent = {
@@ -170,17 +228,31 @@ fun CalendarShareListItem(share: Share) {
                 Icons.Filled.AccountCircle,
                 contentDescription = "Account",
             )
-        })
+        },
+        trailingContent = {
+            if (scope == "Full" || scope == "Edit") {
+                FilledTonalIconButton(onClick = {
+                    shouldShowDialog.value = true
+                    rememberShare.value = share
+                }) {
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                }
+            }
+        }
+    )
     HorizontalDivider()
 
 }
 
 @Composable
 fun CalendarSharesList(
-    shares: List<Share>, firebaseViewModel: FirebaseViewModel, modifier: Modifier = Modifier
+    shares: List<Share>,
+    firebaseViewModel: FirebaseViewModel,
+    modifier: Modifier = Modifier,
+    shouldShowDialog: MutableState<Boolean>,
+    rememberShare: MutableState<Share>,
+    scope: String
 ) {
-
-
     if (shares.isNotEmpty()) {
         Text(
             text = "Calendar Shares",
@@ -192,7 +264,7 @@ fun CalendarSharesList(
             modifier = modifier.height(216.dp)
         ) {
             items(count = shares.count(), key = { i -> shares[i].id }) { i ->
-                CalendarShareListItem(share = shares[i])
+                CalendarShareListItem(share = shares[i], shouldShowDialog, rememberShare, scope)
 
             }
         }
