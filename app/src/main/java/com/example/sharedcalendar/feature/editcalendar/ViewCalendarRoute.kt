@@ -14,7 +14,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -220,10 +224,19 @@ fun CalendarShareListItem(
     ListItem(headlineContent = { Text(share.userEmail) },
         supportingContent = { share.scope?.let { Text(it) } },
         leadingContent = {
-            Icon(
-                Icons.Filled.AccountCircle,
-                contentDescription = "Account",
-            )
+            if (scope == "Full") {
+
+                Icon(
+                    Icons.Filled.AccountCircle,
+                    contentDescription = "Account",
+                )
+            } else if (scope == "Edit") {
+                Icon(Icons.Filled.Edit, contentDescription = "Edit")
+            } else if (scope == "View") {
+                Icon(Icons.Default.Info, contentDescription = "View")
+            } else if (scope == "Availability") {
+                Icon(Icons.Default.DateRange, contentDescription = "Availability")
+            }
         },
         trailingContent = {
             if (scope == "Full" || scope == "Edit") {
