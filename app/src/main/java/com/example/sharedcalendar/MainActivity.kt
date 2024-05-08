@@ -50,29 +50,29 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
     companion object {
         private val TAG: String = MainActivity::class.java.name
     }
-
-    override fun onStart() {
-        super.onStart()
-        FirebaseAuth.getInstance().addAuthStateListener(this);
-    }
-
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(SharedFirebasePreferencesContextWrapper(newBase))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (prefs != null) {
-            prefs?.keepSynced(true)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (prefs != null) {
-            prefs?.keepSynced(false)
-        }
-    }
+//
+//    override fun onStart() {
+//        super.onStart()
+//        FirebaseAuth.getInstance().addAuthStateListener(this);
+//    }
+//
+//    override fun attachBaseContext(newBase: Context?) {
+//        super.attachBaseContext(SharedFirebasePreferencesContextWrapper(newBase))
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//        if (prefs != null) {
+//            prefs?.keepSynced(true)
+//        }
+//    }
+//
+//    override fun onPause() {
+//        super.onPause()
+//        if (prefs != null) {
+//            prefs?.keepSynced(false)
+//        }
+//    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,12 +83,16 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
 
-//        if (Firebase.auth.currentUser == null) {
-//            finishAffinity()
-//            startActivity(Intent(this, AuthActivity::class.java))
-//        }
+        if (Firebase.auth.currentUser == null) {
+            finishAffinity()
+            startActivity(Intent(this, AuthActivity::class.java))
+        }
         user = Firebase.auth.currentUser!!
-//        prefs = SharedFirebasePreferences.getDefaultInstance(this)
+        prefs = SharedFirebasePreferences.getInstance(
+            this,
+            "com-example-sharedcalendar_preferences",
+            Context.MODE_PRIVATE
+        )
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
@@ -98,7 +102,7 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
         firebaseViewModel.getUserShares()
 
-        val calendarPrefs = prefs?.all?.filterKeys { it.contains("calendar") }
+        val calendarPrefs = prefs?.all?.filterKeys { it.contains("calendar|") }
         Log.i("Calendar Prefs", calendarPrefs.toString())
 
         firebaseViewModel.userShares.observe(this) {
@@ -133,8 +137,8 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
             } else if (menuItem.toString() == "Logout") {
 //                val localPrefs = PreferenceManager.getDefaultSharedPreferences(this)
 //                localPrefs.edit().clear().commit().also {
-                prefs?.keepSynced(false)
-                prefs = null
+//                prefs?.keepSynced(false)
+//                prefs = null
 
                 // Call Logout process
                 FirebaseAuth.getInstance().signOut()
@@ -174,15 +178,15 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         }
 
 
-//        // END SIDEBAR NAVIGATION //
+        // END SIDEBAR NAVIGATION //
 //
 //        val calendarFragment = CalendarFragment()
-//
-//        // By default, open the Calendar fragment
-//        supportFragmentManager.beginTransaction().apply {
-//            replace(R.id.mainFragment, calendarFragment)
-//            commit()
-//        }
+
+        // By default, open the Calendar fragment
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.mainFragment, mHomeFragment)
+            commit()
+        }
 
 
     }
@@ -192,79 +196,80 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 //        return calendars[0].id
     }
 
+    //
     override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
-        // Get the current firebase user
-        val currentUser: FirebaseUser? = firebaseAuth.currentUser;
-
-        Log.i(TAG, "Changed $firebaseAuth ${firebaseAuth.currentUser?.uid}")
-        if (currentUser == null) {
-            if (isSignInDisplayed) {
-                prefs = null
-                return
-            }
-            isSignInDisplayed = true
-            prefs = null
-            startActivity(Intent(this, AuthActivity::class.java))
-            finishAffinity()
-        } else {
-            isSignInDisplayed = false
-            Log.d(
-                TAG,
-                prefs.toString() + " " + SharedFirebasePreferences.getInstance(
-                    this,
-                    "com-example-sharedcalendar_preferences",
-                    Context.MODE_PRIVATE
-                )
-                    .toString() + " " + PreferenceManager.getDefaultSharedPreferences(this)
-                    .toString()
-            )
-            prefs = SharedFirebasePreferences.getInstance(
-                this,
-                "com-example-sharedcalendar_preferences",
-                Context.MODE_PRIVATE
-            )
-            Log.d(
-                TAG,
-                prefs.toString() + " " + SharedFirebasePreferences.getInstance(
-                    this,
-                    "com-example-sharedcalendar_preferences",
-                    Context.MODE_PRIVATE
-                )
-                    .toString() + " " + PreferenceManager.getDefaultSharedPreferences(this)
-                    .toString()
-            )
-            PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
-            if (prefs!!.all.isNullOrEmpty() || prefs == {}) {
-                prefs = null
-                return
-            }
-            mSettingsFragment = SettingsFragment()
-//            prefs!!.keepSynced(true)
-//            prefs.registerOnSharedPreferenceChangeListener(this)
-//            prefs.omitKeys("name")
-//            prefs.edit().putString("name", firebaseAuth.currentUser!!.displayName).apply()
-            Log.i(TAG, "Shared Prefs auth state changed ${prefs!!.all}")
-            prefs!!.pull().addOnPullCompleteListener(object :
-                SharedFirebasePreferences.OnPullCompleteListener {
-                override fun onPullSucceeded(preferences: SharedFirebasePreferences) {
-                    Log.d(TAG, "${preferences.all}")
-                    val mFragmentTransaction: FragmentTransaction =
-                        mFragmentManager.beginTransaction()
-                    mFragmentTransaction.replace(R.id.mainFragment, mHomeFragment)
-                    mFragmentTransaction.commit()
-                    mFragmentManager.executePendingTransactions()
-                }
-
-                override fun onPullFailed(e: Exception) {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.settings, SettingsActivity.SettingsFragment(prefs))
-//                        .commitAllowingStateLoss()
-//                    showView()
-//                    recreate()
-                    Toast.makeText(this@MainActivity, "Fetch failed", Toast.LENGTH_SHORT).show()
-                }
-            })
-        }
+//        // Get the current firebase user
+//        val currentUser: FirebaseUser? = firebaseAuth.currentUser;
+//
+//        Log.i(TAG, "Changed $firebaseAuth ${firebaseAuth.currentUser?.uid}")
+//        if (currentUser == null) {
+//            if (isSignInDisplayed) {
+//                prefs = null
+//                return
+//            }
+//            isSignInDisplayed = true
+//            prefs = null
+//            startActivity(Intent(this, AuthActivity::class.java))
+//            finishAffinity()
+//        } else {
+//            isSignInDisplayed = false
+//            Log.d(
+//                TAG,
+//                prefs.toString() + " " + SharedFirebasePreferences.getInstance(
+//                    this,
+//                    "com-example-sharedcalendar_preferences",
+//                    Context.MODE_PRIVATE
+//                )
+//                    .toString() + " " + PreferenceManager.getDefaultSharedPreferences(this)
+//                    .toString()
+//            )
+//            prefs = SharedFirebasePreferences.getInstance(
+//                this,
+//                "com-example-sharedcalendar_preferences",
+//                Context.MODE_PRIVATE
+//            )
+//            Log.d(
+//                TAG,
+//                prefs.toString() + " " + SharedFirebasePreferences.getInstance(
+//                    this,
+//                    "com-example-sharedcalendar_preferences",
+//                    Context.MODE_PRIVATE
+//                )
+//                    .toString() + " " + PreferenceManager.getDefaultSharedPreferences(this)
+//                    .toString()
+//            )
+//            PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
+//            if (prefs!!.all.isNullOrEmpty() || prefs == {}) {
+//                prefs = null
+//                return
+//            }
+//            mSettingsFragment = SettingsFragment()
+////            prefs!!.keepSynced(true)
+////            prefs.registerOnSharedPreferenceChangeListener(this)
+////            prefs.omitKeys("name")
+////            prefs.edit().putString("name", firebaseAuth.currentUser!!.displayName).apply()
+//            Log.i(TAG, "Shared Prefs auth state changed ${prefs!!.all}")
+//            prefs!!.pull().addOnPullCompleteListener(object :
+//                SharedFirebasePreferences.OnPullCompleteListener {
+//                override fun onPullSucceeded(preferences: SharedFirebasePreferences) {
+//                    Log.d(TAG, "${preferences.all}")
+//                    val mFragmentTransaction: FragmentTransaction =
+//                        mFragmentManager.beginTransaction()
+//                    mFragmentTransaction.replace(R.id.mainFragment, mHomeFragment)
+//                    mFragmentTransaction.commit()
+//                    mFragmentManager.executePendingTransactions()
+//                }
+//
+//                override fun onPullFailed(e: Exception) {
+////                    supportFragmentManager.beginTransaction()
+////                        .replace(R.id.settings, SettingsActivity.SettingsFragment(prefs))
+////                        .commitAllowingStateLoss()
+////                    showView()
+////                    recreate()
+//                    Toast.makeText(this@MainActivity, "Fetch failed", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//        }
     }
 
 
