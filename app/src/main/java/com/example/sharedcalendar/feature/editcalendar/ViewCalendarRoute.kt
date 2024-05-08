@@ -127,6 +127,9 @@ fun ViewCalendarScreen(
                 modifier = Modifier.padding(top = 20.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                if (calendar.scope != "Full" && calendar.scope != "Edit") {
+                    Text(text = "You don't have the permissions to edit this calendar")
+                }
                 Button(
                     onClick = { onEditButtonClicked(calendar) },
                     modifier = Modifier.weight(1f),
@@ -139,17 +142,17 @@ fun ViewCalendarScreen(
                         text = "Edit Calendar", color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceBright
-                    )
-                ) {
-                    Text(
-                        text = "Delete Calendar", color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+//                Button(
+//                    onClick = { /*TODO*/ },
+//                    modifier = Modifier.weight(1f),
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = MaterialTheme.colorScheme.surfaceBright
+//                    )
+//                ) {
+//                    Text(
+//                        text = "Delete Calendar", color = MaterialTheme.colorScheme.onSurface
+//                    )
+//                }
 
             }
         }
