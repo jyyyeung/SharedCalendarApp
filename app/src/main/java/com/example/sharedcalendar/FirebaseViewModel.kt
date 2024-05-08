@@ -2,6 +2,7 @@ package com.example.sharedcalendar
 
 
 //import java.time.LocalDateTime
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -374,6 +375,15 @@ class FirebaseViewModel : ViewModel() {
             }
         }.groupBy { it.startTime.toLocalDate() }
     }
+//
+//    fun updatePreferences(sharedPreferences: SharedPreferences?) {
+//
+//        viewModelScope.launch(Dispatchers.IO) {
+//
+//
+//
+//        }
+//    }
 
 }
 

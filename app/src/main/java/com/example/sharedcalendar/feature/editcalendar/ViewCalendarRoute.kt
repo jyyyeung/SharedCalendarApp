@@ -26,14 +26,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.models.Share
-import com.example.sharedcalendar.ui.CalendarPreviewParameterProvider
 import com.example.sharedcalendar.ui.ManageCalendarsViewModel
 import com.example.sharedcalendar.ui.ProfileProperty
 import com.google.firebase.auth.ktx.auth
@@ -55,10 +52,9 @@ fun ViewCalendarRoute(
 }
 
 @Composable
-@Preview
 fun ViewCalendarScreen(
     modifier: Modifier = Modifier,
-    @PreviewParameter(CalendarPreviewParameterProvider::class) calendar: Calendar,
+    calendar: Calendar,
     onEditButtonClicked: (calendar: Calendar) -> Unit = {},
     firebaseViewModel: FirebaseViewModel = viewModel(),
     viewModel: ManageCalendarsViewModel = viewModel()
