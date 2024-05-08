@@ -21,21 +21,23 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
  * create an instance of this fragment.
  */
 class CalendarFragment : Fragment() {
-    private lateinit var prefs: SharedFirebasePreferences
     private lateinit var firebaseViewModel: FirebaseViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = SharedFirebasePreferences.getDefaultInstance(activity)
-        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_calendar, container, false)
+
+        val prefs: SharedFirebasePreferences =
+            SharedFirebasePreferences.getDefaultInstance(activity)
+        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
         // Change Fragment from month to week on button click
         // Set variables for change view buttons
@@ -50,7 +52,7 @@ class CalendarFragment : Fragment() {
         // By default, the view fragment is month view fragment
         childFragmentManager.beginTransaction().apply {
             // Set Default View based on user preferences
-            when (prefs.getString("calendar_view", "month")) {
+            when (prefs?.getString("calendar_view", "month")) {
                 "week" -> replace(R.id.flFragment, weekViewFragment)
                 "month" -> replace(R.id.flFragment, monthViewFragment)
             }
