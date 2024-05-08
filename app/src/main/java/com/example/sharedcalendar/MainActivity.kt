@@ -2,6 +2,7 @@ package com.example.sharedcalendar
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
@@ -31,13 +32,15 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferencesContextWrapper
 
 
-class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
+class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener,
+    SharedPreferences.OnSharedPreferenceChangeListener {
     private val firebaseViewModel by viewModels<FirebaseViewModel>()
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
-    private var prefs: SharedFirebasePreferences? = null
+    private lateinit var prefs: SharedPreferences
 
     private var isSignInDisplayed: Boolean = false
+    private var isModifyingSettings: Boolean = false
 
     /*
      * Fragments
@@ -45,12 +48,13 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
     private lateinit var mFragmentManager: FragmentManager
     private var mHomeFragment: CalendarFragment = CalendarFragment()
     private var mManageCalendarsFragment: ManageCalendarsFragment = ManageCalendarsFragment()
-    private var mSettingsFragment: SettingsFragment = SettingsFragment()
+//    private var mSettingsFragment: SettingsFragment = SettingsFragment()
 
     companion object {
         private val TAG: String = MainActivity::class.java.name
     }
-//
+
+    //
 //    override fun onStart() {
 //        super.onStart()
 //        FirebaseAuth.getInstance().addAuthStateListener(this);
@@ -84,15 +88,17 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
 
         if (Firebase.auth.currentUser == null) {
-            finishAffinity()
             startActivity(Intent(this, AuthActivity::class.java))
+            finish()
         }
         user = Firebase.auth.currentUser!!
-        prefs = SharedFirebasePreferences.getInstance(
-            this,
-            "com-example-sharedcalendar_preferences",
-            Context.MODE_PRIVATE
-        )
+//        SharedFirebasePreferences.getInstance(
+//            this,
+//            "com-example-sharedcalendar_preferences",
+//            Context.MODE_PRIVATE
+//        ).pull()
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+//        prefs.edit().putString("name", user.displayName).apply()
 
         // START SIDEBAR NAVIGATION //
         //Drawer button
@@ -102,7 +108,7 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
         firebaseViewModel.getUserShares()
 
-        val calendarPrefs = prefs?.all?.filterKeys { it.contains("calendar|") }
+        val calendarPrefs = prefs.all?.filterKeys { it.contains("${user.uid}|calendar|") }
         Log.i("Calendar Prefs", calendarPrefs.toString())
 
         firebaseViewModel.userShares.observe(this) {
@@ -126,17 +132,18 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
         nvSidebar.setNavigationItemSelectedListener { menuItem ->
             // Handle menu item selected
             menuItem.isChecked = false
-
+            isModifyingSettings = false
             val mFragmentTransaction = mFragmentManager.beginTransaction()
             Log.i(TAG, menuItem.toString() + menuItem.itemId)
             if (menuItem.toString() == "Settings") {
+                isModifyingSettings = true
                 // Open settings activity
 //                startActivity(Intent(this, SettingsActivity::class.java))
-                mFragmentTransaction.replace(R.id.mainFragment, mSettingsFragment)
+                mFragmentTransaction.replace(R.id.mainFragment, SettingsFragment(user))
 
             } else if (menuItem.toString() == "Logout") {
 //                val localPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-//                localPrefs.edit().clear().commit().also {
+//                prefs.edit().clear().apply().also {
 //                prefs?.keepSynced(false)
 //                prefs = null
 
@@ -270,6 +277,23 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 //                }
 //            })
 //        }
+    }
+
+    //
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        Log.i(TAG, "Shared Preference Changed $key")
+        if (FirebaseAuth.getInstance().currentUser != null && isModifyingSettings) {
+            val calendarPrefs =
+                sharedPreferences?.all?.filterKeys { it.contains("${user.uid}|calendar|") }
+            if (calendarPrefs != null) {
+                firebaseViewModel.getCalendars(calendarPrefs, true)
+            }
+//            SharedFirebasePreferences.getInstance(
+//                this,
+//                "com-example-sharedcalendar_preferences",
+//                Context.MODE_PRIVATE
+//            ).push()
+        }
     }
 
 

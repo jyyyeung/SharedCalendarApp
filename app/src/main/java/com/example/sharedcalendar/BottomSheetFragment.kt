@@ -2,6 +2,7 @@ package com.example.sharedcalendar
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,9 +15,11 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.example.sharedcalendar.models.Event
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
@@ -25,7 +28,7 @@ import kotlin.random.Random
 
 
 class BottomSheetFragment : BottomSheetDialogFragment() {
-    private lateinit var prefs: SharedFirebasePreferences
+    private lateinit var prefs: SharedPreferences
     private lateinit var firebaseViewModel: FirebaseViewModel
 
     private lateinit var startDateTime: LocalDateTime
@@ -39,7 +42,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        prefs = SharedFirebasePreferences.getDefaultInstance(context)
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
         return inflater.inflate(R.layout.bottom_window, container, false)
@@ -208,7 +211,8 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 endMinute = eMinute
             }
 
-            var defaultCalendar = prefs.getString("default_calendar", null)
+            var defaultCalendar =
+                prefs.getString("${FirebaseAuth.getInstance().uid}|default|calendar", null)
             Log.i(TAG, defaultCalendar.toString())
             if (defaultCalendar.isNullOrBlank()) {
                 defaultCalendar = (activity as MainActivity).getCalendarId()

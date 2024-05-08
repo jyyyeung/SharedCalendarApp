@@ -2,6 +2,7 @@ package com.example.sharedcalendar
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,7 @@ import java.time.LocalDate
 class WeekViewSimpleAdapter : WeekViewSimpleAdapterJsr310<Event>() {
     // Reference API: https://github.com/thellmund/Android-Week-View/wiki/Public-API
     override fun onCreateEntity(item: Event): WeekViewEntity {
+        Log.d("WeekViewSimpleAdapter", "Adding ${item.toString()} to Week View")
         // Setup each event passed to adapter
         val entity = WeekViewEntity.Event.Builder(item).setId(item.longId).setTitle(item.title)
             .setStartTime(item.startTime).setEndTime(item.endTime).setAllDay(item.isAllDay)
@@ -64,7 +66,7 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
         weekView.adapter = adapter
 
 
-        firebaseViewModel.calendars.observe(requireActivity()) {
+        firebaseViewModel.calendars.observe(viewLifecycleOwner) {
             // Get Events from Database
             firebaseViewModel.getCurrentMonthEvents()
         }
@@ -73,12 +75,15 @@ class WeekViewFragment : Fragment(R.layout.fragment_week_view) {
 
 
         // Listen for Event Updates
+//        firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
         firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
             val enabledCalendarIds =
                 if (firebaseViewModel.enabledCalendars.value?.isNotEmpty() == true) firebaseViewModel.enabledCalendars.value else mutableListOf()
 
             val filtered = events.filter { enabledCalendarIds!!.contains(it.calendarId) }
             // Update Event list upon updates
+
+            Log.i(TAG, "Week view events update $events")
 
             adapter.submitList(filtered)
 
