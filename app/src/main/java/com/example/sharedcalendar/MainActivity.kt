@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener,
 
         firebaseViewModel.getUserShares()
 
-        val calendarPrefs = prefs.all?.filterKeys { it.contains("calendar|") }
+        val calendarPrefs = prefs.all?.filterKeys { it.contains("${user.uid}|calendar|") }
         Log.i("Calendar Prefs", calendarPrefs.toString())
 
         firebaseViewModel.userShares.observe(this) {
@@ -282,13 +282,18 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener,
     //
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         Log.i(TAG, "Shared Preference Changed $key")
-//        if (FirebaseAuth.getInstance().currentUser != null && isModifyingSettings) {
+        if (FirebaseAuth.getInstance().currentUser != null && isModifyingSettings) {
+            val calendarPrefs =
+                sharedPreferences?.all?.filterKeys { it.contains("${user.uid}|calendar|") }
+            if (calendarPrefs != null) {
+                firebaseViewModel.getCalendars(calendarPrefs, true)
+            }
 //            SharedFirebasePreferences.getInstance(
 //                this,
 //                "com-example-sharedcalendar_preferences",
 //                Context.MODE_PRIVATE
 //            ).push()
-//        }
+        }
     }
 
 

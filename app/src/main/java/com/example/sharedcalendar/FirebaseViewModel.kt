@@ -174,7 +174,8 @@ class FirebaseViewModel : ViewModel() {
     }
 
     private fun isCalendarEnabled(calendarPrefs: Map<String, Any?>, calendarId: String): Boolean {
-        val calendarKey = "calendar|${calendarId}"
+        val calendarKey = "${FirebaseAuth.getInstance().uid}|calendar|${calendarId}"
+        Log.i(TAG, "Check isCalendarEnabled $calendarKey")
         return !calendarPrefs.containsKey(calendarKey) || calendarPrefs.getValue(
             calendarKey
         ) == true
@@ -368,7 +369,7 @@ class FirebaseViewModel : ViewModel() {
         }
         return buildList {
             for (event in _events.value!!) {
-                if (_enabledCalendars.value?.contains(event.id) == true)
+                if (_enabledCalendars.value?.contains(event.calendarId) == true)
                     currentMonth.atDay(event.startTime.dayOfMonth).also {
                         add(event)
                     }

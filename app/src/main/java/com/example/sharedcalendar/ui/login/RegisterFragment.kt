@@ -1,6 +1,7 @@
 package com.example.sharedcalendar.ui.login
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -34,7 +36,7 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 class RegisterFragment : Fragment() {
     private lateinit var userViewModel: UserViewModel
     private lateinit var auth: FirebaseAuth
-    private lateinit var sharedPrefs: SharedFirebasePreferences
+    private lateinit var sharedPrefs: SharedPreferences
 
     companion object {
         private val TAG: String? = RegisterFragment::class.java.name
@@ -162,10 +164,8 @@ class RegisterFragment : Fragment() {
                 val user = auth.currentUser
                 if (user != null) {
                     // Get Shared Preferences
-                    sharedPrefs =
-                        SharedFirebasePreferences.getDefaultInstance(activity)
+                    sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
                     Log.i(TAG, sharedPrefs.all.toString())
-                    sharedPrefs.pull()
 
                     val profileUpdates = userProfileChangeRequest {
                         displayName = username
@@ -176,7 +176,7 @@ class RegisterFragment : Fragment() {
                             Log.d(TAG, "User profile updated.")
                         }
                     }
-                    sharedPrefs.edit().putString("name", username).apply()
+                    sharedPrefs.edit().putString("${user.uid}|name", username).apply()
 
                     // Add user public information to users database
                     val userDetails = hashMapOf(
@@ -218,9 +218,10 @@ class RegisterFragment : Fragment() {
         db.collection("calendars").add(defaultCalendar).addOnSuccessListener { documentReference ->
             Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
             // Set Default calendar in preferences to created calendar
-            sharedPrefs.edit().putString("default_calendar", documentReference.id).apply()
-            sharedPrefs.edit().putBoolean("calendar|${documentReference.id}", true).apply()
-            sharedPrefs.push()
+            sharedPrefs.edit().putString("${user.uid}|default|calendar", documentReference.id)
+                .apply()
+            sharedPrefs.edit().putBoolean("${user.uid}|calendar|${documentReference.id}", true)
+                .apply()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Error adding document", e)
         }

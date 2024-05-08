@@ -52,7 +52,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         val startMonth = currentMonth.minusMonths(200)
         val endMonth = currentMonth.plusMonths(200)
 
-        firebaseViewModel.calendars.observe(requireActivity()) {
+        firebaseViewModel.calendars.observe(viewLifecycleOwner) {
             firebaseViewModel.getCurrentMonthEvents()
         }
 
@@ -63,16 +63,8 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
             Log.i(TAG, events.toString())
             // Update Event list upon updates
-            eventsThisMonth = buildList {
-                for (event in events) {
-//                    Log.i(TAG, event.toString())
-                    currentMonth.atDay(event.startTime.dayOfMonth).also { date ->
-                        add(event)
-                    }
-                }
-            }.groupBy {
-                it.startTime.toLocalDate()
-            }
+            eventsThisMonth = firebaseViewModel.getGroupedEvents()
+            Log.i(TAG, "Month View calendar Events updated")
             binding.MonthViewCalendar.notifyCalendarChanged()
         }
 

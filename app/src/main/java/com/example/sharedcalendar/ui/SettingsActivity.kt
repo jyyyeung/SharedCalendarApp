@@ -187,9 +187,13 @@ class SettingsFragment(private val user: FirebaseUser) :
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d(TAG, "Finish Updating Settings")
+        val calendarPrefs =
+            prefs.all?.filterKeys { it.contains("${user.uid}|calendar|") }
+        if (calendarPrefs != null) {
+            firebaseViewModel.getCalendars(calendarPrefs, true)
+        }
         if (isConfigChanged) {
             Toast.makeText(activity, "Config Changed ", Toast.LENGTH_SHORT).show()
-
         }
     }
 
