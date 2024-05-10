@@ -2,7 +2,16 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="LoginFragmentTest">
+      <entry key="All Tests">
+        <State />
+      </entry>
+      <entry key="AuthActivityTest2">
+        <State />
+      </entry>
+      <entry key="MainActivityTest">
+        <State />
+      </entry>
+      <entry key="activityIsNotNull()">
         <State />
       </entry>
       <entry key="app">

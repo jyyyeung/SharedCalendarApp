@@ -1,7 +1,6 @@
 package com.example.sharedcalendar.ui.login
 
 import android.text.Editable
-import androidx.core.text.trimmedLength
 import androidx.core.util.PatternsCompat
 import androidx.lifecycle.ViewModel
 
@@ -76,6 +75,6 @@ class UserViewModel : ViewModel() {
      * @return True if the password is valid, false otherwise.
      */
     fun isPasswordValid(password: Editable): Boolean {
-        return password.toString().isNotBlank() && password.toString().trimmedLength() > 5
+        return password.toString().isNotBlank() && password.toString().trim().length > 5
     }
 }

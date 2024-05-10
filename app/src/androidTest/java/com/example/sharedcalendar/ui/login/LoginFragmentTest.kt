@@ -33,7 +33,7 @@ class LoginFragmentTest {
     private val validPassword = "password"
 
     @Test
-    fun test_whenLoginButtonIsClickedAndCredentialsAreValid_UserIsLoggedIn() {
+    fun whenLoginButtonIsClickedAndCredentialsAreValid_UserIsLoggedIn() {
         // Given
         every { mockAuth.signInWithEmailAndPassword(any(), any()) } returns mockk(relaxed = true)
 

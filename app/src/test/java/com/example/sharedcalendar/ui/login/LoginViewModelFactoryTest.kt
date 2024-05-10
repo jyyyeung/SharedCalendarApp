@@ -23,6 +23,7 @@ class LoginViewModelFactoryTest {
 
     @Test
     fun `throws IllegalArgumentException when unknown ViewModel class is requested`() {
+        class OtherViewModel : ViewModel()
         try {
             factory.create(OtherViewModel::class.java)
             fail("Expected IllegalArgumentException")
@@ -32,4 +33,3 @@ class LoginViewModelFactoryTest {
     }
 }
 
-class OtherViewModel : ViewModel()

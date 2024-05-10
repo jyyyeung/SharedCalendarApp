@@ -75,6 +75,7 @@ class FirebaseViewModelTest {
         every { Log.i(any(), any()) } returns 0
         every { Log.e(any(), any()) } returns 0
         every { Log.wtf(any(), String()) } returns 0
+        every { Log.wtf(any(), Throwable()) } returns 0
 
 //        mockAuth = mockk(relaxed = true)
         mockkStatic(FirebaseAuth::class)

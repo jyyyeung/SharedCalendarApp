@@ -2,25 +2,47 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.android.application")
+//    jacoco
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
     id("org.jetbrains.kotlin.android")
     kotlin("plugin.serialization") version "1.9.23"
     id("de.mannodermaus.android-junit5") version "1.10.0.0"
+//    id("com.dicedmelon.gradle.jacoco-android") version "0.1.5"
+    jacoco
 }
-//tasks.withType(Test) {
-//    useJUnitPlatform()
-//
-//    testLogging {     // This is for logging and can be removed.
-//        events("passed", "skipped", "failed")
-//    }
-//}
-//tasks.named<Test>("test") {
-//    useJUnitPlatform()
-//}
-//tasks.withType<Test> {
-//    useJUnitPlatform()
-//}
+
+
+task<JacocoReport>("mergedJacocoReport") {
+
+    dependsOn("testDebugUnitTest", "createDebugCoverageReport")
+
+    reports {
+
+    }
+
+    val fileFilter = mutableSetOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*"
+    )
+    val debugTree = fileTree("${project.buildDir}/tmp/kotlin-classes/debug") {
+        exclude(fileFilter)
+    }
+    val mainSrc = "${project.projectDir}/src/main/kotlin"
+
+    sourceDirectories = files(mainSrc)
+    classDirectories = files(debugTree)
+    executionData = fileTree(project.buildDir) {
+        include(
+            "jacoco/testDebugUnitTest.exec",
+            "outputs/code_coverage/debugAndroidTest/connected/*coverage.ec"
+        )
+    }
+}
 
 
 android {
@@ -28,9 +50,10 @@ android {
     compileSdk = 34
 
 
+
     testOptions {
         unitTests {
-            isReturnDefaultValues = true
+//            isReturnDefaultValues = true
             isIncludeAndroidResources = true
         }
 
@@ -51,7 +74,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArgument(
+            "runnerBuilder",
+            "de.mannodermaus.junit5.AndroidJUnit5Builder"
+        )
     }
+
 
     buildTypes {
         release {
@@ -60,6 +88,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+        debug {
+//            enableAndroidTestCoverage = true
+//            enableUnitTestCoverage = true
         }
     }
     compileOptions {
@@ -76,19 +108,37 @@ android {
         viewBinding = true
         compose = true
     }
+
+
+
     tasks.withType<Test> {
         useJUnitPlatform()
+
         testLogging {
             events("passed", "skipped", "failed")
         }
     }
 
-// config JVM target to 1.8 for kotlin compilation tasks
+    tasks.withType(Test::class) {
+        configure<JacocoTaskExtension> {
+            isIncludeNoLocationClasses = true
+            excludes = listOf("jdk.internal.*")
+        }
+    }
+
+    // config JVM target to 1.8 for kotlin compilation tasks
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions.jvmTarget = "1.8"
     }
 
 }
+//val exclusions = listOf(
+//    "**/R.class",
+//    "**/R\$*.class",
+//    "**/BuildConfig.*",
+//    "**/Manifest*.*",
+//    "**/*Test*.*"
+//)
 dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
@@ -98,16 +148,22 @@ dependencies {
     implementation("androidx.compose.material3:material3-android:1.2.1")
 
     implementation("androidx.fragment:fragment-ktx:1.7.0")
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("androidx.test:core-ktx:1.6.0-alpha06")
     debugImplementation("androidx.fragment:fragment-testing:1.7.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
 
-//    implementation("androidx.test.ext:junit-ktx:1.1.5")
-//    testImplementation("junit:junit:4.13.2")
-//    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:core-ktx:1.2.0")
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.1")
+    androidTestImplementation("androidx.test:runner:1.2.0")
+    androidTestImplementation("androidx.test:rules:1.2.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.2.0")
+    androidTestImplementation("com.google.truth:truth:0.44")
 
-//    testImplementation("org.robolectric:robolectric:4.7.3")
-//    androidTestImplementation("androidx.test:runner:1.5.2")
-//    androidTestImplementation("androidx.test:rules:1.5.0")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.12")
 
     val mockkVersion = "1.13.10"
     testImplementation("io.mockk:mockk:${mockkVersion}")
@@ -121,31 +177,20 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("com.android.support.test.espresso:espresso-contrib:3.0.2")
 
-//    testImplementation(platform("org.junit:junit-bom:5.10.2"))
-//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-//    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-//    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    testImplementation(platform("org.junit:junit-bom:5.10.2"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-//    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     // (Required) Writing and executing Unit Tests on the JUnit Platform
-    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
-
-//    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-//    androidTestImplementation("org.junit.jupiter:junit-jupiter")
     // (Optional) If you need "Parameterized Tests"
-    androidTestImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
 
-//    testRuntimeOnly("org.junit.platform:junit-platform-launcher") {
-//        because("Only needed to run tests in a version of IntelliJ IDEA that bundles older versions")
-//    }
-//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-//    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+    // (Optional) If you also have JUnit 4-based tests
+    testImplementation("junit:junit:4.13.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.0")
 
+    androidTestImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
 
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1-Beta")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.10")
 
     val composeBom = platform("androidx.compose:compose-bom:2024.05.00")
     implementation(composeBom)
@@ -175,6 +220,7 @@ dependencies {
     // Coroutine (For API)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
 
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
