@@ -6,9 +6,12 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.transaction
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.databinding.CalendarDayBinding
 import com.example.sharedcalendar.databinding.CalendarHeaderBinding
@@ -122,9 +125,16 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                         if (selectedDate != day.date) {
                             val oldDate = selectedDate
                             selectedDate = day.date
-                            val binding = this@MonthViewFragment.binding
-                            binding.MonthViewCalendar.notifyDateChanged(day.date)
-                            oldDate?.let { binding.MonthViewCalendar.notifyDateChanged(it) }
+                            parentFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment,DayViewFragment())
+                                addToBackStack(null)
+                                commit()
+                            }
+
+
+//                            val binding = this@MonthViewFragment.binding
+//                            binding.MonthViewCalendar.notifyDateChanged(day.date)
+//                            oldDate?.let { binding.MonthViewCalendar.notifyDateChanged(it) }
                         }
                     }
                 }
