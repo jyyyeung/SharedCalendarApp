@@ -108,7 +108,7 @@ class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance())
     }
 
 
-    private fun login(email: String, password: String) {
+    fun login(email: String, password: String) {
         val etPassword = view?.findViewById<TextInputLayout>(R.id.login_password)
         val etEmail = view?.findViewById<TextInputLayout>(R.id.login_email) // binding.username
         auth.signInWithEmailAndPassword(
