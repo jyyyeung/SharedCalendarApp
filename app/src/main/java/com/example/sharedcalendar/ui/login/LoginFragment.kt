@@ -26,14 +26,14 @@ import com.google.firebase.auth.FirebaseUser
  * Use the [LoginFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class LoginFragment : Fragment() {
+class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) : Fragment() {
     private lateinit var userViewModel: UserViewModel
-    private lateinit var auth: FirebaseAuth
+//    lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
-        auth = FirebaseAuth.getInstance()
+//        auth = FirebaseAuth.getInstance()
     }
 
     override fun onCreateView(
@@ -47,7 +47,7 @@ class LoginFragment : Fragment() {
         val etEmailInput =
             view.findViewById<TextInputEditText>(R.id.etUserEmail) // binding.username
         val etPassword = view.findViewById<TextInputLayout>(R.id.login_password)
-        val etPasswordInput = view.findViewById<TextInputEditText>(R.id.et_login_password)
+        val etPasswordInput = view.findViewById<TextInputEditText>(R.id.etLoginPassword)
         val btnLogin = view.findViewById<Button>(R.id.btnLogin)
         val pbLoading = view.findViewById<CircularProgressIndicator>(R.id.pbLoading)
 

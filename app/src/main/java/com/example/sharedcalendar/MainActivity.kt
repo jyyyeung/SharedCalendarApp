@@ -1,19 +1,15 @@
 package com.example.sharedcalendar
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import com.example.sharedcalendar.ui.CalendarFragment
@@ -28,8 +24,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
-import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferencesContextWrapper
 
 
 class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener,
@@ -124,7 +118,7 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener,
             val tvUsername: TextView = findViewById(R.id.tvSidebarUsername)
             val tvEmail: TextView = findViewById(R.id.tvSidebarEmail)
             // Update Sidebar username if current values are default
-            tvUsername.text = user.displayName
+            tvUsername.text = prefs.getString("${user.uid}|name", null) ?: user.displayName
             tvEmail.text = user.email
         }
 
@@ -177,8 +171,8 @@ class MainActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener,
 //                    commit()
 //                }
             }
-            mFragmentTransaction.commit();
-            mFragmentManager.executePendingTransactions();
+            mFragmentTransaction.commit()
+            mFragmentManager.executePendingTransactions()
 //            menuItem.itemId
             drawerLayout.close()
             true

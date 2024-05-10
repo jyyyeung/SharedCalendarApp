@@ -37,7 +37,7 @@ class AuthenticationPagerAdapter(
 }
 
 class AuthActivity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
+    lateinit var auth: FirebaseAuth
 
     public override fun onStart() {
         super.onStart()
@@ -50,7 +50,7 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         // Initialize Firebase Auth

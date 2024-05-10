@@ -16,12 +16,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.models.Calendar
+import com.example.sharedcalendar.models.Share
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -112,41 +110,45 @@ class ShareCalendarFragment : DialogFragment() {
 
             // Save Share
             val db = Firebase.firestore
-            db.collection("shares")
-                .where(
-                    Filter.and(
-                        Filter.equalTo("calendarId", calendarId),
-                        Filter.equalTo("userEmail", userEmail)
-                    )
-                ).get().addOnSuccessListener { results ->
-                    Log.i(TAG, results.toString())
-                    if (results.isEmpty) {
-                        val newShare = hashMapOf(
-                            "calendarId" to calendarId,
-                            "userEmail" to userEmail,
-                            "scope" to scope
-                        )
-                        // Share does not exist
-                        db.collection("shares").add(newShare).addOnSuccessListener { result ->
-                            Log.d(TAG, "DocumentSnapshot successfully written!")
-                            this.dismiss()
-                        }.addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-
-                    } else {
-                        val share = results.documents[0]
-
-                        db.collection("shares").document(share.id)
-                            .set(
-                                hashMapOf("scope" to scope),
-                                SetOptions.merge()
-                            ).addOnSuccessListener {
-                                Log.d(TAG, "DocumentSnapshot successfully written!")
-                                this.dismiss()
-                            }.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-                    }
-                    firebaseViewModel.getShares(firebaseViewModel.calendars.value!!)
-
-                }
+            val newShare: Share = Share(calendarId, userEmail, scope)
+            firebaseViewModel.createShare(newShare).also {
+                this.dismiss()
+            }
+//            db.collection("shares")
+//                .where(
+//                    Filter.and(
+//                        Filter.equalTo("calendarId", calendarId),
+//                        Filter.equalTo("userEmail", userEmail)
+//                    )
+//                ).get().addOnSuccessListener { results ->
+//                    Log.i(TAG, results.toString())
+//                    if (results.isEmpty) {
+//                        val newShare = hashMapOf(
+//                            "calendarId" to calendarId,
+//                            "userEmail" to userEmail,
+//                            "scope" to scope
+//                        )
+//                        // Share does not exist
+//                        db.collection("shares").add(newShare).addOnSuccessListener { result ->
+//                            Log.d(TAG, "DocumentSnapshot successfully written!")
+//                            this.dismiss()
+//                        }.addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+//
+//                    } else {
+//                        val share = results.documents[0]
+//
+//                        db.collection("shares").document(share.id)
+//                            .set(
+//                                hashMapOf("scope" to scope),
+//                                SetOptions.merge()
+//                            ).addOnSuccessListener {
+//                                Log.d(TAG, "DocumentSnapshot successfully written!")
+//                                this.dismiss()
+//                            }.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+//                    }
+//                    firebaseViewModel.getShares(firebaseViewModel.calendars.value!!)
+//
+//                }
 
 
         }
