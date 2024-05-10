@@ -36,7 +36,7 @@ class FirebaseViewModel(
     }
 
     private val _events = MutableLiveData<MutableList<Event>>()
-    val events: LiveData<MutableList<Event>> = _events
+    var events: LiveData<MutableList<Event>> = _events
 
     private val _userCalendars = MutableLiveData<MutableList<Calendar>>()
     var userCalendars: LiveData<MutableList<Calendar>> = _userCalendars
@@ -421,7 +421,7 @@ class FirebaseViewModel(
         this.value = value
     }
 
-    private fun getUserById(
+    fun getUserById(
         userId: String
     ): User? {
         if (users.value?.get(userId) != null) {
@@ -441,7 +441,7 @@ class FirebaseViewModel(
         return user
     }
 
-    private fun getEventsByCalendar(
+    fun getEventsByCalendar(
         calendarId: String, scope: String?, currentMonthOnly: Boolean = false
     ): ArrayList<Event> {
         val eventArrayList: ArrayList<Event> = ArrayList()
@@ -483,12 +483,12 @@ class FirebaseViewModel(
     fun getGroupedEvents(): Map<LocalDate, List<Event>>? {
         val currentMonth = YearMonth.now()
 //        val events = getEvents()
-        if (_events.value == null) {
+        if (events.value == null) {
             return null
         }
         return buildList {
-            for (event in _events.value!!) {
-                if (_enabledCalendars.value?.contains(event.calendarId) == true)
+            for (event in events.value!!) {
+                if (enabledCalendars.value?.contains(event.calendarId) == true)
                     currentMonth.atDay(event.startTime.dayOfMonth).also {
                         add(event)
                     }
@@ -498,6 +498,7 @@ class FirebaseViewModel(
 
     fun deleteShare(share: Share) {
         val shareId = share.id
+
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "deleteCalendar()")
 
