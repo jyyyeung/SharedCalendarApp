@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.preference.PreferenceManager
 import com.example.sharedcalendar.ui.CalendarFragment
 import com.example.sharedcalendar.ui.ManageCalendarsFragment
@@ -20,16 +21,20 @@ import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
 import com.example.sharedcalendar.ui.share.ShareCalendarFragment
 import com.google.android.material.navigation.NavigationView
+import com.google.common.annotations.VisibleForTesting
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 
-class MainActivity(private val auth: FirebaseAuth = Firebase.auth) :
+class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) :
     AppCompatActivity(),
     SharedPreferences.OnSharedPreferenceChangeListener {
-    private val firebaseViewModel by viewModels<FirebaseViewModel>()
+    @VisibleForTesting
+    lateinit var firebaseViewModel: FirebaseViewModel
+
+    //    var firebaseViewModel by viewModels<FirebaseViewModel>()
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
     private lateinit var prefs: SharedPreferences
@@ -52,7 +57,7 @@ class MainActivity(private val auth: FirebaseAuth = Firebase.auth) :
         private val TAG: String = MainActivity::class.java.name
     }
 
-    override fun onStart() {
+    public override fun onStart() {
         super.onStart()
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -150,11 +155,10 @@ class MainActivity(private val auth: FirebaseAuth = Firebase.auth) :
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         mFragmentManager = supportFragmentManager
 
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
-
+        firebaseViewModel = ViewModelProvider(this)[FirebaseViewModel::class.java]
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
@@ -166,11 +170,6 @@ class MainActivity(private val auth: FirebaseAuth = Firebase.auth) :
 //        return calendars[0].id
     }
 
-    fun getUser(): FirebaseUser {
-        return user
-    }
-
-    //
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         Log.i(TAG, "Shared Preference Changed $key")
         if (FirebaseAuth.getInstance().currentUser != null && isModifyingSettings) {

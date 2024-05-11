@@ -3,6 +3,7 @@ package com.example.sharedcalendar
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Looper
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import com.example.sharedcalendar.models.Calendar
@@ -27,10 +28,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
+import io.mockk.unmockkAll
+import org.junit.After
 import org.junit.Before
+import org.robolectric.Shadows.shadowOf
 
 abstract class BaseTest {
-    protected val mockFirebaseViewModel = mockk<FirebaseViewModel>()
+    protected var mockFirebaseViewModel = mockk<FirebaseViewModel>()
     protected lateinit var mockAuth: FirebaseAuth
     protected lateinit var mockFirestore: FirebaseFirestore
 
@@ -82,7 +86,9 @@ abstract class BaseTest {
 
     @Suppress("UNCHECKED_CAST")
     protected fun <T> setField(target: Any, fieldName: String, value: T) {
+        Log.i("Base Test Cast", "${target.javaClass.fields}")
         val field = target.javaClass.getDeclaredField(fieldName)
+        Log.i("Base Test Cast", "Setting field $fieldName to $value")
         field.isAccessible = true
         field.set(target, value)
     }
@@ -90,6 +96,7 @@ abstract class BaseTest {
     @Before
     fun setup() {
 //        MockKAnnotations.init(this)
+        shadowOf(Looper.getMainLooper()).idle()
 
         mockkStatic(Log::class)
         every { Log.v(any(), any()) } returns 0
@@ -221,5 +228,10 @@ abstract class BaseTest {
 
 
         extendedSetup()
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 }
