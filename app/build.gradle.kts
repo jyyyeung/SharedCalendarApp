@@ -75,8 +75,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArgument(
-            "runnerBuilder",
-            "de.mannodermaus.junit5.AndroidJUnit5Builder"
+            "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
         )
     }
 
@@ -199,6 +198,9 @@ dependencies {
 //
 //    debugImplementation("androidx.compose.ui:ui-tooling")
 //    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-test-junit4")
+    implementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
