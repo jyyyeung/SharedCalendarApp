@@ -28,41 +28,44 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
+import io.mockk.spyk
 import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Before
 import org.robolectric.Shadows.shadowOf
 
 abstract class BaseTest {
-    protected var mockFirebaseViewModel = mockk<FirebaseViewModel>()
+    protected var mockFirebaseViewModel = mockk<FirebaseViewModel>(relaxed = true)
     protected lateinit var mockAuth: FirebaseAuth
     protected lateinit var mockFirestore: FirebaseFirestore
+    protected lateinit var spykFirebaseViewModel: FirebaseViewModel
 
     //    protected val mockSharedPreferences = mockk<SharedPreferences>()
 //    protected val mockEditor = mockk<SharedPreferences.Editor>()
-    protected val mockCollectionReference: CollectionReference = mockk()
-    protected val mockUser = mockk<FirebaseUser>()
-    protected val mockTask = mockk<Task<Void>>()
-    protected val mockTaskAuthResult = mockk<Task<AuthResult>>()
-    protected val mockTaskDocumentReference = mockk<Task<DocumentReference>>()
-    protected val mockDocumentReference = mockk<DocumentReference>()
-    protected val mockTaskQuerySnapshot = mockk<Task<QuerySnapshot>>()
-    protected val mockQuerySnapshot = mockk<QuerySnapshot>()
-    protected val mockTaskQueryDocumentSnapshot = mockk<Task<QueryDocumentSnapshot>>()
-    protected val mockQueryDocumentSnapshot = mockk<QueryDocumentSnapshot>()
-    protected val mockCalendar = mockk<Calendar>()
-    protected val mockEvent = mockk<Event>()
-    protected val mockShare = mockk<Share>()
-    protected val mockUserData = mockk<User>()
+    protected val mockCollectionReference: CollectionReference = mockk(relaxed = true)
+    protected val mockUser = mockk<FirebaseUser>(relaxed = true)
+    protected val mockTask = mockk<Task<Void>>(relaxed = true)
+    protected val mockTaskAuthResult = mockk<Task<AuthResult>>(relaxed = true)
+    protected val mockTaskDocumentReference = mockk<Task<DocumentReference>>(relaxed = true)
+    protected val mockDocumentReference = mockk<DocumentReference>(relaxed = true)
+    protected val mockTaskQuerySnapshot = mockk<Task<QuerySnapshot>>(relaxed = true)
+    protected val mockQuerySnapshot = mockk<QuerySnapshot>(relaxed = true)
+    protected val mockTaskQueryDocumentSnapshot = mockk<Task<QueryDocumentSnapshot>>(relaxed = true)
+    protected val mockQueryDocumentSnapshot = mockk<QueryDocumentSnapshot>(relaxed = true)
+    protected val mockCalendar = mockk<Calendar>(relaxed = true)
+    protected val mockEvent = mockk<Event>(relaxed = true)
+    protected val mockShare = mockk<Share>(relaxed = true)
+    protected val mockUserData = mockk<User>(relaxed = true)
     val completionVoidListenerCapture = slot<OnCompleteListener<Void>>()
     protected val successDocumentReferenceCapture = slot<OnSuccessListener<DocumentReference>>()
     protected val successQuerySnapshotListenerCapture = slot<OnSuccessListener<QuerySnapshot>>()
     val successDocumentReferenceListenerCapture = slot<OnSuccessListener<DocumentReference>>()
     val successAuthResultListenerCapture = slot<OnSuccessListener<AuthResult>>()
     private val failureListenerCapture = slot<OnFailureListener>()
-    protected val mockException = mockk<Exception>()
+    protected val mockException = mockk<Exception>(relaxed = true)
 
-    protected val mockQuerySnapshotIterator = mockk<MutableIterator<QueryDocumentSnapshot>>()
+    protected val mockQuerySnapshotIterator =
+        mockk<MutableIterator<QueryDocumentSnapshot>>(relaxed = true)
 
     protected val mockSharedPrefs = mockk<SharedPreferences>(relaxed = true)
     protected val mockSharedPrefsEditor =
@@ -107,13 +110,14 @@ abstract class BaseTest {
         every { Log.wtf(any(), Throwable()) } returns 0
 
         mockkStatic(FirebaseAuth::class)
-        mockAuth = mockk<FirebaseAuth>()
+        mockAuth = mockk<FirebaseAuth>(relaxed = true)
         every { FirebaseAuth.getInstance() } returns mockAuth
 
         mockkStatic(FirebaseFirestore::class)
-        mockFirestore = mockk<FirebaseFirestore>()
+        mockFirestore = mockk<FirebaseFirestore>(relaxed = true)
         every { FirebaseFirestore.getInstance() } returns mockFirestore
 
+        spykFirebaseViewModel = spyk(FirebaseViewModel(mockAuth, mockFirestore))
 //        mockkStatic(SharedPreferences::class)
 //        mockkStatic(SharedPreferences.Editor::class)
         mockkStatic(Task::class)
@@ -122,6 +126,7 @@ abstract class BaseTest {
         every { FirebaseAuth.getInstance() } returns mockAuth
         every { FirebaseFirestore.getInstance() } returns mockFirestore
         every { mockAuth.currentUser } returns mockUser
+        every { mockAuth.uid } returns testUserId
         every { mockUser.uid } returns testUserId
         every { mockUser.email } returns testEmail
         every { mockUser.displayName } returns testUsername

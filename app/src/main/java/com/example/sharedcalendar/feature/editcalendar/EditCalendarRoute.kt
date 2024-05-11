@@ -33,14 +33,6 @@ import com.example.sharedcalendar.models.Calendar
 //    EditCalendarRoute(onBackClicked = {}, navigateToCalendarConfirm = {})
 //}
 
-@Composable
-fun EditCalendarRoute(
-    modifier: Modifier = Modifier, calendar: Calendar, firebaseViewModel: FirebaseViewModel,
-    onBackButtonClicked: () -> Unit
-
-) {
-    EditCalendarScreen(modifier, calendar, firebaseViewModel, onBackButtonClicked)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

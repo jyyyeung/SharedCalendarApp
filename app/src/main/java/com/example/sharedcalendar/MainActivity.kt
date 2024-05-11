@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -49,8 +50,12 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
      * Fragments
      */
     private lateinit var mFragmentManager: FragmentManager
-    private var mHomeFragment: CalendarFragment = CalendarFragment()
-    private var mManageCalendarsFragment: ManageCalendarsFragment = ManageCalendarsFragment()
+
+    @VisibleForTesting
+    var mHomeFragment: CalendarFragment = CalendarFragment()
+
+    @VisibleForTesting
+    var mManageCalendarsFragment: ManageCalendarsFragment = ManageCalendarsFragment()
 //    private var mSettingsFragment: SettingsFragment = SettingsFragment()
 
     companion object {
@@ -99,44 +104,7 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
 
 
         nvSidebar.setNavigationItemSelectedListener { menuItem ->
-            // Handle menu item selected
-            menuItem.isChecked = false
-            isModifyingSettings = false
-            val mFragmentTransaction = mFragmentManager.beginTransaction()
-            Log.i(TAG, menuItem.toString() + menuItem.itemId)
-            if (menuItem.toString() == "Settings") {
-                isModifyingSettings = true
-                // Open settings activity
-//                startActivity(Intent(this, SettingsActivity::class.java))
-                mFragmentTransaction.replace(R.id.mainFragment, SettingsFragment(user))
-
-            } else if (menuItem.toString() == "Logout") {
-
-                // Call Logout process
-                FirebaseAuth.getInstance().signOut()
-                startActivity(Intent(this, AuthActivity::class.java).run {
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                })
-                finishAffinity()
-//                }
-            } else if (menuItem.toString() == "Add Person to Calendar") {
-                // TODO: Handle add person to calendar
-                // Create and show the dialog.
-                ShareCalendarFragment.display(supportFragmentManager)
-//                ft.addToBackStack(null)
-            } else if (menuItem.toString() == "Manage Calendars") {
-                mFragmentTransaction.replace(R.id.mainFragment, mManageCalendarsFragment)
-            } else if (menuItem.toString() == "Home") {
-                // By default, open the Calendar fragment
-                mFragmentTransaction.replace(R.id.mainFragment, mHomeFragment)
-            }
-            mFragmentTransaction.commit()
-            mFragmentManager.executePendingTransactions()
-//            menuItem.itemId
-            drawerLayout.close()
-            true
+            navigationItemSelectedListener(menuItem, drawerLayout)
         }
 
 
@@ -149,6 +117,50 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
             replace(R.id.mainFragment, mHomeFragment)
             commit()
         }
+    }
+
+    private fun navigationItemSelectedListener(
+        menuItem: MenuItem,
+        drawerLayout: DrawerLayout
+    ): Boolean {
+        // Handle menu item selected
+        menuItem.isChecked = false
+        isModifyingSettings = false
+        val mFragmentTransaction = mFragmentManager.beginTransaction()
+        Log.i(TAG, menuItem.toString() + menuItem.itemId)
+        if (menuItem.toString() == "Settings") {
+            isModifyingSettings = true
+            // Open settings activity
+//                startActivity(Intent(this, SettingsActivity::class.java))
+            mFragmentTransaction.replace(R.id.mainFragment, SettingsFragment(user))
+
+        } else if (menuItem.toString() == "Logout") {
+
+            // Call Logout process
+            FirebaseAuth.getInstance().signOut()
+            startActivity(Intent(this, AuthActivity::class.java).run {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            })
+            finishAffinity()
+//                }
+        } else if (menuItem.toString() == "Add Person to Calendar") {
+            // TODO: Handle add person to calendar
+            // Create and show the dialog.
+            ShareCalendarFragment.display(supportFragmentManager)
+//                ft.addToBackStack(null)
+        } else if (menuItem.toString() == "Manage Calendars") {
+            mFragmentTransaction.replace(R.id.mainFragment, mManageCalendarsFragment)
+        } else if (menuItem.toString() == "Home") {
+            // By default, open the Calendar fragment
+            mFragmentTransaction.replace(R.id.mainFragment, mHomeFragment)
+        }
+        mFragmentTransaction.commit()
+        mFragmentManager.executePendingTransactions()
+//            menuItem.itemId
+        drawerLayout.close()
+        return true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
