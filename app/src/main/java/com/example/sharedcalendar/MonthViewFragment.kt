@@ -6,12 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.transaction
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.databinding.CalendarDayBinding
 import com.example.sharedcalendar.databinding.CalendarHeaderBinding
@@ -119,14 +116,14 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
             val binding = CalendarDayBinding.bind(view)
 
             init {
-                // On click listener for each day "cell"
+                // Click listener for each day
                 view.setOnClickListener {
                     if (day.position == DayPosition.MonthDate) {
                         if (selectedDate != day.date) {
                             val oldDate = selectedDate
                             selectedDate = day.date
                             parentFragmentManager.beginTransaction().apply {
-                                replace(R.id.flFragment,DayViewFragment())
+                                replace(R.id.flFragment,DayViewFragment(selectedDate!!))
                                 addToBackStack(null)
                                 commit()
                             }

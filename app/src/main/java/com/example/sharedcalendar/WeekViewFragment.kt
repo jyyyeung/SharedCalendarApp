@@ -41,7 +41,7 @@ class WeekViewSimpleAdapter(private val fragmentManager: FragmentManager) : Week
     override fun onEventClick(data: Event) {
         super.onEventClick(data)
 
-        val newFragment = DayViewFragment() // Replace "YourNewFragment" with the fragment you want to navigate to
+        val newFragment = DayViewFragment(data.startTime.toLocalDate()) // Replace "YourNewFragment" with the fragment you want to navigate to
         fragmentManager.beginTransaction()
             .replace(R.id.flFragment, newFragment) // Replace "R.id.fragmentContainer" with the ID of the container where you want to replace the fragment
             .addToBackStack(null)
