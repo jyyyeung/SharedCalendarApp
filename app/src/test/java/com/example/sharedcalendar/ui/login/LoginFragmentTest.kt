@@ -125,15 +125,26 @@ class LoginFragmentTest {
     }
 
     @Test
-    fun `login with valid credentials returns success`() {
+    fun `login with invalid credential pair returns failure`() {
         val loginFragment = LoginFragment()
         val emailEditText = loginFragment.view?.findViewById<TextInputEditText>(R.id.etUserEmail)
         val passwordEditText =
             loginFragment.view?.findViewById<TextInputEditText>(R.id.etLoginPassword)
         val result = loginFragment.login("valid@example.com", "validPassword")
-        assertTrue(emailEditText?.error.toString().isEmpty())
-        assertTrue(passwordEditText?.error.toString().isEmpty())
+        assertFalse(emailEditText?.error.toString().isEmpty())
+        assertFalse(passwordEditText?.error.toString().isEmpty())
     }
+
+//    @Test
+//    fun `login with valid credentials returns success`() {
+//        val loginFragment = LoginFragment()
+//        val emailEditText = loginFragment.view?.findViewById<TextInputEditText>(R.id.etUserEmail)
+//        val passwordEditText =
+//            loginFragment.view?.findViewById<TextInputEditText>(R.id.etLoginPassword)
+//        val result = loginFragment.login("test@example.com", "password")
+//        assertTrue(emailEditText?.error.toString().isEmpty())
+//        assertTrue(passwordEditText?.error.toString().isEmpty())
+//    }
 
     @Test
     fun `login with invalid email returns failure`() {

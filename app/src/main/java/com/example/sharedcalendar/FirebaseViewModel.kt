@@ -475,7 +475,7 @@ class FirebaseViewModel(
                     Log.w(TAG, "Error getting documents.", exception)
                 }
             // TODO: event array list returns before on successListener is called
-            Log.wtf(TAG, eventArrayList.toString())
+//            Log.wtf(TAG, eventArrayList.toString())
         }
         return eventArrayList
     }

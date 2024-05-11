@@ -129,44 +129,6 @@ class SettingsActivity : AppCompatActivity(),
 //        userViewModel.updateUserSettings(sharedPreferences, key)
     }
 
-//    private fun showView() {
-//        supportFragmentManager.beginTransaction()
-//            .replace(R.id.settings, SettingsFragment())
-//            .commitAllowingStateLoss()
-////        findViewById<View>(com.example.sharedcalendar.R.id.progessBar).visibility = View.GONE
-//    }
-//
-//    override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
-//        Log.i(TAG, "Changed $firebaseAuth ${firebaseAuth.currentUser?.uid}")
-//        if (firebaseAuth.currentUser != null) {
-//            sharedPrefs = SharedFirebasePreferences.getDefaultInstance(this)
-//            sharedPrefs.keepSynced(true)
-//            sharedPrefs.registerOnSharedPreferenceChangeListener(this)
-////            sharedPrefs.omitKeys("name")
-//            sharedPrefs.edit().putString("name", firebaseAuth.currentUser!!.displayName).apply()
-//            Log.i(TAG, "Shared Prefs auth state changed ${sharedPrefs.all}")
-//            sharedPrefs.pull().addOnPullCompleteListener(object :
-//                SharedFirebasePreferences.OnPullCompleteListener {
-//                override fun onPullSucceeded(preferences: SharedFirebasePreferences) {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.settings, SettingsFragment(sharedPrefs))
-//                        .commitAllowingStateLoss()
-////                    showView()
-////                    recreate()
-//                }
-//
-//                override fun onPullFailed(e: Exception) {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.settings, SettingsFragment(sharedPrefs))
-//                        .commitAllowingStateLoss()
-////                    showView()
-////                    recreate()
-//                    Toast.makeText(this@SettingsActivity, "Fetch failed", Toast.LENGTH_SHORT).show()
-//                }
-//            })
-//        }
-//    }
-
 }
 
 //class SettingsFragment(private val sharedPrefs: SharedFirebasePreferences) :
@@ -176,13 +138,6 @@ class SettingsFragment(private val user: FirebaseUser) :
     private lateinit var firebaseViewModel: FirebaseViewModel
     private lateinit var prefs: SharedPreferences
     private var isConfigChanged = false
-//
-//    override fun onConfigurationChanged(newConfig: Configuration) {
-//        super.onConfigurationChanged(newConfig)
-//        Log.i(TAG, "Config Changed")
-//        isConfigChanged = true
-//    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

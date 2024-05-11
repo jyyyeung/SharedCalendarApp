@@ -151,6 +151,7 @@ dependencies {
     implementation("androidx.test.ext:junit-ktx:1.1.5")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation("androidx.test:core-ktx:1.6.0-alpha06")
+    androidTestImplementation(project(":app"))
     debugImplementation("androidx.fragment:fragment-testing:1.7.0")
     androidTestImplementation("androidx.test:runner:1.5.2")
 
