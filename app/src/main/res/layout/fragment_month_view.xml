@@ -11,14 +11,15 @@
     tools:context=".MonthViewFragment">
 
     <com.google.android.material.appbar.AppBarLayout
+        style="@style/Widget.Material3.MaterialCalendar.MonthNavigationButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/hawkes_blue">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="37dp"
             android:gravity="center">
+
             <ImageView
                 android:id="@+id/MonthYearLast"
                 android:layout_width="20dp"
@@ -26,7 +27,8 @@
                 android:layout_marginEnd="22dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/previous_month"
-                android:src="@drawable/ic_chevron_left" />
+                android:src="@drawable/ic_chevron_left"
+                app:tint="?attr/colorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/MonthYearText"
@@ -34,7 +36,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textSize="14dp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
                 tools:text="April 2024" />
 
             <ImageView
@@ -44,7 +47,8 @@
                 android:layout_marginEnd="22dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/next_month"
-                android:src="@drawable/ic_chevron_right" />
+                android:src="@drawable/ic_chevron_right"
+                app:tint="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

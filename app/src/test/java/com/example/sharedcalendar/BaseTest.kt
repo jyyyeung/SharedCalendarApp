@@ -3,6 +3,7 @@ package com.example.sharedcalendar
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.os.Looper
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
@@ -71,13 +72,17 @@ abstract class BaseTest {
     protected val mockSharedPrefsEditor =
         mockk<SharedPreferences.Editor>(relaxed = true)
 
-    protected val application: Application by lazy {
-        ApplicationProvider.getApplicationContext<ApplicationStub>()
-    }
-    protected val context: Context by lazy {
-        application
-    }
-    protected val mockContext = mockk<Context>(relaxed = true)
+    //    protected val application: Application by lazy {
+//        ApplicationProvider.getApplicationContext<ApplicationStub>()
+//    }
+//    protected val context: Context by lazy {
+//        application
+//    }
+    protected val mockApplicationContext: Context =
+        ApplicationProvider.getApplicationContext()
+
+    //    protected val mockApplicationContext: Context = mockk(relaxed = true)
+    protected val mockContextResources = mockk<Resources>(relaxed = true)
 
     internal class ApplicationStub : Application()
 
@@ -96,9 +101,16 @@ abstract class BaseTest {
         field.set(target, value)
     }
 
+    protected fun <T> getField(target: Any, fieldName: String): T {
+        val field = target.javaClass.getDeclaredField(fieldName)
+        field.isAccessible = true
+        return field.get(target) as T
+    }
+
     @Before
     fun setup() {
-//        MockKAnnotations.init(this)
+        MockKAnnotations.init(this)
+
         shadowOf(Looper.getMainLooper()).idle()
 
         mockkStatic(Log::class)
@@ -217,8 +229,8 @@ abstract class BaseTest {
 
         every { mockDocumentReference.id } returns "documentReferenceId"
 
-        every { mockContext.getSharedPreferences(any(), any()) }
-            .returns(mockSharedPrefs)
+//        every { mockApplicationContext.getSharedPreferences(any(), any()) }
+//            .returns(mockSharedPrefs)
         every { mockSharedPrefs.edit() }
             .returns(mockSharedPrefsEditor)
         every { mockSharedPrefsEditor.putString(any(), any()) }
@@ -231,6 +243,22 @@ abstract class BaseTest {
             .returns(mockSharedPrefsEditor)
         every { mockSharedPrefsEditor.commit() } returns true
 
+//        every { mockApplicationContext.resources } returns mockContextResources
+//        every { mockApplicationContext.applicationContext } returns mockApplicationContext
+//        every {
+//            mockApplicationContext.getSharedPreferences(
+//                any<String>(),
+//                any<Int>()
+//            )
+//        } returns mockSharedPrefs
+
+        every { mockContextResources.getString(any()) } returns "mocked string"
+        every { mockContextResources.getStringArray(any<Int>()) } returns arrayOf(
+            "mocked string 1",
+            "mocked string 2"
+        )
+        every { mockContextResources.getBoolean(any()) } returns true
+        every { mockContextResources.getInteger(any()) } returns 1
 
         extendedSetup()
     }
