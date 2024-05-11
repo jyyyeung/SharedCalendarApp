@@ -3,20 +3,17 @@ package com.example.sharedcalendar
 import MainDispatcherRule
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.Share
 import com.example.sharedcalendar.models.User
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -26,19 +23,21 @@ import io.mockk.spyk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import org.junit.rules.TestRule
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
-class FirebaseViewModelTest {
+@RunWith(RobolectricTestRunner::class)
+class FirebaseViewModelTest : BaseTest() {
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -48,8 +47,6 @@ class FirebaseViewModelTest {
     val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
 
 
-    private lateinit var mockAuth: FirebaseAuth
-    private lateinit var mockFirestore: FirebaseFirestore
     private lateinit var viewModel: FirebaseViewModel
 
     // 1. Mock Context and SharePreference
@@ -64,30 +61,10 @@ class FirebaseViewModelTest {
 
     private val userMock = mockk<FirebaseUser>(relaxed = true)
     private val databaseMock = mockk<DatabaseReference>(relaxed = true)
-
-    @BeforeEach
-    fun setup() {
-        MockKAnnotations.init(this)
-
-        mockkStatic(Log::class)
-        every { Log.v(any(), any()) } returns 0
-        every { Log.d(any(), any()) } returns 0
-        every { Log.i(any(), any()) } returns 0
-        every { Log.e(any(), any()) } returns 0
-        every { Log.wtf(any(), String()) } returns 0
-        every { Log.wtf(any(), Throwable()) } returns 0
-
-//        mockAuth = mockk(relaxed = true)
-        mockkStatic(FirebaseAuth::class)
-        mockAuth = mockk(relaxed = true)
-        every { FirebaseAuth.getInstance() } returns mockk(relaxed = true)
-        every { FirebaseAuth.getInstance().currentUser } returns userMock
-        every { FirebaseAuth.getInstance().uid } returns userId
-        every { mockAuth.uid } returns userId
-        every { mockAuth.currentUser } returns userMock
-
+    override fun extendedSetup() {
         mockFirestore = mockk(relaxed = true)
         viewModel = spyk(FirebaseViewModel(mockAuth, mockFirestore))
+
 
         // 2. Use every returns to return mocking sharedPreference.
         every { context.getSharedPreferences(any(), any()) }
@@ -98,24 +75,10 @@ class FirebaseViewModelTest {
             .returns(sharedPrefsEditor)
     }
 
-    //    @Test
-//    fun `addEventToCalendar adds event to first calendar`() = runTest {
-//        val event = Event()
-//        val calendar = Calendar().apply { events = mutableListOf() }
-//        coEvery { viewModel.calendars.value } returns mutableListOf(calendar)
-//
-//        viewModel.addEventToCalendar(event)
-//
-//        assertEquals(1, viewModel.calendars.value?.get(0)?.events?.size)
-//        assertEquals(event, viewModel.calendars.value?.get(0)?.events?.get(0))
-//    }
-    private val mockCalendar = mockk<Calendar>(relaxed = true)
-    private val mockShare = mockk<Share>(relaxed = true)
-    private val mockEvent = mockk<Event>(relaxed = true)
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `createCalendar adds calendar to firestore`() = runTest {
+    fun `createCalendar adds calendar to firestore`() {
         coEvery { viewModel.user.uid } returns userId
         viewModel.createCalendar(userId, sharedPrefs, mockCalendar)
 
@@ -124,7 +87,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `editCalendar updates calendar fields`() = runTest {
+    fun `editCalendar updates calendar fields`() {
 //        val calendarId = "testCalendarId"
         val calendarId = mockCalendar.id ?: "testCalendarId"
         val editedFields: HashMap<String, Any> = hashMapOf("name" to "New Name")
@@ -139,7 +102,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `deleteCalendar removes calendar from firestore`() = runTest {
+    fun `deleteCalendar removes calendar from firestore`() {
         val calendarId = mockCalendar.id ?: "testCalendarId"
 
         viewModel.deleteCalendar(calendarId)
@@ -149,7 +112,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `addEventToCalendar adds event to firestore`() = runTest {
+    fun `addEventToCalendar adds event to firestore`() {
         val newEvent: HashMap<String, Any?> = hashMapOf(
             "calendarId" to "testCalendarId",
             "title" to "Test Event",
@@ -165,7 +128,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `addShare adds share to firestore`() = runTest {
+    fun `addShare adds share to firestore`() {
 //        val share = Share().apply {
 //            calendarId = "testCalendarId"
 //            userEmail = "test@example.com"
@@ -181,7 +144,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `editShare updates share fields`() = runTest {
+    fun `editShare updates share fields`() {
         val shareId = "testShareId"
         val editedFields: HashMap<String, String?> = hashMapOf("scope" to "Edit")
 
@@ -195,7 +158,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `createShare does not add share if already exists`() = runTest {
+    fun `createShare does not add share if already exists`() {
         val share = Share().apply {
             calendarId = "testCalendarId"
             userEmail = "test@example.com"
@@ -214,7 +177,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getShares retrieves shares for given calendars`() = runTest {
+    fun `getShares retrieves shares for given calendars`() {
         val calendar = Calendar().apply { id = "testCalendarId" }
 
         viewModel.getShares(listOf(calendar))
@@ -226,7 +189,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getUserShares retrieves shares for current user`() = runTest {
+    fun `getUserShares retrieves shares for current user`() {
         val userEmail = "test@example.com"
         coEvery { viewModel.user.email } returns userEmail
 
@@ -237,7 +200,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getCalendars retrieves user calendars`() = runTest {
+    fun `getCalendars retrieves user calendars`() {
 //        val userId = "testUserId"
         coEvery { viewModel.user.uid } returns userId
 
@@ -338,7 +301,7 @@ class FirebaseViewModelTest {
 //
 //    @ExperimentalCoroutinesApi
 //    @Test
-//    fun `getCalendars retrieves user and shared calendars`() = runTest {
+//    fun `getCalendars retrieves user and shared calendars`()  {
 ////        val userId = "testUserId"
 //        coEvery { viewModel.user.uid } returns userId
 //        val calendarsSharedWithUserMock = mockk<MutableList<String>>(relaxed = true)
@@ -370,7 +333,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getCurrentMonthEvents retrieves events for current month`() = runTest {
+    fun `getCurrentMonthEvents retrieves events for current month`() {
         val calendar = Calendar().apply { id = "testCalendarId" }
         coEvery { viewModel.calendars.value } returns mutableListOf(calendar)
 
@@ -383,7 +346,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `deleteShare removes share from firestore`() = runTest {
+    fun `deleteShare removes share from firestore`() {
         val share = Share().apply { id = "testShareId" }
 
         viewModel.deleteShare(share)
@@ -393,7 +356,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getUserById returns user when user exists in users LiveData`() = runTest {
+    fun `getUserById returns user when user exists in users LiveData`() {
         val userId = "testUserId"
         val user = mockk<User>(relaxed = true)
         coEvery { user.id } returns userId
@@ -410,7 +373,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getUserById returns null when user does not exist in users LiveData`() = runTest {
+    fun `getUserById returns null when user does not exist in users LiveData`() {
         val userId = "testUserId"
         viewModel.apply {
             this.users = MutableLiveData(mutableMapOf())
@@ -441,7 +404,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getGroupedEvents returns correct map when events exist`() = runTest {
+    fun `getGroupedEvents returns correct map when events exist`() {
         val event1 = Event().apply {
             id = "event1"
             startTime = LocalDateTime.of(2022, 1, 1, 10, 0)
@@ -475,7 +438,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getGroupedEvents returns empty map when no events exist`() = runTest {
+    fun `getGroupedEvents returns empty map when no events exist`() {
         viewModel.apply {
             this.events = MutableLiveData(mutableListOf())
             this.enabledCalendars = MutableLiveData(mutableListOf())
@@ -487,7 +450,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getGroupedEvents returns map without disabled calendars events`() = runTest {
+    fun `getGroupedEvents returns map without disabled calendars events`() {
         val event1 = Event().apply {
             id = "event1"
             startTime = LocalDateTime.of(2022, 1, 1, 10, 0)
@@ -516,7 +479,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getEventsByCalendar returns empty list when no events exist`() = runTest {
+    fun `getEventsByCalendar returns empty list when no events exist`() {
         val calendarId = "testCalendarId"
         val scope = "View"
 
@@ -532,7 +495,7 @@ class FirebaseViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `getEventsByCalendar returns events without events from other calendars`() = runTest {
+    fun `getEventsByCalendar returns events without events from other calendars`() {
         val calendarId = "testCalendarId"
         val scope = "View"
         val event1 = Event(
