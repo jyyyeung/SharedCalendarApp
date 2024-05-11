@@ -27,14 +27,39 @@ import androidx.compose.ui.unit.dp
 import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.models.Calendar
 
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    EditCalendarRoute(onBackClicked = {}, navigateToCalendarConfirm = {})
-//}
 
+fun editCalendar(
+    calendar: Calendar,
+    editedFields: HashMap<String, Any>,
+    firebaseViewModel: FirebaseViewModel,
+    onBackButtonClicked: () -> Unit
+) {
+    for (field in editedFields) {
+        when (field.key) {
+            "name" -> if ((editedFields["name"]!! as String).isBlank()) {
+                editedFields.remove("name")
+            }
 
-@OptIn(ExperimentalMaterial3Api::class)
+            "description" -> if ((editedFields["description"] as String).isBlank()) {
+                editedFields.remove("description")
+            }
+        }
+    }
+    if (editedFields.isEmpty()) {
+        // Go back
+        onBackButtonClicked()
+        return
+    }
+    // Modify values in db
+    calendar.id?.let {
+        firebaseViewModel.editCalendar(it, editedFields)
+        // Go back
+        onBackButtonClicked()
+    }
+    Log.i("Edit Cal", "${calendar.id} $editedFields ")
+
+}
+
 @Composable
 fun EditCalendarScreen(
     modifier: Modifier = Modifier,
@@ -45,27 +70,6 @@ fun EditCalendarScreen(
 
     val context = LocalContext.current
 
-    fun editCalendar(editedFields: HashMap<String, Any>) {
-        for (field in editedFields) {
-            when (field.key) {
-                "name" -> if ((editedFields["name"]!! as String).isBlank()) {
-                    editedFields.remove("name")
-                }
-
-                "description" -> if ((editedFields["description"] as String).isBlank()) {
-                    editedFields.remove("description")
-                }
-            }
-        }
-        // Modify values in db
-        calendar.id?.let {
-            firebaseViewModel.editCalendar(it, editedFields)
-            // Go back
-            onBackButtonClicked()
-        }
-        Log.i("Edit Cal", "${calendar.id} $editedFields ")
-
-    }
 
     val editedFields = hashMapOf<String, Any>()
 
@@ -106,15 +110,39 @@ fun EditCalendarScreen(
 
         Spacer(modifier = Modifier.padding(4.dp))
 
-        Button(onClick = {
-            if (calendarName != calendar.name) editedFields["name"] = calendarName
-            if (calendarDescription != calendar.description)
-                editedFields["description"] = calendarDescription
-            editCalendar(editedFields)
-        }) {
+        Button(
+            onClick = {
+                onClickSaveButton(
+                    calendarName,
+                    calendarDescription,
+                    calendar,
+                    editedFields,
+                    firebaseViewModel, onBackButtonClicked
+                )
+            }
+        ) {
             Icon(imageVector = Icons.Filled.Done, contentDescription = "save")
             Text("Save")
         }
     }
 }
 
+fun onClickSaveButton(
+    calendarName: String,
+    calendarDescription: String,
+    calendar: Calendar,
+    editedFields: HashMap<String, Any>,
+    firebaseViewModel: FirebaseViewModel,
+    onBackButtonClicked: () -> Unit
+) {
+    // Save the changes
+    if (calendarName != calendar.name) editedFields["name"] = calendarName
+    if (calendarDescription != calendar.description)
+        editedFields["description"] = calendarDescription
+    editCalendar(
+        calendar,
+        editedFields,
+        firebaseViewModel,
+        onBackButtonClicked
+    )
+}
