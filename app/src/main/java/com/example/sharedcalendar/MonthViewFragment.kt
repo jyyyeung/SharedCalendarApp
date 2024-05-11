@@ -15,6 +15,7 @@ import com.example.sharedcalendar.databinding.CalendarHeaderBinding
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.displayText
+import com.google.common.annotations.VisibleForTesting
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -31,7 +32,8 @@ import java.time.YearMonth
 
 class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
-    private lateinit var firebaseViewModel: FirebaseViewModel
+    @VisibleForTesting
+    lateinit var firebaseViewModel: FirebaseViewModel
     private var selectedDate: LocalDate? = null
 
 

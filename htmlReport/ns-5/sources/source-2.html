@@ -1,0 +1,172 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthenticationPagerAdapter</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.sharedcalendar.ui.login</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthenticationPagerAdapter (com.example.sharedcalendar.ui.login)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthenticationPagerAdapter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.sharedcalendar.ui.login
+&nbsp;
+&nbsp;import android.content.Intent
+&nbsp;import android.os.Bundle
+&nbsp;import androidx.activity.enableEdgeToEdge
+&nbsp;import androidx.appcompat.app.AppCompatActivity
+&nbsp;import androidx.fragment.app.Fragment
+&nbsp;import androidx.fragment.app.FragmentManager
+&nbsp;import androidx.lifecycle.Lifecycle
+&nbsp;import androidx.viewpager2.adapter.FragmentStateAdapter
+&nbsp;import androidx.viewpager2.widget.ViewPager2
+&nbsp;import com.example.sharedcalendar.MainActivity
+&nbsp;import com.example.sharedcalendar.R
+&nbsp;import com.google.firebase.auth.FirebaseAuth
+&nbsp;
+<b class="fc">&nbsp;class AuthenticationPagerAdapter(</b>
+&nbsp;    fragmentManager: FragmentManager,
+&nbsp;    lifecycle: Lifecycle
+<b class="fc">&nbsp;) : FragmentStateAdapter(fragmentManager, lifecycle) {</b>
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    private val fragmentList: ArrayList&lt;Fragment&gt; = ArrayList()</b>
+&nbsp;
+&nbsp;    override fun getItemCount(): Int {
+<b class="fc">&nbsp;        return fragmentList.size</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    override fun createFragment(position: Int): Fragment {
+<b class="fc">&nbsp;        return fragmentList[position]</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    fun addFragment(fragment: Fragment) {
+<b class="fc">&nbsp;        fragmentList.add(fragment)</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;}
+&nbsp;
+&nbsp;class AuthActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) :
+&nbsp;    AppCompatActivity() {
+&nbsp;//    lateinit var auth: FirebaseAuth
+&nbsp;
+&nbsp;    public override fun onStart() {
+&nbsp;        super.onStart()
+&nbsp;        // Check if user is signed in (non-null) and update UI accordingly.
+&nbsp;        val currentUser = auth.currentUser
+&nbsp;        // Skip Authentication Page if user has already logged in
+&nbsp;        if (currentUser != null) {
+&nbsp;            finishAffinity()
+&nbsp;            startActivity(Intent(this, MainActivity::class.java))
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public override fun onCreate(savedInstanceState: Bundle?) {
+&nbsp;        super.onCreate(savedInstanceState)
+&nbsp;        enableEdgeToEdge()
+&nbsp;        // Initialize Firebase Auth
+&nbsp;//        auth = Firebase.auth
+&nbsp;
+&nbsp;        setContentView(R.layout.activity_auth)
+&nbsp;
+&nbsp;        val viewPager = findViewById&lt;ViewPager2&gt;(R.id.viewPager)
+&nbsp;
+&nbsp;        val pagerAdapter = AuthenticationPagerAdapter(supportFragmentManager, lifecycle)
+&nbsp;        pagerAdapter.addFragment(LoginFragment())
+&nbsp;        pagerAdapter.addFragment(RegisterFragment())
+&nbsp;
+&nbsp;        viewPager.adapter = pagerAdapter
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-05-12 02:48</div>
+</div>
+</body>
+</html>

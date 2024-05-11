@@ -10,9 +10,9 @@ data class Share(
     var scope: String? = "View",
 )
 
-enum class ShareScope {
-    Availability,
-    View,
-    Edit,
-    Full,
-}
+//enum class ShareScope {
+//    Availability,
+//    View,
+//    Edit,
+//    Full,
+//}

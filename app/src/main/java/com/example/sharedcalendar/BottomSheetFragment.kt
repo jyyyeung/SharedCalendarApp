@@ -16,13 +16,10 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
-import com.example.sharedcalendar.models.Event
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.common.annotations.VisibleForTesting
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.LocalDateTime
 import kotlin.random.Random
 
@@ -31,13 +28,26 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var prefs: SharedPreferences
     private lateinit var firebaseViewModel: FirebaseViewModel
 
-    private lateinit var startDateTime: LocalDateTime
-    private lateinit var endDateTime: LocalDateTime
-    private lateinit var dateText: TextView
-    private lateinit var timeText: TextView
-    private lateinit var endDateText: TextView
-    private lateinit var endTimeText: TextView
-    private lateinit var swIsAllDay: MaterialSwitch
+    @VisibleForTesting
+    lateinit var startDateTime: LocalDateTime
+
+    @VisibleForTesting
+    lateinit var endDateTime: LocalDateTime
+
+    @VisibleForTesting
+    lateinit var dateText: TextView
+
+    @VisibleForTesting
+    lateinit var timeText: TextView
+
+    @VisibleForTesting
+    lateinit var endDateText: TextView
+
+    @VisibleForTesting
+    lateinit var endTimeText: TextView
+
+    @VisibleForTesting
+    lateinit var swIsAllDay: MaterialSwitch
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -219,7 +229,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             }
 
 
-            val newEvent = hashMapOf(
+            val newEvent: HashMap<String, Any?> = hashMapOf(
                 "longId" to Random.nextLong(until = Long.MAX_VALUE),
                 "calendarId" to defaultCalendar,
                 "title" to etNewEventName.text.toString(),
@@ -234,30 +244,30 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 "color" to selectedColor.code
             )
 //
-            val db = Firebase.firestore
-            db.collection("events").add(newEvent).addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-                documentReference.get().addOnSuccessListener { result ->
-                    val event = result.toObject(Event::class.java)
-                    if (event is Event) {
-                        event.id = result.id
-                        event.startTime =
-                            LocalDateTime.parse(result.get("startTimestamp").toString())
-                        event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
-                        firebaseViewModel.addEventToCalendar(event)
-                    }
-                    firebaseViewModel.getCurrentMonthEvents()
-
-                    this.dismiss()
-                }
-            }.addOnFailureListener { e ->
-                Log.w(TAG, "Error adding document", e)
+//            val db = Firebase.firestore
+//            db.collection("events").add(newEvent).addOnSuccessListener { documentReference ->
+//                Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+//                documentReference.get().addOnSuccessListener { result ->
+//                    val event = result.toObject(Event::class.java)
+//                    if (event is Event) {
+//                        event.id = result.id
+//                        event.startTime =
+//                            LocalDateTime.parse(result.get("startTimestamp").toString())
+//                        event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
+//                        firebaseViewModel.addEventToCalendar(event)
+//                    }
+//                    firebaseViewModel.getCurrentMonthEvents()
+//
+//                    this.dismiss()
+//                }
+//            }.addOnFailureListener { e ->
+//                Log.w(TAG, "Error adding document", e)
+            firebaseViewModel.addEventToCalendar(newEvent).run {
+                this@BottomSheetFragment.dismiss()
             }
-
         }
-
-
     }
+
 
     fun dateCheck() {
         Log.d("dateCheck", "Checking Date")

@@ -16,6 +16,8 @@ import com.example.sharedcalendar.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -25,28 +27,31 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 
-class FirebaseViewModel : ViewModel() {
+class FirebaseViewModel(
+    private val auth: FirebaseAuth = Firebase.auth,
+    private val db: FirebaseFirestore = Firebase.firestore
+) : ViewModel() {
     companion object {
         private val TAG: String = FirebaseViewModel::class.java.name
     }
 
     private val _events = MutableLiveData<MutableList<Event>>()
-    val events: LiveData<MutableList<Event>> = _events
+    var events: LiveData<MutableList<Event>> = _events
 
     private val _userCalendars = MutableLiveData<MutableList<Calendar>>()
-    val userCalendars: LiveData<MutableList<Calendar>> = _userCalendars
+    var userCalendars: LiveData<MutableList<Calendar>> = _userCalendars
 
     private val _sharedCalendars = MutableLiveData<MutableList<Calendar>>()
-    val sharedCalendars: LiveData<MutableList<Calendar>> = _sharedCalendars
+    var sharedCalendars: LiveData<MutableList<Calendar>> = _sharedCalendars
 
-    fun getStaticCalendars(): List<Calendar> {
-        Log.i(TAG, _userCalendars.value.toString())
-        Log.i(TAG, _sharedCalendars.value.toString())
-        val calendarsList = mutableListOf<Calendar>()
-        _userCalendars.value?.let { calendarsList.addAll(it) }
-        _sharedCalendars.value?.let { calendarsList.addAll(it) }
-        return calendarsList.toList()
-    }
+//    fun getStaticCalendars(): List<Calendar> {
+//        Log.i(TAG, _userCalendars.value.toString())
+//        Log.i(TAG, _sharedCalendars.value.toString())
+//        val calendarsList = mutableListOf<Calendar>()
+//        _userCalendars.value?.let { calendarsList.addAll(it) }
+//        _sharedCalendars.value?.let { calendarsList.addAll(it) }
+//        return calendarsList.toList()
+//    }
 
 //    val calendars:MutableLiveData<List<Calendar>> = MutableLiveData<List<Calendar>>()
 
@@ -62,35 +67,148 @@ class FirebaseViewModel : ViewModel() {
         }
 
     private val _userShares = MutableLiveData<MutableList<Share>>()
-    val userShares: LiveData<MutableList<Share>> = _userShares
+    var userShares: LiveData<MutableList<Share>> = _userShares
 
-    val user = Firebase.auth.currentUser!!
-    private var calendarsSharedWithUser = mutableListOf<String>()
+    val user = auth.currentUser!!
+    var calendarsSharedWithUser: MutableList<String> = mutableListOf<String>()
 
     private val _users = MutableLiveData<MutableMap<String, User>>()
-    val users: LiveData<MutableMap<String, User>> = _users
+    var users: LiveData<MutableMap<String, User>> = _users
 
     private val _shares = MutableLiveData(mutableMapOf<String, ArrayList<Share>>())
-    val shares: LiveData<MutableMap<String, ArrayList<Share>>> = _shares
+    var shares: LiveData<MutableMap<String, ArrayList<Share>>> = _shares
 
     private val _enabledCalendars = MutableLiveData<MutableList<String>>()
-    val enabledCalendars: LiveData<MutableList<String>> = _enabledCalendars
+    var enabledCalendars: LiveData<MutableList<String>> = _enabledCalendars
 
-    private val db = Firebase.firestore
+//    private val db = Firebase.firestore
 
 
-    fun addEventToCalendar(event: Event?) {
-        if (event is Event) {
-            calendars.value?.get(0)?.events?.add(event)
-            Log.i(TAG, calendars.toString())
+    fun createCalendar(
+        uid: String,
+        sharedPrefs: SharedPreferences,
+        calendar: Calendar
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Add a new document with a generated ID
+            db.collection("calendars").add(calendar).addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                // Set Default calendar in preferences to created calendar
+                sharedPrefs.edit().putString("${uid}|default|calendar", documentReference.id)
+                    .apply()
+                sharedPrefs.edit().putBoolean("${uid}|calendar|${documentReference.id}", true)
+                    .apply()
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
         }
+    }
+
+    fun addShare(newShare: Share) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.collection("shares").add(newShare).addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+        }
+    }
+
+    fun editShare(shareId: String, editedFields: HashMap<String, String?>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.collection("shares").document(shareId).set(editedFields, SetOptions.merge())
+                .addOnSuccessListener {
+                    Log.d(TAG, "DocumentSnapshot successfully written!")
+                }.addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+        }
+    }
+
+    fun createShare(newShare: Share) {
+
+//        val newShare = hashMapOf(
+//            "calendarId" to calendarId,
+//            "userEmail" to userEmail,
+//            "scope" to scope
+//        )
+
+        db.collection("shares")
+            .where(
+                Filter.and(
+                    Filter.equalTo("calendarId", newShare.calendarId),
+                    Filter.equalTo("userEmail", newShare.userEmail)
+                )
+            ).get().addOnSuccessListener { results ->
+
+                // Delete existing share
+//                for (result in results.toObjects(Share::class.java))
+//                    deleteShare(result)
+
+                Log.i(TAG, results.toString())
+                if (results.isEmpty) {
+//                    val newShare = hashMapOf(
+//                        "calendarId" to calendarId,
+//                        "userEmail" to userEmail,
+//                        "scope" to scope
+//                    db.collection("shares").add(newShare).addOnSuccessListener {
+//                        Log.d(TAG, "DocumentSnapshot successfully written!")
+//                    }.addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+
+                    addShare(newShare)
+                    // Share does not exist
+                }
+
+//                }
+                else {
+                    val share = results.documents[0]
+                    val editedFields: HashMap<String, String?> =
+                        hashMapOf("scope" to newShare.scope)
+                    editShare(share.id, editedFields)
+////
+//                    db.collection("shares").document(share.id)
+//                        .set(
+//                            hashMapOf("scope" to newShare.scope),
+//                            SetOptions.merge()
+//                        ).addOnSuccessListener {
+//                            Log.d(TAG, "DocumentSnapshot successfully written!")
+//                        }.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
+                }
+//
+                getShares(calendars.value!!)
+
+            }
+    }
+
+    fun addEventToCalendar(newEvent: HashMap<String, Any?>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.collection("events").add(newEvent).addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+                documentReference.get().addOnSuccessListener { result ->
+                    val event = result.toObject(Event::class.java)
+                    if (event is Event) {
+                        event.id = result.id
+                        event.startTime =
+                            LocalDateTime.parse(result.get("startTimestamp").toString())
+                        event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
+
+                        calendars.value?.get(0)?.events?.add(event)
+                        Log.i(TAG, calendars.toString())
+
+                    }
+                    getCurrentMonthEvents()
+
+                }
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+        }
+
     }
 
     fun editCalendar(calendarId: String, editedFields: HashMap<String, Any>) {
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "editCalendar() $calendarId $editedFields")
 
-            val db = Firebase.firestore
+//            val db = Firebase.firestore
             db.collection("calendars").document(calendarId).set(editedFields, SetOptions.merge())
                 .addOnSuccessListener {
                     Log.i(TAG, "Calendar updated")
@@ -104,7 +222,7 @@ class FirebaseViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "deleteCalendar()")
 
-            val db = Firebase.firestore
+//            val db = Firebase.firestore
 
             db.collection("calendars").document(calendarId).delete().addOnSuccessListener {
                 Log.i(TAG, "Calendar deleted")
@@ -119,6 +237,7 @@ class FirebaseViewModel : ViewModel() {
             }
         }
     }
+
 
     fun getShares(calendars: List<Calendar>) {
         val newShares = shares.value
@@ -189,12 +308,12 @@ class FirebaseViewModel : ViewModel() {
         isSharedCalendarFetched = true
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "getCalendars()")
-            val db = Firebase.firestore
+//            val db = Firebase.firestore
 
             val calendars1 = ArrayList<Calendar>()
             val calendarsEnabled = ArrayList<String>()
             db.collection("calendars")
-                .whereEqualTo("ownerId", FirebaseAuth.getInstance().currentUser?.uid).get()
+                .whereEqualTo("ownerId", user.uid).get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         val calendar = document.toObject(Calendar::class.java)
@@ -251,7 +370,7 @@ class FirebaseViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
 
             val calendarEvents = ArrayList<Event>()
-            val db = Firebase.firestore
+//            val db = Firebase.firestore
             Log.i(TAG, "Calendars to find events for $calendars")
             if (calendars.value?.isNotEmpty() == true) {
                 for (calendar in calendars.value!!) {
@@ -302,14 +421,14 @@ class FirebaseViewModel : ViewModel() {
         this.value = value
     }
 
-    private fun getUserById(
+    fun getUserById(
         userId: String
     ): User? {
         if (users.value?.get(userId) != null) {
             return users.value?.get(userId)
         }
         var user: User? = null
-        val db = Firebase.firestore
+//        val db = Firebase.firestore
         viewModelScope.launch(Dispatchers.IO) {
             db.collection("users").document(userId).get().addOnSuccessListener { result ->
                 user = result.toObject(User::class.java)
@@ -322,11 +441,11 @@ class FirebaseViewModel : ViewModel() {
         return user
     }
 
-    private fun getEventsByCalendar(
+    fun getEventsByCalendar(
         calendarId: String, scope: String?, currentMonthOnly: Boolean = false
     ): ArrayList<Event> {
         val eventArrayList: ArrayList<Event> = ArrayList()
-        val db = Firebase.firestore
+//        val db = Firebase.firestore
 
 //        if (currentMonthOnly) {
 //            val currentMonth = YearMonth.now()
@@ -356,7 +475,7 @@ class FirebaseViewModel : ViewModel() {
                     Log.w(TAG, "Error getting documents.", exception)
                 }
             // TODO: event array list returns before on successListener is called
-            Log.wtf(TAG, eventArrayList.toString())
+//            Log.wtf(TAG, eventArrayList.toString())
         }
         return eventArrayList
     }
@@ -364,12 +483,12 @@ class FirebaseViewModel : ViewModel() {
     fun getGroupedEvents(): Map<LocalDate, List<Event>>? {
         val currentMonth = YearMonth.now()
 //        val events = getEvents()
-        if (_events.value == null) {
+        if (events.value == null) {
             return null
         }
         return buildList {
-            for (event in _events.value!!) {
-                if (_enabledCalendars.value?.contains(event.calendarId) == true)
+            for (event in events.value!!) {
+                if (enabledCalendars.value?.contains(event.calendarId) == true)
                     currentMonth.atDay(event.startTime.dayOfMonth).also {
                         add(event)
                     }
@@ -379,10 +498,11 @@ class FirebaseViewModel : ViewModel() {
 
     fun deleteShare(share: Share) {
         val shareId = share.id
+
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "deleteCalendar()")
 
-            val db = Firebase.firestore
+//            val db = Firebase.firestore
 
             db.collection("shares").document(shareId).delete().addOnSuccessListener {
                 Log.i(TAG, "share deleted")

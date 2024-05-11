@@ -14,8 +14,10 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
+import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
+import com.example.sharedcalendar.models.Calendar
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -23,10 +25,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.datetime.TimeZone
-import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 
 /**
  * A simple [Fragment] subclass.
@@ -37,6 +39,7 @@ class RegisterFragment : Fragment() {
     private lateinit var userViewModel: UserViewModel
     private lateinit var auth: FirebaseAuth
     private lateinit var sharedPrefs: SharedPreferences
+    private lateinit var db: FirebaseFirestore
 
     companion object {
         private val TAG: String? = RegisterFragment::class.java.name
@@ -67,6 +70,8 @@ class RegisterFragment : Fragment() {
         val pbLoading = view.findViewById<CircularProgressIndicator>(R.id.pbLoading)
 
         auth = Firebase.auth
+        db = Firebase.firestore
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
 
 
         // Listen to changes in Email input
@@ -164,7 +169,6 @@ class RegisterFragment : Fragment() {
                 val user = auth.currentUser
                 if (user != null) {
                     // Get Shared Preferences
-                    sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
                     Log.i(TAG, sharedPrefs.all.toString())
 
                     val profileUpdates = userProfileChangeRequest {
@@ -182,7 +186,8 @@ class RegisterFragment : Fragment() {
                     val userDetails = hashMapOf(
                         "name" to username, "email" to email
                     )
-                    Firebase.firestore.collection("users").document(user.uid).set(userDetails)
+//                    db.collection("users").document(user.uid).set(userDetails)
+                    updateUserDetails(user.uid, userDetails)
 
                     // Create default calendar for user
                     createDefaultCalendar()
@@ -203,28 +208,21 @@ class RegisterFragment : Fragment() {
         }
     }
 
+    private fun updateUserDetails(userId: String, userDetails: HashMap<String, String>) {
+        db.collection("users").document(userId).set(userDetails)
+    }
+
     private fun createDefaultCalendar() {
-        val db = Firebase.firestore
         val user = Firebase.auth.currentUser ?: return
-        val defaultCalendar = hashMapOf(
-            "name" to user.email,
-            "color" to "#7886CB",
-            "timezone" to TimeZone.currentSystemDefault().id,
-            "ownerId" to user.uid,
-            "isDefault" to true,
-            "description" to "Default Calendar for account ${user.email}"
+        val defaultCalendar: Calendar = Calendar(
+            name = user.email!!,
+            color = "#7886CB",
+            timezone = TimeZone.currentSystemDefault().id,
+            ownerId = user.uid,
+            isDefault = true,
+            description = "Default Calendar for account ${user.email}"
         )
-        // Add a new document with a generated ID
-        db.collection("calendars").add(defaultCalendar).addOnSuccessListener { documentReference ->
-            Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-            // Set Default calendar in preferences to created calendar
-            sharedPrefs.edit().putString("${user.uid}|default|calendar", documentReference.id)
-                .apply()
-            sharedPrefs.edit().putBoolean("${user.uid}|calendar|${documentReference.id}", true)
-                .apply()
-        }.addOnFailureListener { e ->
-            Log.w(TAG, "Error adding document", e)
-        }
+        FirebaseViewModel().createCalendar(user.uid, sharedPrefs, defaultCalendar)
     }
 
     // Called when User login successful

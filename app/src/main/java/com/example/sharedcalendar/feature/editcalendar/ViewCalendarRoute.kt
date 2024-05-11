@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,11 +17,8 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -38,7 +34,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,20 +45,6 @@ import com.example.sharedcalendar.ui.ProfileProperty
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import java.util.TimeZone
-
-@Composable
-fun ViewCalendarRoute(
-    modifier: Modifier = Modifier,
-    calendar: Calendar,
-    onEditButtonClicked: (calendar: Calendar) -> Unit,
-    firebaseViewModel: FirebaseViewModel,
-    onBackButtonClicked: () -> Unit
-
-) {
-    ViewCalendarScreen(
-        modifier, calendar, onEditButtonClicked, firebaseViewModel
-    )
-}
 
 @Composable
 fun ViewCalendarScreen(
@@ -137,14 +118,6 @@ fun ViewCalendarScreen(
                     calendar.scope ?: "View"
                 )
             }
-
-//                    Spacer(
-//                        Modifier.height(
-//                            (this@BoxWithConstraints.maxHeight - 320.dp).coerceAtLeast(
-//                                0.dp
-//                            )
-//                        )
-//                    )
 
             Row(
                 modifier = Modifier.padding(top = 20.dp, bottom = 8.dp),
