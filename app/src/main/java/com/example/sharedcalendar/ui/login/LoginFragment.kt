@@ -20,7 +20,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-
 /**
  * A simple [Fragment] subclass.
  * Use the [LoginFragment.newInstance] factory method to
@@ -28,16 +27,16 @@ import com.google.firebase.auth.FirebaseUser
  */
 class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) : Fragment() {
     private lateinit var userViewModel: UserViewModel
-//    lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
-//        auth = FirebaseAuth.getInstance()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_login, container, false)
@@ -51,10 +50,8 @@ class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance())
         val btnLogin = view.findViewById<Button>(R.id.btnLogin)
         val pbLoading = view.findViewById<CircularProgressIndicator>(R.id.pbLoading)
 
-
         // Listen to changes in Email input
         etEmailInput.setOnKeyListener { _, _, _ ->
-//            Log.d("LoginFragment", etEmailInput.text.toString())
             if (userViewModel.isEmailValid(etEmailInput.text!!)) {
                 // Clear Error
                 etEmail.error = null
@@ -63,35 +60,26 @@ class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance())
             }
             false
         }
-//
-//        // Listen to changes in Password input
-//        etPasswordInput.setOnKeyListener { _, _, _ ->
-//            if (userViewModel.isPasswordValid(etPasswordInput.text!!)) {
-//                // Clear Error
-//                etPassword.error = null
-//            } else {
-//                etPassword.error = getString(R.string.invalid_password)
-//            }
-//            false
-//        }
 
         // Listen to Done action on keyboard
         etPasswordInput.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
-                EditorInfo.IME_ACTION_DONE -> login(
-                    etEmailInput.text.toString(), etPasswordInput.text.toString()
-                )
+                EditorInfo.IME_ACTION_DONE ->
+                    login(
+                        etEmailInput.text.toString(),
+                        etPasswordInput.text.toString(),
+                    )
             }
             false
         }
 
-
         // Listen to Login btn click event
         btnLogin?.setOnClickListener {
             // On login clicked
-            //Verify Data validity
-            if (!userViewModel.isEmailValid(etEmailInput?.text!!) || !userViewModel.isPasswordValid(
-                    etPasswordInput?.text!!
+            // Verify Data validity
+            if (!userViewModel.isEmailValid(etEmailInput?.text!!) ||
+                !userViewModel.isPasswordValid(
+                    etPasswordInput?.text!!,
                 )
             ) {
                 return@setOnClickListener
@@ -107,12 +95,18 @@ class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance())
         return view
     }
 
-
-    fun login(email: String, password: String) {
+    /**
+     * Performs the login operation.
+     */
+    fun login(
+        email: String,
+        password: String,
+    ) {
         val etPassword = view?.findViewById<TextInputLayout>(R.id.login_password)
         val etEmail = view?.findViewById<TextInputLayout>(R.id.login_email) // binding.username
         auth.signInWithEmailAndPassword(
-            email, password
+            email,
+            password,
         ).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val user = task.result.user
@@ -128,9 +122,6 @@ class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance())
             Log.i(TAG, "Login Failed, $exception.localizedMessage")
             etEmail?.error = " "
             etPassword?.error = "Invalid Email or Password"
-//            error("Login Failed, $exception.localizedMessage")
-//                Toast.makeText(applicationContext, exception.localizedMessage, Toast.LENGTH_LONG)
-//                    .show()
         }
     }
 
@@ -138,7 +129,6 @@ class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance())
     private fun updateUiWithUser(model: FirebaseUser) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
-        // TODO : initiate successful logged in experience
 
         Toast.makeText(
             requireActivity().application,
@@ -158,5 +148,3 @@ class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance())
         private val TAG: String = LoginFragment::class.java.name
     }
 }
-
-

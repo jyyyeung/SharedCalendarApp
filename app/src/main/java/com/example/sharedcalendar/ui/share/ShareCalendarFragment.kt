@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-
 /**
  * A simple [DialogFragment] subclass.
  * Use the [ShareCalendarFragment.newInstance] factory method to
@@ -33,12 +32,18 @@ class ShareCalendarFragment : DialogFragment() {
     private var toolbar: Toolbar? = null
     private lateinit var firebaseViewModel: FirebaseViewModel
     private lateinit var shareViewModel: ShareViewModel
-    private val scopes: List<String> = listOf(
-        "Availability", "View", "Edit", "Full"
-    )
+    private val scopes: List<String> =
+        listOf(
+            "Availability",
+            "View",
+            "Edit",
+            "Full",
+        )
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         val view: View = inflater.inflate(R.layout.fragment_share_calendar, container, false)
@@ -66,11 +71,12 @@ class ShareCalendarFragment : DialogFragment() {
             dropdownSelectCalendar.setSimpleItems(calendars.map { c -> c.name }.toTypedArray())
         }
 
-
-        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            requireContext(), android.R.layout.simple_dropdown_item_1line,
-            scopes
-        )
+        val adapter: ArrayAdapter<String> =
+            ArrayAdapter<String>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                scopes,
+            )
         dropdownShareScope.setText("Availability", false)
         dropdownShareScope.setAdapter(adapter)
 
@@ -78,6 +84,7 @@ class ShareCalendarFragment : DialogFragment() {
         btnShare.setOnClickListener {
             var calendar: Calendar? = null
 
+            // Validate Calendar
             if (firebaseViewModel.calendars.value?.map { c -> c.name }?.toTypedArray()
                     ?.contains(dropdownSelectCalendar.text.toString()) != true
             ) {
@@ -86,10 +93,12 @@ class ShareCalendarFragment : DialogFragment() {
             } else {
                 selectCalendar.error = null
                 val calendarName = dropdownSelectCalendar.text.toString()
-                calendar = firebaseViewModel.calendars.value?.filter { c -> c.name == calendarName }
-                    ?.get(0)
+                calendar =
+                    firebaseViewModel.calendars.value?.filter { c -> c.name == calendarName }
+                        ?.get(0)
             }
 
+            // Validate Email
             if (!shareViewModel.isEmailValid(etUserEmail.text)) {
                 shareUserEmail.error = getString(R.string.invalid_email)
                 return@setOnClickListener
@@ -100,6 +109,7 @@ class ShareCalendarFragment : DialogFragment() {
                 shareUserEmail.error = null
             }
 
+            //  Validate Share Scope
             if (dropdownShareScope.text.toString() !in scopes) {
                 shareScope.error = "Invalid Share Scope"
                 return@setOnClickListener
@@ -118,7 +128,6 @@ class ShareCalendarFragment : DialogFragment() {
             firebaseViewModel.createShare(newShare).also {
                 this.dismiss()
             }
-
         }
 
         return view
@@ -126,17 +135,19 @@ class ShareCalendarFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
+        // Set the width and height of the dialog to match the screen
         val dialog = dialog
         if (dialog != null) {
             val width = ViewGroup.LayoutParams.MATCH_PARENT
             val height = ViewGroup.LayoutParams.MATCH_PARENT
             dialog.window!!.setLayout(width, height)
         }
-
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         toolbar!!.setNavigationOnClickListener { dismiss() }
         toolbar!!.title = "Share Calendar"
@@ -145,14 +156,11 @@ class ShareCalendarFragment : DialogFragment() {
 
     companion object {
         private val TAG: String? = ShareCalendarFragment::class.java.name
-        fun display(
-            fragmentManager: FragmentManager?
-        ): ShareCalendarFragment {
+
+        fun display(fragmentManager: FragmentManager?): ShareCalendarFragment {
             val shareCalendarFragment = ShareCalendarFragment()
             shareCalendarFragment.show(fragmentManager!!, TAG)
             return shareCalendarFragment
         }
     }
-
-
 }

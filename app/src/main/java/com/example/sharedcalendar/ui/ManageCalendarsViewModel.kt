@@ -9,11 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * ViewModel class for managing calendars.
+ */
 class ManageCalendarsViewModel : ViewModel() {
-
-    /**
-     * Manage Calendar Screen state for this order
-     */
     private val _calendar = MutableStateFlow(Calendar())
     val calendar: StateFlow<Calendar> = _calendar.asStateFlow()
 
@@ -22,6 +21,4 @@ class ManageCalendarsViewModel : ViewModel() {
     fun setCalendar(calendar: Calendar) {
         _calendar.update { calendar }
     }
-
-
 }

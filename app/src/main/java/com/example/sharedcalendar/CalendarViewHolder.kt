@@ -4,26 +4,15 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-
-//class CalendarViewHolder(itemView: View, onItemListener: CalendarAdapter.OnItemListener) :
-//    RecyclerView.ViewHolder(itemView), View.OnClickListener {
-//    val dayOfMonth: TextView
-//    private val onItemListener: CalendarAdapter.OnItemListener
-//
-//    init {
-//        dayOfMonth = itemView.findViewById<TextView>(R.id.dayOfMonth)
-//        this.onItemListener = onItemListener
-//        itemView.setOnClickListener(this)
-//    }
-//
-//
-//    override fun onClick(view: View) {
-//        onItemListener.onItemClick(adapterPosition, dayOfMonth.text as String)
-//    }
-//}
+/**
+ * ViewHolder class for the CalendarAdapter.
+ * This class represents a single item view in the RecyclerView.
+ *
+ * @param itemView The view representing a single item in the RecyclerView.
+ */
 class CalendarViewHolder(
     itemView: View,
-    private val onItemListener: CalendarAdapter.OnItemListener
+    private val onItemListener: CalendarAdapter.OnItemListener,
 ) : RecyclerView.ViewHolder(itemView) {
     val dayOfMonth: TextView = itemView.findViewById(R.id.dayOfMonth)
 

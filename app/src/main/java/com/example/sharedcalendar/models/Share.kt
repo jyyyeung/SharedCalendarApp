@@ -17,4 +17,3 @@ data class Share(
     var userEmail: String = "",
     var scope: String? = "View",
 )
-

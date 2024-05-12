@@ -6,14 +6,15 @@ import androidx.lifecycle.ViewModel
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-
 /**
  * ViewModel for the login screen.
  * @constructor Creates a new instance of [UserViewModel].
  */
 class UserViewModel : ViewModel() {
-
-    fun valuesAreEqual(value1: Editable, value2: Editable): Boolean {
+    fun valuesAreEqual(
+        value1: Editable,
+        value2: Editable,
+    ): Boolean {
         return value1.toString() == value2.toString()
     }
 
@@ -34,6 +35,11 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Password Strength: Checks if the password is strong.
+     * @param password The password to be checked.
+     * @return True if the password is strong, false otherwise.
+     */
     fun isPasswordStrong(password: Editable): Boolean {
         val pattern: Pattern
         val matcher: Matcher

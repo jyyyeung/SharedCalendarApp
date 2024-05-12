@@ -61,17 +61,27 @@ import com.example.sharedcalendar.feature.editcalendar.EditCalendarScreen
 import com.example.sharedcalendar.feature.editcalendar.ViewCalendarScreen
 import com.example.sharedcalendar.models.Calendar
 
-enum class ManageCalendarScreens(@StringRes val title: Int) {
+/**
+ * Enum class representing the screens in the Manage Calendars fragment.
+ */
+enum class ManageCalendarScreens(
+    @StringRes val title: Int,
+) {
     Select(title = R.string.select_calendar_screen),
-    Edit(title = R.string.edit_calendar_screen), View(
-        title = R.string.view_calendar_screen
+    Edit(title = R.string.edit_calendar_screen),
+    View(
+        title = R.string.view_calendar_screen,
     ),
     Create(title = R.string.create_calendar_screen),
 }
 
+/**
+ * A fragment that allows users to manage calendars.
+ */
 class ManageCalendarsFragment : Fragment() {
     private lateinit var firebaseViewModel: FirebaseViewModel
     private val viewModel by viewModels<ManageCalendarsViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
@@ -83,22 +93,21 @@ class ManageCalendarsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
+                        color = MaterialTheme.colorScheme.background,
                     ) {
                         ManageCalendarScreen(
-                            firebaseViewModel, viewModel
+                            firebaseViewModel,
+                            viewModel,
                         )
-
                     }
                 }
-
             }
         }
     }
@@ -107,7 +116,6 @@ class ManageCalendarsFragment : Fragment() {
         private val TAG: String? = ManageCalendarsFragment::class.java.name
     }
 }
-
 
 @Composable
 fun ManageCalendarScreen(
@@ -119,34 +127,37 @@ fun ManageCalendarScreen(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val fabVisibility = rememberSaveable { (mutableStateOf(true)) }
     // Get the name of the current screen
-    val currentScreen = ManageCalendarScreens.valueOf(
-        backStackEntry?.destination?.route ?: ManageCalendarScreens.Select.name
-    )
+    val currentScreen =
+        ManageCalendarScreens.valueOf(
+            backStackEntry?.destination?.route ?: ManageCalendarScreens.Select.name,
+        )
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
         floatingActionButton = {
-
-            AnimatedVisibility(visible = fabVisibility.value,
+            AnimatedVisibility(
+                visible = fabVisibility.value,
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it }),
                 content = {
 //                    DoseFAB(navController, analyticsHelper)
-                })
+                },
+            )
         },
         topBar = {
             ManageCalendarsAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() },
             )
-        }) { innerPadding ->
+        },
+    ) { innerPadding ->
         val calendar by viewModel.calendar.collectAsState()
 
         NavHost(
             navController = navController,
             startDestination = ManageCalendarScreens.Select.name,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = ManageCalendarScreens.Select.name) {
                 SelectCalendarScreen(
@@ -155,25 +166,29 @@ fun ManageCalendarScreen(
                     onItemClicked = {
                         viewModel.setCalendar(it)
                         navController.navigate(ManageCalendarScreens.View.name)
-                    }
+                    },
                 )
             }
             composable(route = ManageCalendarScreens.View.name) {
                 val context = LocalContext.current
                 ViewCalendarScreen(
-                    calendar = calendar, onEditButtonClicked = {
+                    calendar = calendar,
+                    onEditButtonClicked = {
                         viewModel.setCalendar(it)
                         navController.navigate(ManageCalendarScreens.Edit.name)
-                    }, firebaseViewModel
+                    },
+                    firebaseViewModel,
                 )
             }
             composable(route = ManageCalendarScreens.Edit.name) {
-                EditCalendarScreen(modifier = Modifier.fillMaxSize(),
+                EditCalendarScreen(
+                    modifier = Modifier.fillMaxSize(),
                     calendar = calendar,
                     firebaseViewModel,
                     onBackButtonClicked = {
                         navController.navigateUp()
-                    })
+                    },
+                )
             }
         }
     }
@@ -190,25 +205,31 @@ fun ManageCalendarsAppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TopAppBar(title = { Text(stringResource(currentScreen.title)) },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
+    TopAppBar(
+        title = { Text(stringResource(currentScreen.title)) },
+        colors =
+            TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
         modifier = modifier,
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back Button"
+                        contentDescription = "Back Button",
                     )
                 }
             }
-        })
+        },
+    )
 }
 
 @Composable
-fun ProfileProperty(label: String, value: String) {
+fun ProfileProperty(
+    label: String,
+    value: String,
+) {
     Column {
         HorizontalDivider(modifier = Modifier.padding(bottom = 4.dp))
         Text(
@@ -219,18 +240,18 @@ fun ProfileProperty(label: String, value: String) {
         Text(
             text = value,
             modifier = Modifier.height(24.dp),
-            style = MaterialTheme.typography.bodyMedium, overflow = TextOverflow.Visible
+            style = MaterialTheme.typography.bodyMedium,
+            overflow = TextOverflow.Visible,
         )
     }
 }
-
 
 @Composable
 fun CalendarListItem(
     calendar: Calendar,
     onItemClicked: (calendar: Calendar) -> Unit = {
         ManageCalendarsViewModel().setCalendar(
-            calendar
+            calendar,
         )
     },
 ) {
@@ -239,13 +260,14 @@ fun CalendarListItem(
             Text(
                 text = calendar.name,
                 modifier = Modifier.padding(horizontal = 16.dp),
-//                style = MaterialTheme.typography.bodyLarge
             )
         },
         leadingContent = {
-            Icon(ImageVector.vectorResource(R.drawable.ic_baseline_circle_24),
+            Icon(
+                ImageVector.vectorResource(R.drawable.ic_baseline_circle_24),
                 contentDescription = null,
-                tint = calendar.color?.let { HexToJetpackColor.getColor(it) } ?: Color.Gray)
+                tint = calendar.color?.let { HexToJetpackColor.getColor(it) } ?: Color.Gray,
+            )
         },
         modifier = Modifier.clickable { onItemClicked(calendar) },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -255,13 +277,17 @@ fun CalendarListItem(
 
 @Composable
 fun SelectCalendarList(
-    calendars: List<Calendar>, onItemClicked: (calendar: Calendar) -> Unit, modifier: Modifier
+    calendars: List<Calendar>,
+    onItemClicked: (calendar: Calendar) -> Unit,
+    modifier: Modifier,
 ) {
     LazyColumn(
-        modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(
-            count = calendars.count(), key = { i -> calendars[i].id!! },
+            count = calendars.count(),
+            key = { i -> calendars[i].id!! },
         ) { i ->
             CalendarListItem(calendars[i], onItemClicked)
         }
@@ -275,20 +301,14 @@ fun SelectCalendarScreen(
     onItemClicked: (calendar: Calendar) -> Unit = { },
 ) {
     val calendars = firebaseViewModel.calendars.observeAsState()
-    // API call
-//    LaunchedEffect(key1 = Unit) {
-//        firebaseViewModel.getCalendars()
-////        firebaseViewModel.userShares.observe() {
-////            firebaseViewModel.getCalendars()
-////        }
-//    }
-//    val calendars = firebaseViewModel.getStaticCalendars()
 
     Log.i("Calendar List", calendars.toString())
 
     calendars.value?.let {
         SelectCalendarList(
-            calendars = it.toList(), onItemClicked = onItemClicked, modifier = modifier
+            calendars = it.toList(),
+            onItemClicked = onItemClicked,
+            modifier = modifier,
         )
     }
 }

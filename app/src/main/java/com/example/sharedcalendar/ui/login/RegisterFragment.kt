@@ -48,11 +48,12 @@ class RegisterFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]
-
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_register, container, false)
@@ -72,7 +73,6 @@ class RegisterFragment : Fragment() {
         auth = Firebase.auth
         db = Firebase.firestore
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
-
 
         // Listen to changes in Email input
         etUsername.setOnKeyListener { _, _, _ ->
@@ -98,7 +98,6 @@ class RegisterFragment : Fragment() {
             false
         }
 
-
         // Listen to changes in Password input
         etPassword.setOnKeyListener { _, _, _ ->
             if (!userViewModel.isPasswordValid(etPassword.text!!)) {
@@ -110,7 +109,6 @@ class RegisterFragment : Fragment() {
             }
             false
         }
-
 
         // Listen to changes in Password input
         etConfirmPassword.setOnKeyListener { _, _, _ ->
@@ -126,22 +124,27 @@ class RegisterFragment : Fragment() {
         // Listen to Done action on keyboard
         etPassword.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
-                EditorInfo.IME_ACTION_DONE -> register(
-                    etEmail.text.toString(), etPassword.text.toString(), etUsername.text.toString()
-                )
+                EditorInfo.IME_ACTION_DONE ->
+                    register(
+                        etEmail.text.toString(),
+                        etPassword.text.toString(),
+                        etUsername.text.toString(),
+                    )
             }
             false
         }
 
-
         // Listen to Login btn click event
         btnRegister?.setOnClickListener {
             // On login clicked
-            //Verify Data validity
-            if (!userViewModel.isEmailValid(etEmail?.text!!) || !userViewModel.isPasswordValid(
-                    etPassword?.text!!
-                ) || !userViewModel.isUsernameValid(etUsername?.text!!) || !userViewModel.valuesAreEqual(
-                    etPassword.text!!, etConfirmPassword?.text!!
+            // Verify Data validity
+            if (!userViewModel.isEmailValid(etEmail?.text!!) ||
+                !userViewModel.isPasswordValid(
+                    etPassword?.text!!,
+                ) || !userViewModel.isUsernameValid(etUsername?.text!!) ||
+                !userViewModel.valuesAreEqual(
+                    etPassword.text!!,
+                    etConfirmPassword?.text!!,
                 )
             ) {
                 return@setOnClickListener
@@ -151,14 +154,20 @@ class RegisterFragment : Fragment() {
 
             // Call Register process
             register(
-                etEmail.text.toString(), etPassword.text.toString(), etUsername.text.toString()
+                etEmail.text.toString(),
+                etPassword.text.toString(),
+                etUsername.text.toString(),
             )
             pbLoading?.visibility = View.GONE
         }
         return view
     }
 
-    private fun register(email: String, password: String, username: String) {
+    private fun register(
+        email: String,
+        password: String,
+        username: String,
+    ) {
         val loUsername = view?.findViewById<TextInputLayout>(R.id.loRegisterUsername)
         val loEmail = view?.findViewById<TextInputLayout>(R.id.loRegisterEmail) // binding.username
         val loPassword = view?.findViewById<TextInputLayout>(R.id.loRegisterPassword)
@@ -173,10 +182,10 @@ class RegisterFragment : Fragment() {
                     // Get Shared Preferences
                     Log.i(TAG, sharedPrefs.all.toString())
 
-                    val profileUpdates = userProfileChangeRequest {
-                        displayName = username
-//                                photoUri = Uri.parse("https://example.com/jane-q-user/profile.jpg")
-                    }
+                    val profileUpdates =
+                        userProfileChangeRequest {
+                            displayName = username
+                        }
                     user.updateProfile(profileUpdates).addOnCompleteListener { task2 ->
                         if (task2.isSuccessful) {
                             Log.d(TAG, "User profile updated.")
@@ -185,10 +194,11 @@ class RegisterFragment : Fragment() {
                     sharedPrefs.edit().putString("${user.uid}|name", username).apply()
 
                     // Add user public information to users database
-                    val userDetails = hashMapOf(
-                        "name" to username, "email" to email
-                    )
-//                    db.collection("users").document(user.uid).set(userDetails)
+                    val userDetails =
+                        hashMapOf(
+                            "name" to username,
+                            "email" to email,
+                        )
                     updateUserDetails(user.uid, userDetails)
 
                     // Create default calendar for user
@@ -203,27 +213,32 @@ class RegisterFragment : Fragment() {
                 Log.w(TAG, "createUserWithEmail:failure", task.exception)
                 showLoginFailed(R.string.register_failed)
                 loEmail?.error = " "
-                if (task.exception.toString().contains("email")) loEmail?.error =
-                    task.exception?.localizedMessage
-
+                if (task.exception.toString().contains("email")) {
+                    loEmail?.error =
+                        task.exception?.localizedMessage
+                }
             }
         }
     }
 
-    private fun updateUserDetails(userId: String, userDetails: HashMap<String, String>) {
+    private fun updateUserDetails(
+        userId: String,
+        userDetails: HashMap<String, String>,
+    ) {
         db.collection("users").document(userId).set(userDetails)
     }
 
     private fun createDefaultCalendar() {
         val user = Firebase.auth.currentUser ?: return
-        val defaultCalendar: Calendar = Calendar(
-            name = user.email!!,
-            color = "#7886CB",
-            timezone = TimeZone.currentSystemDefault().id,
-            ownerId = user.uid,
-            isDefault = true,
-            description = "Default Calendar for account ${user.email}"
-        )
+        val defaultCalendar: Calendar =
+            Calendar(
+                name = user.email!!,
+                color = "#7886CB",
+                timezone = TimeZone.currentSystemDefault().id,
+                ownerId = user.uid,
+                isDefault = true,
+                description = "Default Calendar for account ${user.email}",
+            )
         FirebaseViewModel().createCalendar(user.uid, sharedPrefs, defaultCalendar)
     }
 
@@ -245,5 +260,4 @@ class RegisterFragment : Fragment() {
     ) {
         Toast.makeText(requireActivity().application, errorString, Toast.LENGTH_SHORT).show()
     }
-
 }

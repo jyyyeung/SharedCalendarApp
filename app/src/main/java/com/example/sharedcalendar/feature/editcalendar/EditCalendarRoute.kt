@@ -11,7 +11,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,22 +26,31 @@ import androidx.compose.ui.unit.dp
 import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.models.Calendar
 
-
+/**
+ * Edits a calendar.
+ *
+ * @param calendar The calendar to edit.
+ * @param editedFields The fields to edit.
+ * @param firebaseViewModel The view model for Firebase.
+ * @param onBackButtonClicked The callback for when the back button is clicked.
+ */
 fun editCalendar(
     calendar: Calendar,
     editedFields: HashMap<String, Any>,
     firebaseViewModel: FirebaseViewModel,
-    onBackButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit,
 ) {
     for (field in editedFields) {
         when (field.key) {
-            "name" -> if ((editedFields["name"]!! as String).isBlank()) {
-                editedFields.remove("name")
-            }
+            "name" ->
+                if ((editedFields["name"]!! as String).isBlank()) {
+                    editedFields.remove("name")
+                }
 
-            "description" -> if ((editedFields["description"] as String).isBlank()) {
-                editedFields.remove("description")
-            }
+            "description" ->
+                if ((editedFields["description"] as String).isBlank()) {
+                    editedFields.remove("description")
+                }
         }
     }
     if (editedFields.isEmpty()) {
@@ -57,19 +65,24 @@ fun editCalendar(
         onBackButtonClicked()
     }
     Log.i("Edit Cal", "${calendar.id} $editedFields ")
-
 }
 
+/**
+ * Composable function for the edit calendar screen.
+ *
+ * @param modifier The modifier to apply to the layout.
+ * @param calendar The calendar to edit.
+ * @param firebaseViewModel The view model for Firebase.
+ * @param onBackButtonClicked The callback for when the back button is clicked.
+ */
 @Composable
 fun EditCalendarScreen(
     modifier: Modifier = Modifier,
     calendar: Calendar,
     firebaseViewModel: FirebaseViewModel,
-    onBackButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit,
 ) {
-
     val context = LocalContext.current
-
 
     val editedFields = hashMapOf<String, Any>()
 
@@ -78,11 +91,11 @@ fun EditCalendarScreen(
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-
         Text(
-            text = "Edit Calendar Information", style = MaterialTheme.typography.bodyLarge
+            text = "Edit Calendar Information",
+            style = MaterialTheme.typography.bodyLarge,
         )
         TextField(
             modifier = Modifier.fillMaxWidth(),
@@ -91,7 +104,7 @@ fun EditCalendarScreen(
             onValueChange = { calendarName = it },
             placeholder = {
                 Text(
-                    text = "Enter the name of calendar"
+                    text = "Enter the name of calendar",
                 )
             },
         )
@@ -103,9 +116,9 @@ fun EditCalendarScreen(
             onValueChange = { calendarDescription = it },
             placeholder = {
                 Text(
-                    text = "Enter the description for this calendar"
+                    text = "Enter the description for this calendar",
                 )
-            }
+            },
         )
 
         Spacer(modifier = Modifier.padding(4.dp))
@@ -117,9 +130,10 @@ fun EditCalendarScreen(
                     calendarDescription,
                     calendar,
                     editedFields,
-                    firebaseViewModel, onBackButtonClicked
+                    firebaseViewModel,
+                    onBackButtonClicked,
                 )
-            }
+            },
         ) {
             Icon(imageVector = Icons.Filled.Done, contentDescription = "save")
             Text("Save")
@@ -127,22 +141,33 @@ fun EditCalendarScreen(
     }
 }
 
+/**
+ * Handles the save button click.
+ *
+ * @param calendarName The name of the calendar.
+ * @param calendarDescription The description of the calendar.
+ * @param calendar The calendar to edit.
+ * @param editedFields The fields to edit.
+ * @param firebaseViewModel The view model for Firebase.
+ * @param onBackButtonClicked The callback for when the back button is clicked.
+ */
 fun onClickSaveButton(
     calendarName: String,
     calendarDescription: String,
     calendar: Calendar,
     editedFields: HashMap<String, Any>,
     firebaseViewModel: FirebaseViewModel,
-    onBackButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit,
 ) {
     // Save the changes
     if (calendarName != calendar.name) editedFields["name"] = calendarName
-    if (calendarDescription != calendar.description)
+    if (calendarDescription != calendar.description) {
         editedFields["description"] = calendarDescription
+    }
     editCalendar(
         calendar,
         editedFields,
         firebaseViewModel,
-        onBackButtonClicked
+        onBackButtonClicked,
     )
 }

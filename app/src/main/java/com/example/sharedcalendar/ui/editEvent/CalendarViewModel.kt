@@ -13,7 +13,6 @@ import java.util.Calendar
  * @constructor Creates a new instance of [CalendarViewModel].
  */
 class CalendarViewModel : ViewModel() {
-
     companion object {
         private val TAG: String = CalendarViewModel::class.java.name
     }
@@ -39,12 +38,12 @@ class CalendarViewModel : ViewModel() {
         _editEvent.value = event
     }
 
-
     fun setSelectedDate(selectedDate: LocalDate) {
-        _selectedDate.value = Calendar.getInstance().apply {
-            set(Calendar.YEAR, selectedDate.year)
-            set(Calendar.MONTH, selectedDate.monthValue - 1)
-            set(Calendar.DAY_OF_MONTH, selectedDate.dayOfMonth)
-        }
+        _selectedDate.value =
+            Calendar.getInstance().apply {
+                set(Calendar.YEAR, selectedDate.year)
+                set(Calendar.MONTH, selectedDate.monthValue - 1)
+                set(Calendar.DAY_OF_MONTH, selectedDate.dayOfMonth)
+            }
     }
 }

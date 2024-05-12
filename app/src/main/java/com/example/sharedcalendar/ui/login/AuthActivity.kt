@@ -13,12 +13,13 @@ import com.example.sharedcalendar.MainActivity
 import com.example.sharedcalendar.R
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Adapter class for managing the authentication pages in the AuthActivity.
+ */
 class AuthenticationPagerAdapter(
     fragmentManager: FragmentManager,
-    lifecycle: Lifecycle
+    lifecycle: Lifecycle,
 ) : FragmentStateAdapter(fragmentManager, lifecycle) {
-
-
     private val fragmentList: ArrayList<Fragment> = ArrayList()
 
     override fun getItemCount(): Int {
@@ -34,10 +35,13 @@ class AuthenticationPagerAdapter(
     }
 }
 
+/**
+ * Activity for handling user authentication.
+ *
+ * @param auth The instance of FirebaseAuth used for authentication.
+ */
 class AuthActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) :
     AppCompatActivity() {
-//    lateinit var auth: FirebaseAuth
-
     public override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -52,8 +56,6 @@ class AuthActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Initialize Firebase Auth
-//        auth = Firebase.auth
 
         setContentView(R.layout.activity_auth)
 

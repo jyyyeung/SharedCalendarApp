@@ -17,10 +17,13 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-
+/**
+ * Fragment for the settings screen.
+ *
+ * @param user The current user.
+ */
 class SettingsFragment(private val user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!) :
     PreferenceFragmentCompat() {
-    //    private val firebaseViewModel by viewModels<FirebaseViewModel>()
     private lateinit var firebaseViewModel: FirebaseViewModel
     private lateinit var prefs: SharedPreferences
     private var isConfigChanged = false
@@ -29,6 +32,9 @@ class SettingsFragment(private val user: FirebaseUser = FirebaseAuth.getInstance
         private val TAG: String? = SettingsFragment::class.java.name
     }
 
+    /**
+     * Called when the fragment is being destroyed.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         Log.d(TAG, "Finish Updating Settings")
@@ -41,7 +47,10 @@ class SettingsFragment(private val user: FirebaseUser = FirebaseAuth.getInstance
         }
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreatePreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
         prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
@@ -62,7 +71,6 @@ class SettingsFragment(private val user: FirebaseUser = FirebaseAuth.getInstance
         calendarCategory.title = "Show Calendars"
         screen.addPreference(calendarCategory)
 
-
         // Listen for Event Updates
         firebaseViewModel.calendars.observe(this) { calendars ->
             // Set Default Calendar Preference Values
@@ -74,18 +82,19 @@ class SettingsFragment(private val user: FirebaseUser = FirebaseAuth.getInstance
             lpDefaultCalendar?.entries = defaultCalendarEntries
             lpDefaultCalendar?.entryValues = defaultCalendarValues
             if (!defaultCalendarValues.isNullOrEmpty() && prefs.getString(
-                    "${user.uid}|default|calendar", null
+                    "${user.uid}|default|calendar",
+                    null,
                 ) == null
             ) {
                 prefs.edit().putString(
                     "${user.uid}|default|calendar",
-                    calendars.filter { c -> c.isDefault }[0].id.toString()
+                    calendars.filter { c -> c.isDefault }[0].id.toString(),
                 ).apply()
 //                lpDefaultCalendar?.value = calendars.filter { c -> c.isDefault }[0].id.toString()
             }
             lpDefaultCalendar?.value = prefs.getString(
                 "${user.uid}|default|calendar",
-                null
+                null,
             ) ?: when (calendars.filter { c -> c.isDefault }.size) {
                 0 -> null
                 else -> calendars.filter { c -> c.isDefault }[0].id.toString()
@@ -95,10 +104,10 @@ class SettingsFragment(private val user: FirebaseUser = FirebaseAuth.getInstance
             // Allow enabling calendars
             for (calendar in calendars) {
                 val calendarPreference = CheckBoxPreference(context)
-                calendarPreference.key = "${user.uid}|calendar|${calendar.id.toString()}"
+                calendarPreference.key = "${user.uid}|calendar|${calendar.id}"
                 calendarPreference.title = calendar.name
                 calendarPreference.isChecked =
-                    prefs.getBoolean("${user.uid}|calendar|${calendar.id.toString()}", true)
+                    prefs.getBoolean("${user.uid}|calendar|${calendar.id}", true)
                 if (calendar.ownerId != Firebase.auth.currentUser?.uid) {
                     calendarPreference.summary = calendar.owner?.name ?: "Shared by another user"
                 }

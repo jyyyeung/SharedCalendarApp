@@ -12,10 +12,17 @@ import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
 import java.time.LocalDate
 
-
+/**
+ * A fragment that displays the day view for a selected date.
+ *
+ * @param selectedDate The date to be displayed in the day view.
+ */
 class DayViewFragment(selectedDate: LocalDate) : Fragment(R.layout.day_view_fragment) {
     private lateinit var binding: DayViewFragmentBinding
 
+    /**
+     * The adapter used for the RecyclerView in the DayViewFragment.
+     */
     lateinit var adapter: DayRecyclerViewAdapter
     private lateinit var itemList: ArrayList<Event>
 
@@ -34,42 +41,49 @@ class DayViewFragment(selectedDate: LocalDate) : Fragment(R.layout.day_view_frag
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
+        // Inflate the layout for this fragment
         binding = DayViewFragmentBinding.inflate(inflater, container, false)
         binding.dayRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        // Get Events from database
         itemList = firebaseViewModel.getEventThisDay(date)
 
-        //Firebase
+        // Firebase
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
         firebaseViewModel.calendars.observe(requireActivity()) {
-            //Get Events from database
+            // Get Events from database
             firebaseViewModel.getEvents()
         }
+        // Set up RecyclerView
         adapter = DayRecyclerViewAdapter(itemList)
         binding.dayRecyclerView.adapter = adapter
 
+        // Observe Events
         firebaseViewModel.events.observe(requireActivity()) {
+            // Get Events from database
             firebaseViewModel.getEventThisDay(date).also {
+                // Update RecyclerView
                 adapter.updateList(it)
                 itemList = it
             }
         }
 
         val bottomWindow = BottomSheetEditFragment()
-        //RecyclerView Click
+        // RecyclerView Click
         adapter.onItemClick = {
+            // Set the event to be edited
             calendarViewModel.setEditEvent(it)
 
-            if (!bottomWindow.isAdded)
+            // Show the bottom sheet if it is not already shown
+            if (!bottomWindow.isAdded) { // To Prevent multiple instances of the bottom sheet
                 bottomWindow.show(
                     childFragmentManager,
-                    "BottomSheetDialogue"
+                    "BottomSheetDialogue",
                 )
+            }
         }
         return binding.root
     }
-
 }
-

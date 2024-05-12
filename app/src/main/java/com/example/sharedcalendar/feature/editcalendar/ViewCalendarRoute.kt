@@ -56,7 +56,7 @@ import java.util.TimeZone
 fun ViewCalendarScreen(
     calendar: Calendar,
     onEditButtonClicked: (calendar: Calendar) -> Unit = {},
-    firebaseViewModel: FirebaseViewModel = viewModel()
+    firebaseViewModel: FirebaseViewModel = viewModel(),
 ) {
     val scrollState = rememberScrollState()
     val shares by firebaseViewModel.shares.observeAsState()
@@ -68,36 +68,43 @@ fun ViewCalendarScreen(
 
     Surface {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 16.dp, end = 16.dp, bottom = 16.dp, top = 16.dp
-                )
-                .verticalScroll(scrollState),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = 16.dp,
+                        top = 16.dp,
+                    )
+                    .verticalScroll(scrollState),
         ) {
             // Title
             Column(
-                modifier = Modifier
+                modifier = Modifier,
             ) {
                 Text(
                     text = calendar.name,
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
             val currentUser = Firebase.auth.currentUser
             // Calendar Details
             ProfileProperty(
-                "Timezone", calendar.timezone ?: TimeZone.getDefault().toString()
+                "Timezone",
+                calendar.timezone ?: TimeZone.getDefault().toString(),
             )
             ProfileProperty(
-                "Owner", when (calendar.ownerId == currentUser?.uid) {
+                "Owner",
+                when (calendar.ownerId == currentUser?.uid) {
                     true -> currentUser?.displayName ?: "You own this calendar"
-                    false -> calendar.owner?.name ?: firebaseViewModel.users.value?.get(
-                        calendar.ownerId
-                    )?.name ?: "Shared By Unknown User"
-                }
+                    false ->
+                        calendar.owner?.name ?: firebaseViewModel.users.value?.get(
+                            calendar.ownerId,
+                        )?.name ?: "Shared By Unknown User"
+                },
             )
             ProfileProperty("Access Scope", calendar.scope.toString())
 
@@ -108,7 +115,7 @@ fun ViewCalendarScreen(
                     modifier = Modifier.wrapContentHeight(),
                     shouldShowDialog,
                     rememberShare,
-                    calendar.scope ?: "View"
+                    calendar.scope ?: "View",
                 )
             }
 
@@ -120,19 +127,16 @@ fun ViewCalendarScreen(
                     Button(
                         onClick = { onEditButtonClicked(calendar) },
                         modifier = Modifier.weight(1f),
-                        enabled = (calendar.scope == "Full" || calendar.scope == "Edit")
+                        enabled = (calendar.scope == "Full" || calendar.scope == "Edit"),
                     ) {
                         Text(
-                            text = "Edit Calendar"
+                            text = "Edit Calendar",
                         )
                     }
                 }
-
             }
         }
     }
-
-
 }
 
 /**
@@ -146,15 +150,13 @@ fun ViewCalendarScreen(
 fun DeleteShareDialog(
     shouldShowDialog: MutableState<Boolean>,
     share: MutableState<Share>,
-    firebaseViewModel: FirebaseViewModel
+    firebaseViewModel: FirebaseViewModel,
 ) {
-    if (shouldShowDialog.value) { // 2
+    if (shouldShowDialog.value) {
         AlertDialog(
-            // 3
-            onDismissRequest = { // 4
+            onDismissRequest = {
                 shouldShowDialog.value = false
             },
-            // 5
             title = { Text(text = "Delete Share") },
             text = { Text(text = "Are you share you want to remove share with ${share.value.userEmail} of scope ${share.value.scope}?") },
             icon = { Icon(Icons.Default.Delete, contentDescription = "Delete") },
@@ -164,11 +166,10 @@ fun DeleteShareDialog(
                         shouldShowDialog.value = false
                         firebaseViewModel.deleteShare(share.value)
                     },
-
-                    ) {
+                ) {
                     Text(
                         text = "Delete",
-                        color = MaterialTheme.colorScheme.error
+                        color = MaterialTheme.colorScheme.error,
                     )
                 }
             },
@@ -176,13 +177,12 @@ fun DeleteShareDialog(
                 Button(
                     onClick = {
                         shouldShowDialog.value = false
-                    }
+                    },
                 ) {
                     Text("Cancel")
                 }
             },
-
-            )
+        )
     }
 }
 
@@ -200,9 +200,10 @@ fun CalendarShareListItem(
     share: Share,
     shouldShowDialog: MutableState<Boolean>,
     rememberShare: MutableState<Share>,
-    scope: String
+    scope: String,
 ) {
-    ListItem(headlineContent = { Text(share.userEmail) },
+    ListItem(
+        headlineContent = { Text(share.userEmail) },
         supportingContent = { share.scope?.let { Text(it) } },
         leadingContent = {
             when (scope) {
@@ -235,10 +236,9 @@ fun CalendarShareListItem(
                     Icon(Icons.Filled.Delete, contentDescription = "Delete")
                 }
             }
-        }
+        },
     )
     HorizontalDivider()
-
 }
 
 /**
@@ -256,21 +256,20 @@ fun CalendarSharesList(
     modifier: Modifier = Modifier,
     shouldShowDialog: MutableState<Boolean>,
     rememberShare: MutableState<Share>,
-    scope: String
+    scope: String,
 ) {
     if (shares.isNotEmpty()) {
         Text(
             text = "Calendar Shares",
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = 8.dp),
         )
 
         LazyColumn(
-            modifier = modifier.height(216.dp)
+            modifier = modifier.height(216.dp),
         ) {
             items(count = shares.count(), key = { i -> shares[i].id as Any }) { i ->
                 CalendarShareListItem(share = shares[i], shouldShowDialog, rememberShare, scope)
-
             }
         }
     }

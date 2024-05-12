@@ -31,9 +31,10 @@ class CalendarFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
-
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_calendar, container, false)
 
@@ -42,7 +43,6 @@ class CalendarFragment : Fragment() {
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
         firebaseViewModel.calendars.observe(requireActivity()) {
-
             // Get Events from Database
             firebaseViewModel.getEvents()
         }
@@ -57,7 +57,7 @@ class CalendarFragment : Fragment() {
         val weekViewFragment = WeekViewFragment(7)
         val halfWeekViewFragment = WeekViewFragment(3)
         val dayViewFragment = WeekViewFragment(1)
-//        val dayViewFragment = DayViewFragment()
+
         val defaultViewModeFragment =
             when (prefs.getString("${FirebaseAuth.getInstance().uid}|default|view", "month")) {
                 "week" -> weekViewFragment
@@ -77,37 +77,37 @@ class CalendarFragment : Fragment() {
             }
         }
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                Log.d(TAG, "onTabSelected: ${tab?.text}")
-                val selectedViewModeFragment = when (tab?.text) {
-                    getString(R.string.tabItem_month) -> monthViewFragment
-                    getString(R.string.tabItem_week) -> weekViewFragment
-                    getString(R.string.tabItem_halfWeek) -> halfWeekViewFragment
-                    getString(R.string.tabItem_day) -> dayViewFragment
-                    else -> defaultViewModeFragment
+        tabLayout.addOnTabSelectedListener(
+            object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    Log.d(TAG, "onTabSelected: ${tab?.text}")
+                    val selectedViewModeFragment =
+                        when (tab?.text) {
+                            getString(R.string.tabItem_month) -> monthViewFragment
+                            getString(R.string.tabItem_week) -> weekViewFragment
+                            getString(R.string.tabItem_halfWeek) -> halfWeekViewFragment
+                            getString(R.string.tabItem_day) -> dayViewFragment
+                            else -> defaultViewModeFragment
+                        }
+                    // Handle tab select
+                    childFragmentManager.beginTransaction().apply {
+                        // Replace fragment with month view fragment
+                        replace(R.id.frameLayout_calendarFragment, selectedViewModeFragment)
+                        addToBackStack(null)
+                        // commit the change
+                        commit()
+                    }
                 }
-                // Handle tab select
-                childFragmentManager.beginTransaction().apply {
-                    // Replace fragment with month view fragment
-                    replace(R.id.frameLayout_calendarFragment, selectedViewModeFragment)
-                    addToBackStack(null)
-                    // commit the change
-                    commit()
+
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                    // Handle tab reselect
                 }
 
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Handle tab reselect
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Handle tab unselect
-            }
-        })
-
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    // Handle tab unselect
+                }
+            },
+        )
 
         // By default, the view fragment is month view fragment
         childFragmentManager.beginTransaction().apply {
@@ -116,7 +116,6 @@ class CalendarFragment : Fragment() {
             commit()
         }
 
-
         // When Click AddEvent Button
         val addEventBtn: FloatingActionButton = view.findViewById(R.id.addEventBtn)
         val bottomWindow = BottomSheetFragment()
@@ -124,7 +123,8 @@ class CalendarFragment : Fragment() {
         addEventBtn.setOnClickListener {
             if (bottomWindow.isAdded) return@setOnClickListener
             bottomWindow.show(
-                childFragmentManager, "BottomSheetDialogue"
+                childFragmentManager,
+                "BottomSheetDialogue",
             )
         }
 

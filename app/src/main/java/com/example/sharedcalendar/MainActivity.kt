@@ -1,5 +1,9 @@
 package com.example.sharedcalendar
 
+/**
+ * This file is the main activity of the Shared Calendar app.
+ * It imports the necessary classes for Android intents.
+ */
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -24,7 +28,11 @@ import com.google.common.annotations.VisibleForTesting
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-
+/**
+ * The main activity of the SharedCalendar app.
+ *
+ * @param auth The instance of FirebaseAuth used for authentication.
+ */
 class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) :
     AppCompatActivity(),
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -65,11 +73,10 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
         }
 
         // START SIDEBAR NAVIGATION //
-        //Drawer button
+        // Drawer button
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
 //        val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
-
 
         firebaseViewModel.getUserShares()
 
@@ -95,16 +102,11 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
             tvEmail.text = user.email
         }
 
-
         nvSidebar.setNavigationItemSelectedListener { menuItem ->
             navigationItemSelectedListener(menuItem, drawerLayout)
         }
 
-
         // END SIDEBAR NAVIGATION //
-//
-//        val calendarFragment = CalendarFragment()
-
         // By default, open the Calendar fragment
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.mainFragment, mHomeFragment)
@@ -112,9 +114,15 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
         }
     }
 
+    /**
+     * Handles the selection of items in the navigation drawer.
+     *
+     * @param item The selected item in the navigation drawer.
+     * @param drawerLayout The drawer layout to close after selecting an item.
+     */
     private fun navigationItemSelectedListener(
         menuItem: MenuItem,
-        drawerLayout: DrawerLayout
+        drawerLayout: DrawerLayout,
     ): Boolean {
         // Handle menu item selected
         menuItem.isChecked = false
@@ -124,25 +132,22 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
         if (menuItem.toString() == "Settings") {
             isModifyingSettings = true
             // Open settings activity
-//                startActivity(Intent(this, SettingsActivity::class.java))
             mFragmentTransaction.replace(R.id.mainFragment, SettingsFragment(user))
-
         } else if (menuItem.toString() == "Logout") {
-
             // Call Logout process
             FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(this, AuthActivity::class.java).run {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            })
+            startActivity(
+                Intent(this, AuthActivity::class.java).run {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                },
+            )
             finishAffinity()
-//                }
         } else if (menuItem.toString() == "Add Person to Calendar") {
-            // TODO: Handle add person to calendar
+            // Handle add person to calendar
             // Create and show the dialog.
             ShareCalendarFragment.display(supportFragmentManager)
-//                ft.addToBackStack(null)
         } else if (menuItem.toString() == "Manage Calendars") {
             mFragmentTransaction.replace(R.id.mainFragment, mManageCalendarsFragment)
         } else if (menuItem.toString() == "Home") {
@@ -151,7 +156,6 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
         }
         mFragmentTransaction.commit()
         mFragmentManager.executePendingTransactions()
-//            menuItem.itemId
         drawerLayout.close()
         return true
     }
@@ -166,16 +170,27 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
         firebaseViewModel = ViewModelProvider(this)[FirebaseViewModel::class.java]
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
-
-
     }
 
+    /**
+     * Retrieves the calendar ID.
+     *
+     * @return The calendar ID as a String, or null if it cannot be retrieved.
+     */
     fun getCalendarId(): String? {
         return firebaseViewModel.calendars.value?.get(0)?.id
-//        return calendars[0].id
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    /**
+     * Called when a shared preference is changed, added, or removed.
+     *
+     * @param sharedPreferences The SharedPreferences that received the change.
+     * @param key The key of the preference that was changed, added, or removed.
+     */
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences?,
+        key: String?,
+    ) {
         Log.i(TAG, "Shared Preference Changed $key")
         if (FirebaseAuth.getInstance().currentUser != null && isModifyingSettings) {
             val calendarPrefs =
@@ -185,6 +200,4 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
             }
         }
     }
-
-
 }

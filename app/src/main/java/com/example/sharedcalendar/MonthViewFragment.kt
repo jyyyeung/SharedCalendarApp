@@ -39,12 +39,10 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
     private var selectedDate: LocalDate? = null
 
 
-    //            private val thisEvents = viewModel.getEvents(true).groupBy { it.startTime.toLocalDate() }
     private var eventsThisMonth: Map<LocalDate, List<Event>>? = null
     lateinit var binding: FragmentMonthViewBinding
 
 
-    //    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
@@ -118,27 +116,6 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                             calendarViewModel.setSelectedDate(selectedDate!!)
                             // Change Fragment from month to week on button click
                             calendarViewModel.changeViewMode("3-day")
-//                            parentFragmentManager.beginTransaction().apply {
-//                                replace(
-//                                    R.id.frameLayout_calendarFragment,
-//                                    WeekViewFragment(3)
-//                                )
-//                                addToBackStack(null)
-//                                commit()
-//                            }
-//                            parentFragmentManager.beginTransaction().apply {
-//                                replace(
-//                                    R.id.frameLayout_calendarFragment,
-//                                    DayViewFragment(selectedDate!!)
-//                                )
-//                                addToBackStack(null)
-//                                commit()
-//                            }
-
-
-//                            val binding = this@MonthViewFragment.binding
-//                            binding.MonthViewCalendar.notifyDateChanged(day.date)
-//                            oldDate?.let { binding.MonthViewCalendar.notifyDateChanged(it) }
                         }
                     }
                 }
