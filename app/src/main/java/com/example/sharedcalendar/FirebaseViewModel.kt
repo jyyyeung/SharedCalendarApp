@@ -498,11 +498,13 @@ class FirebaseViewModel(
 
     fun deleteShare(share: Share) {
         val shareId = share.id
+        if (shareId.isNullOrEmpty()) {
+            Log.w(TAG, "Share ID is null")
+            return
+        }
 
         viewModelScope.launch(Dispatchers.IO) {
             Log.i(TAG, "deleteCalendar()")
-
-//            val db = Firebase.firestore
 
             db.collection("shares").document(shareId).delete().addOnSuccessListener {
                 Log.i(TAG, "share deleted")
@@ -514,15 +516,6 @@ class FirebaseViewModel(
             }
         }
     }
-//
-//    fun updatePreferences(sharedPreferences: SharedPreferences?) {
-//
-//        viewModelScope.launch(Dispatchers.IO) {
-//
-//
-//
-//        }
-//    }
 
 }
 

@@ -245,7 +245,7 @@ fun CalendarSharesList(
         LazyColumn(
             modifier = modifier.height(216.dp)
         ) {
-            items(count = shares.count(), key = { i -> shares[i].id }) { i ->
+            items(count = shares.count(), key = { i -> shares[i].id as Any }) { i ->
                 CalendarShareListItem(share = shares[i], shouldShowDialog, rememberShare, scope)
 
             }
