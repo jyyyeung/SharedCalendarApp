@@ -62,8 +62,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
             // Call the function under test
             ViewCalendarScreen(
                 calendar = calendar,
-                firebaseViewModel = spykFirebaseViewModel,
-                viewModel = viewModel
+                firebaseViewModel = spykFirebaseViewModel
             )
 
 
@@ -91,8 +90,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
             // Act
             ViewCalendarScreen(
                 calendar = calendar,
-                firebaseViewModel = spykFirebaseViewModel,
-                viewModel = viewModel
+                firebaseViewModel = spykFirebaseViewModel
             )
 
             // Assert
@@ -112,8 +110,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
             // Act
             ViewCalendarScreen(
                 calendar = calendar,
-                firebaseViewModel = spykFirebaseViewModel,
-                viewModel = viewModel
+                firebaseViewModel = spykFirebaseViewModel
             )
 
             // Assert
@@ -133,8 +130,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
             // Act
             ViewCalendarScreen(
                 calendar = calendar,
-                firebaseViewModel = spykFirebaseViewModel,
-                viewModel = viewModel
+                firebaseViewModel = spykFirebaseViewModel
             )
 
             // Assert
@@ -154,8 +150,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
             // Act
             ViewCalendarScreen(
                 calendar = calendar,
-                firebaseViewModel = spykFirebaseViewModel,
-                viewModel = viewModel
+                firebaseViewModel = spykFirebaseViewModel
             )
 
             // Assert
@@ -173,7 +168,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
         composeTestRule.setContent {
 
             // Act
-            MyAlertDialog(shouldShowDialog, share, spykFirebaseViewModel)
+            DeleteShareDialog(shouldShowDialog, share, spykFirebaseViewModel)
         }
         // Assert
         assertTrue(shouldShowDialog.value)
@@ -188,7 +183,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
         composeTestRule.setContent {
 
             // Act
-            MyAlertDialog(shouldShowDialog, share, spykFirebaseViewModel)
+            DeleteShareDialog(shouldShowDialog, share, spykFirebaseViewModel)
         }
         // Assert
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
@@ -223,7 +218,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
         composeTestRule.setContent {
 
             // Act
-            MyAlertDialog(shouldShowDialog, share, spykFirebaseViewModel)
+            DeleteShareDialog(shouldShowDialog, share, spykFirebaseViewModel)
         }
         // Assert
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
@@ -241,7 +236,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
         composeTestRule.setContent {
 
             // Act
-            MyAlertDialog(shouldShowDialog, share, spykFirebaseViewModel)
+            DeleteShareDialog(shouldShowDialog, share, spykFirebaseViewModel)
         }
         // Assert
         val dialog = ShadowAlertDialog.getLatestAlertDialog()
@@ -260,7 +255,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
         composeTestRule.setContent {
 
             // Act
-            MyAlertDialog(shouldShowDialog, share, spykFirebaseViewModel)
+            DeleteShareDialog(shouldShowDialog, share, spykFirebaseViewModel)
             val dialog = ShadowAlertDialog.getLatestAlertDialog()
             if (dialog != null) {
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.performClick()
@@ -281,7 +276,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
 
         composeTestRule.setContent {
             // Act
-            MyAlertDialog(shouldShowDialog, share, spykFirebaseViewModel)
+            DeleteShareDialog(shouldShowDialog, share, spykFirebaseViewModel)
         }
 
         // Assert
@@ -298,7 +293,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
         composeTestRule.setContent {
 
             // Act
-            MyAlertDialog(shouldShowDialog, share, spykFirebaseViewModel)
+            DeleteShareDialog(shouldShowDialog, share, spykFirebaseViewModel)
             val dialog = ShadowAlertDialog.getLatestAlertDialog()
             if (dialog != null) {
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.performClick()
@@ -318,7 +313,7 @@ class ViewCalendarRouteKtTest : BaseTest() {
         composeTestRule.setContent {
 
             // Act
-            MyAlertDialog(shouldShowDialog, share, spykFirebaseViewModel)
+            DeleteShareDialog(shouldShowDialog, share, spykFirebaseViewModel)
             val dialog = ShadowAlertDialog.getLatestAlertDialog()
             if (dialog != null) {
                 dialog.getButton(DialogInterface.BUTTON_NEGATIVE)?.performClick()

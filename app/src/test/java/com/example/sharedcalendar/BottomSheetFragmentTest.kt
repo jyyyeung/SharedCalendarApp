@@ -92,7 +92,7 @@ class BottomSheetFragmentTest : BaseTest() {
         fragment.timeText.text = "Time"
         fragment.endTimeText.text = "Time"
 
-        fragment.dateCheck()
+        fragment.checkDateIsValid()
 
         assertEquals(false, fragment.view?.findViewById<Button>(R.id.saveBtn)?.isEnabled)
     }
@@ -106,7 +106,7 @@ class BottomSheetFragmentTest : BaseTest() {
         fragment.timeText.text = "12:00"
         fragment.endTimeText.text = "12:00"
 
-        fragment.dateCheck()
+        fragment.checkDateIsValid()
 
         assertEquals(true, fragment.view?.findViewById<Button>(R.id.saveBtn)?.isEnabled)
     }

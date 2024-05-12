@@ -351,7 +351,7 @@ class FirebaseViewModelTest : BaseTest() {
 
         viewModel.deleteShare(share)
 
-        coVerify { mockFirestore.collection("shares").document(share.id).delete() }
+        coVerify { share.id?.let { mockFirestore.collection("shares").document(it).delete() } }
     }
 
     @ExperimentalCoroutinesApi

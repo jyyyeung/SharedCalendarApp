@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
@@ -15,8 +14,8 @@ import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.MonthViewFragment
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.WeekViewFragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 
 /**
  * A simple [Fragment] subclass.
@@ -25,10 +24,6 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
  */
 class CalendarFragment : Fragment() {
     private lateinit var firebaseViewModel: FirebaseViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -83,14 +78,16 @@ class CalendarFragment : Fragment() {
         }
 
         // When Click AddEvent Button
-        val addEventBtn: ImageButton = view.findViewById(R.id.addEventBtn)
+        val addEventBtn: FloatingActionButton = view.findViewById(R.id.addEventBtn)
         val bottomWindow = BottomSheetFragment()
 
         addEventBtn.setOnClickListener {
+            if (bottomWindow.isAdded) return@setOnClickListener
             bottomWindow.show(
                 childFragmentManager, "BottomSheetDialogue"
             )
         }
+
         return view
     }
 

@@ -71,6 +71,8 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         endTimeText = view.findViewById(R.id.endTimeTV)
         swIsAllDay = view.findViewById(R.id.swIsAllDay)
 
+        dateText.text = "Date"
+
         //Handle Click on StartDate
         dateText.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
@@ -84,11 +86,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                             year, adjMonth, day, startDateTime.hour, startDateTime.minute
                         )
                     Log.d("StartDate", "StartDate: $startDateTime")
-                    dateCheck()
+                    checkDateIsValid()
                 },
-                (LocalDateTime.now().year),
-                (LocalDateTime.now().month.value - 1),
-                (LocalDateTime.now().dayOfMonth)
+                (today.year),
+                (today.month.value - 1),
+                (today.dayOfMonth)
             )
 
             datePickerDialog.show()
@@ -113,11 +115,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                             year, adjMonth, day, endDateTime.hour, endDateTime.minute
                         )
                     Log.d("StartDate", "endDate: $endDateTime")
-                    dateCheck()
+                    checkDateIsValid()
                 },
-                (LocalDateTime.now().year),
-                (LocalDateTime.now().month.value - 1),
-                (LocalDateTime.now().dayOfMonth)
+                (today.year),
+                (today.month.value - 1),
+                (today.dayOfMonth)
             )
 
             datePickerDialog.show()
@@ -136,9 +138,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                             hour,
                             minute
                         )
-                    dateCheck()
+                    checkDateIsValid()
                     Log.d("StartDate", "startDate: $startDateTime")
-                }, 15, 30, false
+                }, today.hour, today.minute, false
             )
             timePickerDialog.show()
         }
@@ -157,9 +159,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                             hour,
                             minute
                         )
-                    dateCheck()
+                    checkDateIsValid()
                     Log.d("StartDate", "endDate: $endDateTime")
-                }, 15, 30, false
+                }, today.plusHours(1).hour, today.minute, false
             )
             timePickerDialog.show()
         }
@@ -181,7 +183,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 timeText.visibility = View.VISIBLE
                 endTimeText.visibility = View.VISIBLE
             }
-            dateCheck()
+            checkDateIsValid()
         }
 
 
@@ -201,7 +203,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         //Save Button
         val saveBtn = view.findViewById<Button>(R.id.saveBtn)
         saveBtn.setOnClickListener {
-
             var startHour = 0
             var startMinute = 0
             var endHour = 0
@@ -243,25 +244,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 ).toString(),
                 "color" to selectedColor.code
             )
-//
-//            val db = Firebase.firestore
-//            db.collection("events").add(newEvent).addOnSuccessListener { documentReference ->
-//                Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-//                documentReference.get().addOnSuccessListener { result ->
-//                    val event = result.toObject(Event::class.java)
-//                    if (event is Event) {
-//                        event.id = result.id
-//                        event.startTime =
-//                            LocalDateTime.parse(result.get("startTimestamp").toString())
-//                        event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
-//                        firebaseViewModel.addEventToCalendar(event)
-//                    }
-//                    firebaseViewModel.getCurrentMonthEvents()
-//
-//                    this.dismiss()
-//                }
-//            }.addOnFailureListener { e ->
-//                Log.w(TAG, "Error adding document", e)
             firebaseViewModel.addEventToCalendar(newEvent).run {
                 this@BottomSheetFragment.dismiss()
             }
@@ -269,7 +251,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     }
 
 
-    fun dateCheck() {
+    /**
+     * Check Date Is Valid.
+     *
+     */
+    fun checkDateIsValid() {
         Log.d("dateCheck", "Checking Date")
         val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
         //Do nothing if not yet picked all date
@@ -302,15 +288,12 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 LocalDateTime.of(endDateTime.year, endDateTime.month, endDateTime.dayOfMonth, 0, 0)
         }
 
-
+        // If Start Date time is after End Date time, show error and disable save button
+        val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
         if (startDateTime.isAfter(endDateTime)) {
-            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
-
             startDateLL?.setBackgroundColor(resources.getColor(R.color.highlight_red))
             saveBtn?.isEnabled = false
         } else {
-            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
-            val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
             startDateLL?.setBackgroundColor(resources.getColor(R.color.white))
             saveBtn?.isEnabled = true
         }
@@ -324,6 +307,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
     lateinit var selectedColor: Color
 
+    /**
+     * Load color spinner
+     */
     private fun loadColor() {
         selectedColor = ColorList().default
         val spinner = view?.findViewById<Spinner>(R.id.colorSpinner)

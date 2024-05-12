@@ -105,7 +105,6 @@ class ManageCalendarsFragment : Fragment() {
 
             }
         }
-//        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     companion object {
@@ -183,7 +182,7 @@ fun ManageCalendarScreen(
             composable(route = ManageCalendarScreens.View.name) {
                 val context = LocalContext.current
                 ViewCalendarScreen(
-                    modifier = Modifier.fillMaxSize(), calendar = calendar, onEditButtonClicked = {
+                    calendar = calendar, onEditButtonClicked = {
                         viewModel.setCalendar(it)
                         navController.navigate(ManageCalendarScreens.Edit.name)
                     }, firebaseViewModel

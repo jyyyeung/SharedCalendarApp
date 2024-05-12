@@ -148,6 +148,7 @@ dependencies {
 
     implementation("androidx.fragment:fragment-ktx:1.7.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.7")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation("androidx.test:core-ktx:1.6.0-alpha06")
     androidTestImplementation(project(":app"))

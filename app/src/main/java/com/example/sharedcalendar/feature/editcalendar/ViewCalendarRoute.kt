@@ -40,30 +40,32 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.models.Calendar
 import com.example.sharedcalendar.models.Share
-import com.example.sharedcalendar.ui.ManageCalendarsViewModel
 import com.example.sharedcalendar.ui.ProfileProperty
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import java.util.TimeZone
 
+/**
+ * View Calendar Screen.
+ *
+ * @param calendar The calendar to display
+ * @param onEditButtonClicked The callback when the edit button is clicked
+ * @param firebaseViewModel The view model
+ */
 @Composable
 fun ViewCalendarScreen(
-    modifier: Modifier = Modifier,
     calendar: Calendar,
     onEditButtonClicked: (calendar: Calendar) -> Unit = {},
-    firebaseViewModel: FirebaseViewModel = viewModel(),
-    viewModel: ManageCalendarsViewModel = viewModel()
+    firebaseViewModel: FirebaseViewModel = viewModel()
 ) {
     val scrollState = rememberScrollState()
     val shares by firebaseViewModel.shares.observeAsState()
     val shouldShowDialog = remember { mutableStateOf(false) } // 1
     val rememberShare: MutableState<Share> = remember { mutableStateOf(Share()) }
     if (shouldShowDialog.value) {
-        MyAlertDialog(shouldShowDialog = shouldShowDialog, rememberShare, firebaseViewModel)
+        DeleteShareDialog(shouldShowDialog = shouldShowDialog, rememberShare, firebaseViewModel)
     }
 
-//    Column(modifier = modifier.padding(16.dp)) {
-//        BoxWithConstraints {
     Surface {
         Column(
             modifier = Modifier
@@ -98,20 +100,11 @@ fun ViewCalendarScreen(
                 }
             )
             ProfileProperty("Access Scope", calendar.scope.toString())
-//
-//                    Spacer(
-//                        Modifier.height(
-//                            (this@BoxWithConstraints.maxHeight - 320.dp).coerceAtLeast(
-//                                0.dp
-//                            )
-//                        )
-//                    )
 
             shares?.get(calendar.id.toString())?.toList()?.let {
                 Log.i("View Calendar Route", shares.toString())
                 CalendarSharesList(
                     shares = it,
-                    firebaseViewModel = firebaseViewModel,
                     modifier = Modifier.wrapContentHeight(),
                     shouldShowDialog,
                     rememberShare,
@@ -142,8 +135,15 @@ fun ViewCalendarScreen(
 
 }
 
+/**
+ * Delete Share Dialog.
+ *
+ * @param shouldShowDialog Whether to show the dialog
+ * @param share The share to delete
+ * @param firebaseViewModel The view model
+ */
 @Composable
-fun MyAlertDialog(
+fun DeleteShareDialog(
     shouldShowDialog: MutableState<Boolean>,
     share: MutableState<Share>,
     firebaseViewModel: FirebaseViewModel
@@ -186,6 +186,14 @@ fun MyAlertDialog(
     }
 }
 
+/**
+ * Calendar Share List Item.
+ *
+ * @param share The share to display
+ * @param shouldShowDialog Whether to show the delete share dialog
+ * @param rememberShare The current selected share to delete
+ * @param scope The scope of the calendar
+ */
 
 @Composable
 fun CalendarShareListItem(
@@ -197,18 +205,25 @@ fun CalendarShareListItem(
     ListItem(headlineContent = { Text(share.userEmail) },
         supportingContent = { share.scope?.let { Text(it) } },
         leadingContent = {
-            if (scope == "Full") {
+            when (scope) {
+                "Full" -> {
+                    Icon(
+                        Icons.Filled.AccountCircle,
+                        contentDescription = "Account",
+                    )
+                }
 
-                Icon(
-                    Icons.Filled.AccountCircle,
-                    contentDescription = "Account",
-                )
-            } else if (scope == "Edit") {
-                Icon(Icons.Filled.Edit, contentDescription = "Edit")
-            } else if (scope == "View") {
-                Icon(Icons.Default.Info, contentDescription = "View")
-            } else if (scope == "Availability") {
-                Icon(Icons.Default.DateRange, contentDescription = "Availability")
+                "Edit" -> {
+                    Icon(Icons.Filled.Edit, contentDescription = "Edit")
+                }
+
+                "View" -> {
+                    Icon(Icons.Default.Info, contentDescription = "View")
+                }
+
+                "Availability" -> {
+                    Icon(Icons.Default.DateRange, contentDescription = "Availability")
+                }
             }
         },
         trailingContent = {
@@ -226,10 +241,18 @@ fun CalendarShareListItem(
 
 }
 
+/**
+ * Calendar Shares List.
+ *
+ * @param shares The list of shares to display
+ * @param modifier The modifier
+ * @param shouldShowDialog Whether to show the delete share dialog
+ * @param rememberShare The current selected share to edit or delete
+ * @param scope The scope of the calendar
+ */
 @Composable
 fun CalendarSharesList(
     shares: List<Share>,
-    firebaseViewModel: FirebaseViewModel,
     modifier: Modifier = Modifier,
     shouldShowDialog: MutableState<Boolean>,
     rememberShare: MutableState<Share>,

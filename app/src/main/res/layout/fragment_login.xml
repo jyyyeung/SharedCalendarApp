@@ -102,7 +102,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@color/gray"
             android:text="@string/action_sign_in"
             android:textAllCaps="false"
             app:layout_constraintEnd_toStartOf="@+id/guideline_right"
@@ -148,7 +147,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="32dp"
-                android:text="Swipe Left to Register"
+                android:text="@string/swipe_left_to_register"
                 android:textSize="15sp" />
         </RelativeLayout>
 

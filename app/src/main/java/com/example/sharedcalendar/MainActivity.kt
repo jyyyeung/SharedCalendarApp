@@ -7,12 +7,10 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.preference.PreferenceManager
 import com.example.sharedcalendar.ui.CalendarFragment
 import com.example.sharedcalendar.ui.ManageCalendarsFragment
@@ -25,8 +23,6 @@ import com.google.android.material.navigation.NavigationView
 import com.google.common.annotations.VisibleForTesting
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 
 class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) :
@@ -35,16 +31,11 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
     @VisibleForTesting
     lateinit var firebaseViewModel: FirebaseViewModel
 
-    //    var firebaseViewModel by viewModels<FirebaseViewModel>()
     private lateinit var userViewModel: UserViewModel
     private lateinit var user: FirebaseUser
     private lateinit var prefs: SharedPreferences
 
-    //    private var isSignInDisplayed: Boolean = false
     private var isModifyingSettings: Boolean = false
-
-
-//    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     /*
      * Fragments
@@ -56,7 +47,6 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
 
     @VisibleForTesting
     var mManageCalendarsFragment: ManageCalendarsFragment = ManageCalendarsFragment()
-//    private var mSettingsFragment: SettingsFragment = SettingsFragment()
 
     companion object {
         private val TAG: String = MainActivity::class.java.name
