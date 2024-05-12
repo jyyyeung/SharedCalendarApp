@@ -337,7 +337,7 @@ class FirebaseViewModelTest : BaseTest() {
         val calendar = Calendar().apply { id = "testCalendarId" }
         coEvery { viewModel.calendars.value } returns mutableListOf(calendar)
 
-        viewModel.getCurrentMonthEvents()
+        viewModel.getEvents()
 
         coVerify {
             mockFirestore.collection("events").whereEqualTo("calendarId", calendar.id).get()

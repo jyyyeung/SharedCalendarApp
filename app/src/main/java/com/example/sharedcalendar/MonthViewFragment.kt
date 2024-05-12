@@ -55,11 +55,11 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         val endMonth = currentMonth.plusMonths(200)
 
         firebaseViewModel.calendars.observe(viewLifecycleOwner) {
-            firebaseViewModel.getCurrentMonthEvents()
+            firebaseViewModel.getEvents()
         }
 
         // Get Events from Database
-        firebaseViewModel.getCurrentMonthEvents()
+        firebaseViewModel.getEvents()
 
         // Listen for Event Updates
         firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
@@ -117,7 +117,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                             val oldDate = selectedDate
                             selectedDate = day.date
                             parentFragmentManager.beginTransaction().apply {
-                                replace(R.id.flFragment,DayViewFragment(selectedDate!!))
+                                replace(R.id.flFragment, DayViewFragment(selectedDate!!))
                                 addToBackStack(null)
                                 commit()
                             }

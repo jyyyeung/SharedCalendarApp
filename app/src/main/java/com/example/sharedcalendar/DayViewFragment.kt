@@ -1,79 +1,75 @@
 package com.example.sharedcalendar
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.sharedcalendar.databinding.DayViewFragmentBinding
 import com.example.sharedcalendar.models.Event
+import com.example.sharedcalendar.ui.editEvent.DayViewViewModel
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 
-class DayViewFragment(selectedDate: LocalDate): Fragment(R.layout.day_view_fragment){
-    lateinit var binding: DayViewFragmentBinding
+class DayViewFragment(selectedDate: LocalDate) : Fragment(R.layout.day_view_fragment) {
+    private lateinit var binding: DayViewFragmentBinding
 
     lateinit var adapter: DayRecyclerViewAdapter
-    lateinit var recyclerView: RecyclerView
-    lateinit var itemList : ArrayList<Event>
-    //lateinit var testList : ArrayList<String>
+    private lateinit var itemList: ArrayList<Event>
 
-    var date = selectedDate
+    private var date = selectedDate
 
     private lateinit var firebaseViewModel: FirebaseViewModel
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?){
-        super.onViewCreated(view, savedInstanceState)
-        binding = DayViewFragmentBinding.bind(view)
+    private val dayViewViewModel by lazy {
+        ViewModelProvider(this)[DayViewViewModel::class.java]
+    }
 
-        initialiseObject()
-        val layoutManager = LinearLayoutManager(context)
-        recyclerView = view.findViewById(R.id.dayRecyclerView)
-        recyclerView.layoutManager = layoutManager
-        adapter = DayRecyclerViewAdapter(itemList)
-        recyclerView.adapter = adapter
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DayViewFragmentBinding.inflate(inflater, container, false)
+        binding.dayRecyclerView.layoutManager = LinearLayoutManager(context)
+
+        itemList = firebaseViewModel.getEventThisDay(date)
 
         //Firebase
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
-        firebaseViewModel.calendars.observe(requireActivity()){
+        firebaseViewModel.calendars.observe(requireActivity()) {
             //Get Events from database
-            //firebaseViewModel.get
+            firebaseViewModel.getEvents()
+        }
+        adapter = DayRecyclerViewAdapter(itemList)
+        binding.dayRecyclerView.adapter = adapter
+
+        firebaseViewModel.events.observe(requireActivity()) {
+            firebaseViewModel.getEventThisDay(date).also {
+                adapter.updateList(it)
+                itemList = it
+            }
         }
 
         val bottomWindow = BottomSheetEditFragment()
         //RecyclerView Click
         adapter.onItemClick = {
-            bottomWindow.show(
-                childFragmentManager,
-                "BottomSheetDialogue"
-            )
-            bottomWindow.parseEvent(it)
+            dayViewViewModel.setEditEvent(it)
+
+            if (!bottomWindow.isAdded)
+                bottomWindow.show(
+                    childFragmentManager,
+                    "BottomSheetDialogue"
+                )
         }
-
+        return binding.root
     }
 
-
-    //TODO: Click on event
-
-
-    private fun initialiseObject(){
-        itemList = arrayListOf<Event>()
-        var test = Event(
-            "0","0","event0","description",LocalDateTime.now().toString(), LocalDateTime.now(),LocalDateTime.now().plusHours(2).toString(),LocalDateTime.now().plusHours(2))
-        var test1 = Event(
-            "1","0","event1","description")
-        var test2 = Event(
-            "2","0","event2","description")
-        var test3 = Event(
-            "3","0","event3","description")
-        var test4 = Event(
-            "4","0","event4","description")
-
-        itemList.add(test)
-        itemList.add(test2)
-        itemList.add(test3)
-        itemList.add(test4)
-    }
 }
 

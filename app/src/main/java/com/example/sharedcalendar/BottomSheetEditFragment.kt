@@ -15,18 +15,20 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.models.Event
+import com.example.sharedcalendar.ui.editEvent.DayViewViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.materialswitch.MaterialSwitch
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.LocalDateTime
-import kotlin.random.Random
 
 
-class BottomSheetEditFragment() : BottomSheetDialogFragment(){
+class BottomSheetEditFragment : BottomSheetDialogFragment() {
     private lateinit var prefs: SharedFirebasePreferences
     private lateinit var firebaseViewModel: FirebaseViewModel
+    private lateinit var dayViewViewModel: DayViewViewModel
 
     private lateinit var startDateTime: LocalDateTime
     private lateinit var endDateTime: LocalDateTime
@@ -35,27 +37,24 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
     private lateinit var endDateText: TextView
     private lateinit var endTimeText: TextView
     private lateinit var swIsAllDay: MaterialSwitch
-    private lateinit var thisEvent : Event
-    private lateinit var etNewEventName : EditText
-    private lateinit var etNewEventDescription : EditText
-
+    private lateinit var thisEvent: Event
+    private lateinit var etNewEventName: EditText
+    private lateinit var etNewEventDescription: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         prefs = SharedFirebasePreferences.getDefaultInstance(context)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+        dayViewViewModel =
+            ViewModelProvider(this.requireParentFragment())[DayViewViewModel::class.java]
 
         return inflater.inflate(R.layout.bottom_window_edit, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle? ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
-        val today = LocalDateTime.now()
-
-
-
 
         dateText = view.findViewById(R.id.edit_startDateTV)
         timeText = view.findViewById(R.id.edit_startTimeTV)
@@ -65,9 +64,13 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
         etNewEventName = view.findViewById<EditText>(R.id.edit_etNewEventName)
         etNewEventDescription = view.findViewById<EditText>(R.id.edit_etNewEventDescription)
 
-        SetupView()
+        thisEvent = dayViewViewModel.editEvent.value!!
 
-
+        dayViewViewModel.editEvent.observe(viewLifecycleOwner) {
+            thisEvent = it
+            SetupView()
+        }
+//        SetupView()
 
         //Handle Click on StartDate
         dateText.setOnClickListener {
@@ -81,9 +84,16 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
                         else LocalDateTime.of(
                             year, adjMonth, day, startDateTime.hour, startDateTime.minute
                         )
-                    if (endDateText.text == "Date"){
-                        endDateTime = LocalDateTime.of(startDateTime.year,startDateTime.month,startDateTime.dayOfMonth,0,0)
-                        endDateText.text = "${startDateTime.year}.${startDateTime.month.value}.${startDateTime.dayOfMonth}"
+                    if (endDateText.text == "Date") {
+                        endDateTime = LocalDateTime.of(
+                            startDateTime.year,
+                            startDateTime.month,
+                            startDateTime.dayOfMonth,
+                            0,
+                            0
+                        )
+                        endDateText.text =
+                            "${startDateTime.year}.${startDateTime.month.value}.${startDateTime.dayOfMonth}"
                     }
 
                     Log.d("StartDate", "StartDate: $startDateTime")
@@ -95,11 +105,6 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
             )
 
             datePickerDialog.show()
-
-            /*val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("test")
-                .build()
-                datePicker.show(parentFragmentManager,"tag")*/
         }
 
 
@@ -129,7 +134,7 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
         timeText.setOnClickListener {
             val timePickerDialog = TimePickerDialog(
                 this.requireContext(), { _, hour, minute ->
-                    timeText.text = "$hour:$minute"
+                    timeText.text = LocalTime(hour, minute).toString()
                     startDateTime =
                         if (dateText.text == "Date") LocalDateTime.of(0, 1, 1, hour, minute)
                         else LocalDateTime.of(
@@ -150,7 +155,7 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
         endTimeText.setOnClickListener {
             val timePickerDialog = TimePickerDialog(
                 this.requireContext(), { _, hour, minute ->
-                    endTimeText.text = "$hour:$minute"
+                    endTimeText.text = LocalTime(hour, minute).toString()
                     endDateTime =
                         if (endDateText.text == "Date") LocalDateTime.of(0, 1, 1, hour, minute)
                         else LocalDateTime.of(
@@ -209,30 +214,33 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
             var endHour = 0
             var endMinute = 0
 
-            val (startYear, startMonth, startDay) = dateText.text.split(".").map { it.toInt() }
+            val startYear = LocalDate.parse(dateText.text).year
+            val startMonth = LocalDate.parse(dateText.text).monthNumber
+            val startDay = LocalDate.parse(dateText.text).dayOfMonth
+
             if (!swIsAllDay.isChecked) {
-                val (sHour, sMinute) = timeText.text.split(":").map { it.toInt() }
-                startHour = sHour
-                startMinute = sMinute
+                startHour = LocalTime.parse(dateText.text).hour
+                startMinute = LocalTime.parse(dateText.text).minute
             }
 
-            val (endYear, endMonth, endDay) = endDateText.text.split(".").map { it.toInt() }
+            val endYear = LocalDate.parse(endDateText.text).year
+            val endMonth = LocalDate.parse(endDateText.text).monthNumber
+            val endDay = LocalDate.parse(endDateText.text).dayOfMonth
+
             if (!swIsAllDay.isChecked) {
-                val (eHour, eMinute) = endTimeText.text.split(":").map { it.toInt() }
-                endHour = eHour
-                endMinute = eMinute
+                endHour = LocalTime.parse(endTimeText.text).hour
+                endMinute = LocalTime.parse(endTimeText.text).minute
             }
 
-            var defaultCalendar = prefs.getString("default_calendar", null)
+            var defaultCalendar =
+                prefs.getString("${FirebaseAuth.getInstance().uid}|default|calendar", null)
             //Log.i(BottomSheetFragment.TAG, defaultCalendar.toString())
             if (defaultCalendar.isNullOrBlank()) {
                 defaultCalendar = (activity as MainActivity).getCalendarId()
             }
 
 
-            val newEvent = hashMapOf(
-                "longId" to Random.nextLong(until = Long.MAX_VALUE),
-                "calendarId" to defaultCalendar,
+            val editedEvent: HashMap<String, Any> = hashMapOf<String, Any>(
                 "title" to etNewEventName.text.toString(),
                 "description" to etNewEventDescription.text.toString(),
                 "isAllDay" to swIsAllDay.isChecked,
@@ -244,27 +252,9 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
                 ).toString(),
                 "color" to selectedColor.code
             )
-//
-            val db = Firebase.firestore
-            db.collection("events").add(newEvent).addOnSuccessListener { documentReference ->
-                //Log.d(BottomSheetFragment.TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-                documentReference.get().addOnSuccessListener { result ->
-                    val event = result.toObject(Event::class.java)
-                    if (event is Event) {
-                        event.id = result.id
-                        event.startTime =
-                            LocalDateTime.parse(result.get("startTimestamp").toString())
-                        event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
-                        firebaseViewModel.addEventToCalendar(event)
-                    }
-                    firebaseViewModel.getCurrentMonthEvents()
 
-                    this.dismiss()
-                }
-            }.addOnFailureListener { e ->
-                //Log.w(BottomSheetFragment.TAG, "Error adding document", e)
-            }
-
+            firebaseViewModel.editEvent(thisEvent.id, editedEvent)
+            this.dismiss()
         }
 
         dateCheck()
@@ -272,21 +262,53 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
 
     }
 
-    fun parseEvent(event:Event){
+    fun parseEvent(event: Event) {
+        Log.d("parseEvent", "Parsing Event ${event.title}")
         thisEvent = event
     }
-    fun SetupView(){
+
+    private fun setEditPermission(scope: String) {
+        val isEditAllowed = scope == "Full" || scope == "Edit"
+        dateText.isEnabled = isEditAllowed
+        timeText.isEnabled = isEditAllowed
+        endDateText.isEnabled = isEditAllowed
+        endTimeText.isEnabled = isEditAllowed
+        swIsAllDay.isEnabled = isEditAllowed
+        etNewEventName.isEnabled = isEditAllowed
+        etNewEventDescription.isEnabled = isEditAllowed
+
+        val spinner = view?.findViewById<Spinner>(R.id.edit_colorSpinner)
+        val colorTextView = view?.findViewById<TextView>(R.id.edit_colorTextView)
+        val colorView = view?.findViewById<View>(R.id.edit_colorWindow)
+
+        spinner?.isEnabled = isEditAllowed
+        colorTextView?.isEnabled = isEditAllowed
+        colorView?.isEnabled = isEditAllowed
+
+
+        val saveBtn = view?.findViewById<Button>(R.id.edit_saveBtn)
+        saveBtn?.isEnabled = isEditAllowed
+    }
+
+    private fun SetupView() {
+        if (thisEvent.isAllDay) {
+            timeText.visibility = View.INVISIBLE
+            endTimeText.visibility = View.INVISIBLE
+        } else {
+            timeText.visibility = View.VISIBLE
+            endTimeText.visibility = View.VISIBLE
+        }
         dateText.text = thisEvent.startTime.toLocalDate().toString()
-        timeText.text = "${thisEvent.startTime.hour}:${thisEvent.startTime.minute}"
+        timeText.text = thisEvent.startTime.toLocalTime().toString()
         endDateText.text = thisEvent.endTime.toLocalDate().toString()
-        endTimeText.text = "${thisEvent.endTime.hour}:${thisEvent.endTime.minute}"
+        endTimeText.text = thisEvent.endTime.toLocalTime().toString()
         swIsAllDay.isChecked = thisEvent.isAllDay
         etNewEventName.setText(thisEvent.title)
         etNewEventDescription.setText(thisEvent.description)
 
         startDateTime = thisEvent.startTime
         endDateTime = thisEvent.endTime
-
+        setEditPermission(thisEvent.scope)
     }
 
     fun dateCheck() {
@@ -347,9 +369,9 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
 
     private fun loadColor() {
         selectedColor = ColorList().default
-        val spinner = view?.findViewById<Spinner>(R.id.colorSpinner)
-        val colorTextView = view?.findViewById<TextView>(R.id.colorTextView)
-        val colorView = view?.findViewById<View>(R.id.colorWindow)
+        val spinner = view?.findViewById<Spinner>(R.id.edit_colorSpinner)
+        val colorTextView = view?.findViewById<TextView>(R.id.edit_colorTextView)
+        val colorView = view?.findViewById<View>(R.id.edit_colorWindow)
 
 
         spinner?.adapter = SpinnerAdapter(requireContext(), ColorList().colors())

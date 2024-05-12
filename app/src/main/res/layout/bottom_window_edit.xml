@@ -24,7 +24,6 @@
             android:layout_marginTop="5dp"
             android:text="Edit"
             android:textAlignment="viewStart"
-            android:textColor="@color/black"
             android:textSize="25dp" />
 
     </LinearLayout>
@@ -226,7 +225,8 @@
         android:layout_height="1dp"
         android:orientation="horizontal"
         android:padding="10dp"
-        android:paddingBottom="30dp">
+        android:paddingBottom="30dp"
+        android:visibility="gone">
 
         <Spinner
             android:id="@+id/edit_colorSpinner"
@@ -263,6 +263,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="right">
+
 
         <Button
             android:id="@+id/edit_cancelBtn"

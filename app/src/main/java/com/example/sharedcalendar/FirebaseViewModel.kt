@@ -44,24 +44,8 @@ class FirebaseViewModel(
     private val _sharedCalendars = MutableLiveData<MutableList<Calendar>>()
     var sharedCalendars: LiveData<MutableList<Calendar>> = _sharedCalendars
 
-//    fun getStaticCalendars(): List<Calendar> {
-//        Log.i(TAG, _userCalendars.value.toString())
-//        Log.i(TAG, _sharedCalendars.value.toString())
-//        val calendarsList = mutableListOf<Calendar>()
-//        _userCalendars.value?.let { calendarsList.addAll(it) }
-//        _sharedCalendars.value?.let { calendarsList.addAll(it) }
-//        return calendarsList.toList()
-//    }
-
-//    val calendars:MutableLiveData<List<Calendar>> = MutableLiveData<List<Calendar>>()
-
     val calendars: LiveData<MutableList<Calendar>> =
         MediatorLiveData<MutableList<Calendar>>().apply {
-//            val observer = Observer<MutableList<Calendar>> {
-//                if (it.isNotEmpty()) {
-//                    value = _sharedCalendars + _userCalendars
-//                }
-//            }
             addSource(_userCalendars) { value = _sharedCalendars + it }
             addSource(_sharedCalendars) { value = _userCalendars + it }
         }
@@ -80,9 +64,6 @@ class FirebaseViewModel(
 
     private val _enabledCalendars = MutableLiveData<MutableList<String>>()
     var enabledCalendars: LiveData<MutableList<String>> = _enabledCalendars
-
-//    private val db = Firebase.firestore
-
 
     fun createCalendar(
         uid: String,
@@ -125,12 +106,6 @@ class FirebaseViewModel(
 
     fun createShare(newShare: Share) {
 
-//        val newShare = hashMapOf(
-//            "calendarId" to calendarId,
-//            "userEmail" to userEmail,
-//            "scope" to scope
-//        )
-
         db.collection("shares")
             .where(
                 Filter.and(
@@ -139,43 +114,30 @@ class FirebaseViewModel(
                 )
             ).get().addOnSuccessListener { results ->
 
-                // Delete existing share
-//                for (result in results.toObjects(Share::class.java))
-//                    deleteShare(result)
-
                 Log.i(TAG, results.toString())
                 if (results.isEmpty) {
-//                    val newShare = hashMapOf(
-//                        "calendarId" to calendarId,
-//                        "userEmail" to userEmail,
-//                        "scope" to scope
-//                    db.collection("shares").add(newShare).addOnSuccessListener {
-//                        Log.d(TAG, "DocumentSnapshot successfully written!")
-//                    }.addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-
                     addShare(newShare)
-                    // Share does not exist
-                }
-
-//                }
-                else {
+                } else {
                     val share = results.documents[0]
                     val editedFields: HashMap<String, String?> =
                         hashMapOf("scope" to newShare.scope)
                     editShare(share.id, editedFields)
-////
-//                    db.collection("shares").document(share.id)
-//                        .set(
-//                            hashMapOf("scope" to newShare.scope),
-//                            SetOptions.merge()
-//                        ).addOnSuccessListener {
-//                            Log.d(TAG, "DocumentSnapshot successfully written!")
-//                        }.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
                 }
-//
                 getShares(calendars.value!!)
 
             }
+    }
+
+    fun editEvent(eventId: String, editedFields: HashMap<String, Any>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.i(TAG, "editEvent() $eventId $editedFields")
+            db.collection("events").document(eventId).set(editedFields, SetOptions.merge())
+                .addOnSuccessListener {
+                    Log.i(TAG, "Event updated")
+                }.addOnFailureListener { exception ->
+                    Log.w(TAG, "Error updating event.", exception)
+                }
+        }
     }
 
     fun addEventToCalendar(newEvent: HashMap<String, Any?>) {
@@ -194,7 +156,7 @@ class FirebaseViewModel(
                         Log.i(TAG, calendars.toString())
 
                     }
-                    getCurrentMonthEvents()
+                    getEvents()
 
                 }
             }.addOnFailureListener { e ->
@@ -365,7 +327,9 @@ class FirebaseViewModel(
         }
     }
 
-    fun getCurrentMonthEvents(currentMonthOnly: Boolean = false) {
+    fun getEvents(forceRefresh: Boolean = false) {
+        // Prevent unnecessary API calls
+        if (events.value != null && !forceRefresh) return
         Log.d(TAG, "getCurrentMonthEvents")
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -386,6 +350,7 @@ class FirebaseViewModel(
                                     event.title = "Busy"
                                     event.description = ""
                                 }
+                                event.scope = calendar.scope.toString()
 
                                 event.startTime =
                                     LocalDateTime.parse(document.get("startTimestamp").toString())
@@ -445,12 +410,7 @@ class FirebaseViewModel(
         calendarId: String, scope: String?, currentMonthOnly: Boolean = false
     ): ArrayList<Event> {
         val eventArrayList: ArrayList<Event> = ArrayList()
-//        val db = Firebase.firestore
 
-//        if (currentMonthOnly) {
-//            val currentMonth = YearMonth.now()
-//            //  Query only events from this month
-//        }
         viewModelScope.launch(Dispatchers.IO) {
             db.collection("events").whereEqualTo("calendarId", calendarId).get()
                 .addOnSuccessListener { result ->
@@ -515,6 +475,26 @@ class FirebaseViewModel(
                 Log.w(TAG, "Error deleting Share.", exception)
             }
         }
+    }
+
+    fun getEventThisDay(date: LocalDate): ArrayList<Event> {
+
+//        val events = getEvents()
+        if (events.value == null) {
+            return arrayListOf()
+        }
+
+        return events.value?.filter {
+            Log.d(
+                TAG,
+                "Event: ${
+                    it.startTime.toLocalDate().isEqual(date)
+                } ${it.startTime.toLocalDate()} $date"
+            )
+            it.startTime.toLocalDate().isEqual(date) ||
+                    (date.isAfter(it.startTime.toLocalDate()) && date.isBefore(it.endTime.toLocalDate()))
+
+        } as ArrayList<Event>
     }
 
 }

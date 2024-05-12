@@ -98,13 +98,15 @@ class RegisterFragment : Fragment() {
             false
         }
 
+
         // Listen to changes in Password input
         etPassword.setOnKeyListener { _, _, _ ->
-            if (userViewModel.isPasswordValid(etPassword.text!!)) {
+            if (!userViewModel.isPasswordValid(etPassword.text!!)) {
+                loPassword.error =
+                    "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character"
+            } else {
                 // Clear Error
                 loPassword.error = null
-            } else {
-                loPassword.error = getString(R.string.invalid_password)
             }
             false
         }

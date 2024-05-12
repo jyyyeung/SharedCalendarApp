@@ -63,17 +63,17 @@ class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance())
             }
             false
         }
-
-        // Listen to changes in Password input
-        etPasswordInput.setOnKeyListener { _, _, _ ->
-            if (userViewModel.isPasswordValid(etPasswordInput.text!!)) {
-                // Clear Error
-                etPassword.error = null
-            } else {
-                etPassword.error = getString(R.string.invalid_password)
-            }
-            false
-        }
+//
+//        // Listen to changes in Password input
+//        etPasswordInput.setOnKeyListener { _, _, _ ->
+//            if (userViewModel.isPasswordValid(etPasswordInput.text!!)) {
+//                // Clear Error
+//                etPassword.error = null
+//            } else {
+//                etPassword.error = getString(R.string.invalid_password)
+//            }
+//            false
+//        }
 
         // Listen to Done action on keyboard
         etPasswordInput.setOnEditorActionListener { _, actionId, _ ->
