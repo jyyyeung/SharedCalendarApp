@@ -1,80 +1,77 @@
-
-
-
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > ManageCalendarScreens</title>
-  <style type="text/css">
+    <title>Coverage Report > ManageCalendarScreens</title>
+    <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
-  </style>
-  <script type="text/javascript" src="../../js/highlight.min.js"></script>
-  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+
+    </style>
+    <script src="../../js/highlight.min.js" type="text/javascript"></script>
+    <script src="../../js/highlightjs-line-numbers.min.js" type="text/javascript"></script>
 </head>
 
 <body>
 <div class="content">
-<div class="breadCrumbs">
-Current scope:     <a href="../../index.html">all classes</a>
-    <span class="separator">|</span>
-    <a href="../index.html">com.example.sharedcalendar.ui</a>
-</div>
+    <div class="breadCrumbs">
+        Current scope: <a href="../../index.html">all classes</a>
+        <span class="separator">|</span>
+        <a href="../index.html">com.example.sharedcalendar.ui</a>
+    </div>
 
-<h1>Coverage Summary for Class: ManageCalendarScreens (com.example.sharedcalendar.ui)</h1>
+    <h1>Coverage Summary for Class: ManageCalendarScreens (com.example.sharedcalendar.ui)</h1>
 
-<table class="coverageStats">
-<tr>
-  <th class="name">Class</th>
-<th class="coverageStat 
+    <table class="coverageStats">
+        <tr>
+            <th class="name">Class</th>
+            <th class="coverageStat
 ">
-  Class, %
-</th>
-<th class="coverageStat 
+                Class, %
+            </th>
+            <th class="coverageStat
 ">
-  Method, %
-</th>
-<th class="coverageStat 
+                Method, %
+            </th>
+            <th class="coverageStat
 ">
-  Line, %
-</th>
-</tr>
-<tr>
-  <td class="name">ManageCalendarScreens</td>
-<td class="coverageStat">
+                Line, %
+            </th>
+        </tr>
+        <tr>
+            <td class="name">ManageCalendarScreens</td>
+            <td class="coverageStat">
   <span class="percent">
     0%
   </span>
-  <span class="absValue">
+                <span class="absValue">
     (0/1)
   </span>
-</td>
-<td class="coverageStat">
+            </td>
+            <td class="coverageStat">
   <span class="percent">
     0%
   </span>
-  <span class="absValue">
+                <span class="absValue">
     (0/2)
   </span>
-</td>
-<td class="coverageStat">
+            </td>
+            <td class="coverageStat">
   <span class="percent">
     0%
   </span>
-  <span class="absValue">
+                <span class="absValue">
     (0/5)
   </span>
-</td>
-</tr>
+            </td>
+        </tr>
 
-</table>
+    </table>
 
-<br/>
-<br/>
+    <br/>
+    <br/>
 
 
-<pre>
+    <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package com.example.sharedcalendar.ui
 &nbsp;
 &nbsp;import android.os.Bundle
@@ -95,10 +92,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import androidx.compose.foundation.lazy.LazyColumn
 &nbsp;import androidx.compose.material.icons.Icons
 &nbsp;import androidx.compose.material.icons.automirrored.filled.ArrowBack
-&nbsp;import androidx.compose.material.icons.filled.Add
 &nbsp;import androidx.compose.material3.ExperimentalMaterial3Api
-&nbsp;import androidx.compose.material3.ExtendedFloatingActionButton
-&nbsp;import androidx.compose.material3.FloatingActionButtonDefaults
 &nbsp;import androidx.compose.material3.HorizontalDivider
 &nbsp;import androidx.compose.material3.Icon
 &nbsp;import androidx.compose.material3.IconButton
@@ -129,7 +123,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import androidx.fragment.app.viewModels
 &nbsp;import androidx.lifecycle.ViewModelProvider
 &nbsp;import androidx.lifecycle.viewmodel.compose.viewModel
-&nbsp;import androidx.navigation.NavController
 &nbsp;import androidx.navigation.NavHostController
 &nbsp;import androidx.navigation.compose.NavHost
 &nbsp;import androidx.navigation.compose.composable
@@ -182,7 +175,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;            }
 &nbsp;        }
-&nbsp;//        return super.onCreateView(inflater, container, savedInstanceState)
 &nbsp;    }
 &nbsp;
 &nbsp;    companion object {
@@ -190,23 +182,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;}
 &nbsp;
-&nbsp;
-&nbsp;@Composable
-&nbsp;fun DoseFAB(navController: NavController) {
-&nbsp;    ExtendedFloatingActionButton(
-&nbsp;        text = { Text(text = &quot;Add Calendar&quot;) },
-&nbsp;        icon = {
-&nbsp;            Icon(
-&nbsp;                imageVector = Icons.Default.Add, contentDescription = &quot;add&quot;
-&nbsp;            )
-&nbsp;        },
-&nbsp;        onClick = {
-&nbsp;            navController.navigate(ManageCalendarScreens.Create.name)
-&nbsp;        },
-&nbsp;        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp),
-&nbsp;        containerColor = MaterialTheme.colorScheme.tertiary
-&nbsp;    )
-&nbsp;}
 &nbsp;
 &nbsp;@Composable
 &nbsp;fun ManageCalendarScreen(
@@ -260,7 +235,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;            composable(route = ManageCalendarScreens.View.name) {
 &nbsp;                val context = LocalContext.current
 &nbsp;                ViewCalendarScreen(
-&nbsp;                    modifier = Modifier.fillMaxSize(), calendar = calendar, onEditButtonClicked = {
+&nbsp;                    calendar = calendar, onEditButtonClicked = {
 &nbsp;                        viewModel.setCalendar(it)
 &nbsp;                        navController.navigate(ManageCalendarScreens.Edit.name)
 &nbsp;                    }, firebaseViewModel
@@ -410,11 +385,12 @@ Current scope:     <a href="../../index.html">all classes</a>
       hljs.initLineNumbersOnLoad();
     }
 })();
+
 </script>
 
 <div class="footer">
-    
-    <div style="float:right;">generated on 2024-05-12 02:48</div>
+
+    <div style="float:right;">generated on 2024-05-12 21:32</div>
 </div>
 </body>
 </html>

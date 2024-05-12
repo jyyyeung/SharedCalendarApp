@@ -225,8 +225,7 @@
         android:layout_height="1dp"
         android:orientation="horizontal"
         android:padding="10dp"
-        android:paddingBottom="30dp"
-        android:visibility="gone">
+        android:paddingBottom="30dp">
 
         <Spinner
             android:id="@+id/edit_colorSpinner"

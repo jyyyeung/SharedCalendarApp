@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import com.alamkanak.weekview.WeekView
-import com.example.sharedcalendar.WeekViewFragment
 import com.example.sharedcalendar.ui.CalendarFragment
 import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
 import io.mockk.spyk
@@ -51,7 +50,7 @@ class WeekViewFragmentTest : BaseTest() {
             launchFragmentInContainer<WeekViewFragment>(themeResId = R.style.Base_Theme_SharedCalendar)
 
         setField(fragment, "firebaseViewModel", spykFirebaseViewModel)
-        fragmentScenario = FragmentScenario.launchInContainer(WeekViewFragment::class.java)
+//        fragmentScenario = FragmentScenario.launchInContainer(WeekViewFragment::class.java)
 
     }
 
@@ -66,7 +65,6 @@ class WeekViewFragmentTest : BaseTest() {
     @Test
     fun test_week_view_fragment_selected_date_initialized() {
         scenario.onFragment {
-            setField(it, "calendarViewModel", spykFirebaseViewModel)
             val selectedDate = getField<LocalDate>(it, "selectedDate")
             assertEquals(LocalDate.now(), selectedDate)
         }
@@ -76,7 +74,6 @@ class WeekViewFragmentTest : BaseTest() {
     @Test
     fun test_week_view_fragment_week_view_initialized() {
         scenario.onFragment {
-            setField(it, "calendarViewModel", spykFirebaseViewModel)
             val weekView = getField<WeekView>(it, "weekView")
             assertNotNull(weekView)
         }

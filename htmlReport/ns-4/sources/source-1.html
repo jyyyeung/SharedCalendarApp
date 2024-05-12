@@ -4,7 +4,6 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
   <title>Coverage Report > CalendarFragment</title>
   <style type="text/css">
     @import "../../css/coverage.css";
@@ -34,10 +33,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 </th>
 <th class="coverageStat 
 ">
-  Branch, %
-</th>
-<th class="coverageStat 
-">
   Line, %
 </th>
 </tr>
@@ -45,29 +40,40 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">CalendarFragment</td>
 <td class="coverageStat">
   <span class="percent">
-    57.1%
+    75%
   </span>
   <span class="absValue">
-    (4/7)
+    (3/4)
   </span>
 </td>
-<td class="coverageStat">
+    <td class="coverageStat">
   <span class="percent">
-    37.5%
+    77.1%
   </span>
-  <span class="absValue">
-    (3/8)
+        <span class="absValue">
+    (27/35)
   </span>
-</td>
-<td class="coverageStat">
-  <span class="percent">
-    59%
-  </span>
-  <span class="absValue">
-    (23/39)
-  </span>
-</td>
+    </td>
 </tr>
+    <tr>
+        <td class="name">CalendarFragment$calendarViewModel$2</td>
+        <td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+            <span class="absValue">
+    (1/1)
+  </span>
+        </td>
+        <td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+            <span class="absValue">
+    (1/1)
+  </span>
+        </td>
+    </tr>
   <tr>
     <td class="name">CalendarFragment$Companion</td>
 <td class="coverageStat">
@@ -78,39 +84,91 @@ Current scope:     <a href="../../index.html">all classes</a>
     (1/2)
   </span>
 </td>
-<td class="coverageStat">
+      <td class="coverageStat">
   <span class="percent">
     50%
   </span>
-  <span class="absValue">
+          <span class="absValue">
     (1/2)
   </span>
-</td>
+      </td>
   </tr>
-<tr>
-  <td class="name"><strong>Total</strong></td>
-<td class="coverageStat">
+    <tr>
+        <td class="name">CalendarFragment$onCreateView$1</td>
+        <td class="coverageStat">
   <span class="percent">
-    55.6%
+    100%
   </span>
-  <span class="absValue">
-    (5/9)
+            <span class="absValue">
+    (1/1)
   </span>
-</td>
-<td class="coverageStat">
+        </td>
+        <td class="coverageStat">
   <span class="percent">
-    37.5%
+    100%
   </span>
-  <span class="absValue">
-    (3/8)
+            <span class="absValue">
+    (2/2)
   </span>
-</td>
-<td class="coverageStat">
+        </td>
+    </tr>
+    <tr>
+        <td class="name">CalendarFragment$onCreateView$2</td>
+        <td class="coverageStat">
   <span class="percent">
-    58.5%
+    0%
   </span>
-  <span class="absValue">
-    (24/41)
+            <span class="absValue">
+    (0/1)
+  </span>
+        </td>
+        <td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+            <span class="absValue">
+    (0/7)
+  </span>
+        </td>
+    </tr>
+    <tr>
+        <td class="name">CalendarFragment$onCreateView$3</td>
+        <td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+            <span class="absValue">
+    (1/4)
+  </span>
+        </td>
+        <td class="coverageStat">
+  <span class="percent">
+    6.2%
+  </span>
+            <span class="absValue">
+    (1/16)
+  </span>
+        </td>
+    </tr>
+    <tr>
+        <td class="name">CalendarFragment$sam$androidx_lifecycle_Observer$0</td>
+    </tr>
+    <tr>
+        <td class="name"><strong>Total</strong></td>
+        <td class="coverageStat">
+  <span class="percent">
+    53.8%
+  </span>
+            <span class="absValue">
+    (7/13)
+  </span>
+        </td>
+        <td class="coverageStat">
+  <span class="percent">
+    50.8%
+  </span>
+            <span class="absValue">
+    (32/63)
   </span>
 </td>
 </tr>
@@ -125,11 +183,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;import android.content.SharedPreferences
 &nbsp;import android.os.Bundle
+&nbsp;import android.util.Log
 &nbsp;import android.view.LayoutInflater
 &nbsp;import android.view.View
 &nbsp;import android.view.ViewGroup
-&nbsp;import android.widget.Button
-&nbsp;import android.widget.ImageButton
 &nbsp;import androidx.fragment.app.Fragment
 &nbsp;import androidx.lifecycle.ViewModelProvider
 &nbsp;import androidx.preference.PreferenceManager
@@ -138,8 +195,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import com.example.sharedcalendar.MonthViewFragment
 &nbsp;import com.example.sharedcalendar.R
 &nbsp;import com.example.sharedcalendar.WeekViewFragment
+&nbsp;import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
+&nbsp;import com.google.android.material.floatingactionbutton.FloatingActionButton
+&nbsp;import com.google.android.material.tabs.TabLayout
 &nbsp;import com.google.firebase.auth.FirebaseAuth
-&nbsp;import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 &nbsp;
 &nbsp;/**
 &nbsp; * A simple [Fragment] subclass.
@@ -148,10 +207,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp; */
 <b class="fc">&nbsp;class CalendarFragment : Fragment() {</b>
 &nbsp;    private lateinit var firebaseViewModel: FirebaseViewModel
-&nbsp;
-&nbsp;    override fun onCreate(savedInstanceState: Bundle?) {
-<b class="fc">&nbsp;        super.onCreate(savedInstanceState)</b>
-<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;    private val calendarViewModel by lazy {</b>
+<b class="fc">&nbsp;        ViewModelProvider(requireActivity())[CalendarViewModel::class.java]</b>
+&nbsp;    }
 &nbsp;
 &nbsp;    override fun onCreateView(
 &nbsp;        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -164,56 +222,93 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;            PreferenceManager.getDefaultSharedPreferences(requireActivity())</b>
 <b class="fc">&nbsp;        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]</b>
 &nbsp;
+<b class="fc">&nbsp;        firebaseViewModel.calendars.observe(requireActivity()) {</b>
+&nbsp;
+&nbsp;            // Get Events from Database
+<b class="fc">&nbsp;            firebaseViewModel.getEvents()</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        firebaseViewModel.getEvents()</b>
+&nbsp;
 &nbsp;        // Change Fragment from month to week on button click
-&nbsp;        // Set variables for change view buttons
-<b class="fc">&nbsp;        val weekBtn: Button = view.findViewById(R.id.weekBtn)</b>
-<b class="fc">&nbsp;        val monthBtn: Button = view.findViewById(R.id.monthBtn)</b>
+<b class="fc">&nbsp;        val tabLayout: TabLayout = view.findViewById(R.id.tabLayout_viewMode)</b>
 &nbsp;
 &nbsp;        // Set variables for View Fragments
 <b class="fc">&nbsp;        val monthViewFragment = MonthViewFragment()</b>
-<b class="fc">&nbsp;        val weekViewFragment = WeekViewFragment()</b>
+<b class="fc">&nbsp;        val weekViewFragment = WeekViewFragment(7)</b>
+<b class="fc">&nbsp;        val halfWeekViewFragment = WeekViewFragment(3)</b>
+<b class="fc">&nbsp;        val dayViewFragment = WeekViewFragment(1)</b>
+&nbsp;//        val dayViewFragment = DayViewFragment()
+<b class="fc">&nbsp;        val defaultViewModeFragment =</b>
+<b class="fc">&nbsp;            when (prefs.getString(&quot;${FirebaseAuth.getInstance().uid}|default|view&quot;, &quot;month&quot;)) {</b>
+<b class="nc">&nbsp;                &quot;week&quot; -&gt; weekViewFragment</b>
+<b class="fc">&nbsp;                &quot;month&quot; -&gt; monthViewFragment</b>
+<b class="nc">&nbsp;                &quot;3-day&quot; -&gt; halfWeekViewFragment</b>
+<b class="nc">&nbsp;                &quot;day&quot; -&gt; dayViewFragment</b>
+<b class="nc">&nbsp;                else -&gt; monthViewFragment</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;        calendarViewModel.viewMode.observe(viewLifecycleOwner) {</b>
+<b class="nc">&nbsp;            Log.d(TAG, &quot;onCreateView: viewMode: $it&quot;)</b>
+<b class="nc">&nbsp;            when (it) {</b>
+<b class="nc">&nbsp;                &quot;week&quot; -&gt; tabLayout.getTabAt(1)?.select()</b>
+<b class="nc">&nbsp;                &quot;month&quot; -&gt; tabLayout.getTabAt(0)?.select()</b>
+<b class="nc">&nbsp;                &quot;3-day&quot; -&gt; tabLayout.getTabAt(2)?.select()</b>
+<b class="nc">&nbsp;                &quot;day&quot; -&gt; tabLayout.getTabAt(3)?.select()</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {</b>
+&nbsp;
+&nbsp;            override fun onTabSelected(tab: TabLayout.Tab?) {
+<b class="nc">&nbsp;                Log.d(TAG, &quot;onTabSelected: ${tab?.text}&quot;)</b>
+<b class="nc">&nbsp;                val selectedViewModeFragment = when (tab?.text) {</b>
+<b class="nc">&nbsp;                    getString(R.string.tabItem_month) -&gt; monthViewFragment</b>
+<b class="nc">&nbsp;                    getString(R.string.tabItem_week) -&gt; weekViewFragment</b>
+<b class="nc">&nbsp;                    getString(R.string.tabItem_halfWeek) -&gt; halfWeekViewFragment</b>
+<b class="nc">&nbsp;                    getString(R.string.tabItem_day) -&gt; dayViewFragment</b>
+<b class="nc">&nbsp;                    else -&gt; defaultViewModeFragment</b>
+&nbsp;                }
+&nbsp;                // Handle tab select
+<b class="nc">&nbsp;                childFragmentManager.beginTransaction().apply {</b>
+&nbsp;                    // Replace fragment with month view fragment
+<b class="nc">&nbsp;                    replace(R.id.frameLayout_calendarFragment, selectedViewModeFragment)</b>
+<b class="nc">&nbsp;                    addToBackStack(null)</b>
+&nbsp;                    // commit the change
+<b class="nc">&nbsp;                    commit()</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+&nbsp;            override fun onTabReselected(tab: TabLayout.Tab?) {
+&nbsp;                // Handle tab reselect
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+&nbsp;            override fun onTabUnselected(tab: TabLayout.Tab?) {
+&nbsp;                // Handle tab unselect
+<b class="nc">&nbsp;            }</b>
+&nbsp;        })
 &nbsp;
 &nbsp;
 &nbsp;        // By default, the view fragment is month view fragment
 <b class="fc">&nbsp;        childFragmentManager.beginTransaction().apply {</b>
 &nbsp;            // Set Default View based on user preferences
-<b class="pc">&nbsp;            when (prefs.getString(&quot;${FirebaseAuth.getInstance().uid}|default|view&quot;, &quot;month&quot;)) {</b>
-<b class="nc">&nbsp;                &quot;week&quot; -&gt; replace(R.id.flFragment, weekViewFragment)</b>
-<b class="fc">&nbsp;                &quot;month&quot; -&gt; replace(R.id.flFragment, monthViewFragment)</b>
-&nbsp;            }
+<b class="fc">&nbsp;            replace(R.id.frameLayout_calendarFragment, defaultViewModeFragment)</b>
 <b class="fc">&nbsp;            commit()</b>
 <b class="fc">&nbsp;        }</b>
 &nbsp;
-&nbsp;        // When Click Month Button
-<b class="fc">&nbsp;        monthBtn.setOnClickListener {</b>
-<b class="nc">&nbsp;            childFragmentManager.beginTransaction().apply {</b>
-&nbsp;                // Replace fragment with month view fragment
-<b class="nc">&nbsp;                replace(R.id.flFragment, monthViewFragment)</b>
-<b class="nc">&nbsp;                addToBackStack(null)</b>
-&nbsp;                // commit the change
-<b class="nc">&nbsp;                commit()</b>
-<b class="nc">&nbsp;            }</b>
-<b class="nc">&nbsp;        }</b>
-&nbsp;        // When Click Week Button
-<b class="fc">&nbsp;        weekBtn.setOnClickListener {</b>
-<b class="nc">&nbsp;            childFragmentManager.beginTransaction().apply {</b>
-&nbsp;                // Replace fragment with week view fragment
-<b class="nc">&nbsp;                replace(R.id.flFragment, weekViewFragment)</b>
-<b class="nc">&nbsp;                addToBackStack(null)</b>
-&nbsp;                // Commit the changes
-<b class="nc">&nbsp;                commit()</b>
-<b class="nc">&nbsp;            }</b>
-<b class="nc">&nbsp;        }</b>
 &nbsp;
 &nbsp;        // When Click AddEvent Button
-<b class="fc">&nbsp;        val addEventBtn: ImageButton = view.findViewById(R.id.addEventBtn)</b>
+<b class="fc">&nbsp;        val addEventBtn: FloatingActionButton = view.findViewById(R.id.addEventBtn)</b>
 <b class="fc">&nbsp;        val bottomWindow = BottomSheetFragment()</b>
 &nbsp;
 <b class="fc">&nbsp;        addEventBtn.setOnClickListener {</b>
+<b class="nc">&nbsp;            if (bottomWindow.isAdded) return@setOnClickListener</b>
 <b class="nc">&nbsp;            bottomWindow.show(</b>
 <b class="nc">&nbsp;                childFragmentManager, &quot;BottomSheetDialogue&quot;</b>
 &nbsp;            )
 <b class="nc">&nbsp;        }</b>
+&nbsp;
 <b class="fc">&nbsp;        return view</b>
 &nbsp;    }
 &nbsp;
@@ -252,8 +347,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 </script>
 
 <div class="footer">
-    
-    <div style="float:right;">generated on 2024-05-12 02:48</div>
+
+    <div style="float:right;">generated on 2024-05-12 21:32</div>
 </div>
 </body>
 </html>

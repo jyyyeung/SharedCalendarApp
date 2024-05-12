@@ -23,7 +23,7 @@ class DayViewFragment(selectedDate: LocalDate) : Fragment(R.layout.day_view_frag
 
     private lateinit var firebaseViewModel: FirebaseViewModel
     private val calendarViewModel by lazy {
-        ViewModelProvider(this)[CalendarViewModel::class.java]
+        ViewModelProvider(requireActivity())[CalendarViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -38,7 +38,7 @@ class WeekViewFragment(private val visibleDays: Int = 3) : Fragment(R.layout.fra
 
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
         calendarViewModel =
-            ViewModelProvider(requireParentFragment())[CalendarViewModel::class.java]
+            ViewModelProvider(requireActivity())[CalendarViewModel::class.java]
 
         weekView = view.findViewById<WeekView>(R.id.weekView)
 

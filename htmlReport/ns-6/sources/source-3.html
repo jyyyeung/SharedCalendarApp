@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+    <title>Coverage Report > LoginFragment</title>
+    <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+
+
+    </style>
+    <script src="../../js/highlight.min.js" type="text/javascript"></script>
+    <script src="../../js/highlightjs-line-numbers.min.js" type="text/javascript"></script>
+</head>
+
+<body>
+<div class="content">
+    <div class="breadCrumbs">
+        Current scope: <a href="../../index.html">all classes</a>
+        <span class="separator">|</span>
+        <a href="../index.html">com.example.sharedcalendar.ui.login</a>
+    </div>
+
+    <h1>Coverage Summary for Class: LoginFragment (com.example.sharedcalendar.ui.login)</h1>
+
+    <table class="coverageStats">
+
+        <tr>
+            <th class="name">Class</th>
+            <th class="coverageStat
+">
+                Method, %
+            </th>
+            <th class="coverageStat
+">
+                Line, %
+            </th>
+        </tr>
+        <tr>
+            <td class="name">LoginFragment</td>
+            <td class="coverageStat">
+  <span class="percent">
+    41.7%
+  </span>
+                <span class="absValue">
+    (5/12)
+  </span>
+            </td>
+            <td class="coverageStat">
+  <span class="percent">
+    40.3%
+  </span>
+                <span class="absValue">
+    (25/62)
+  </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="name">LoginFragment$Companion</td>
+            <td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+                <span class="absValue">
+    (1/1)
+  </span>
+            </td>
+            <td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+                <span class="absValue">
+    (1/1)
+  </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="name"><strong>Total</strong></td>
+            <td class="coverageStat">
+  <span class="percent">
+    46.2%
+  </span>
+                <span class="absValue">
+    (6/13)
+  </span>
+            </td>
+            <td class="coverageStat">
+  <span class="percent">
+    41.3%
+  </span>
+                <span class="absValue">
+    (26/63)
+  </span>
+            </td>
+        </tr>
+    </table>
+
+    <br/>
+    <br/>
+
+
+    <pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.sharedcalendar.ui.login
+&nbsp;
+&nbsp;import android.content.Intent
+&nbsp;import android.os.Bundle
+&nbsp;import android.util.Log
+&nbsp;import android.view.LayoutInflater
+&nbsp;import android.view.View
+&nbsp;import android.view.ViewGroup
+&nbsp;import android.view.inputmethod.EditorInfo
+&nbsp;import android.widget.Button
+&nbsp;import android.widget.Toast
+&nbsp;import androidx.annotation.StringRes
+&nbsp;import androidx.fragment.app.Fragment
+&nbsp;import androidx.lifecycle.ViewModelProvider
+&nbsp;import com.example.sharedcalendar.MainActivity
+&nbsp;import com.example.sharedcalendar.R
+&nbsp;import com.google.android.material.progressindicator.CircularProgressIndicator
+&nbsp;import com.google.android.material.textfield.TextInputEditText
+&nbsp;import com.google.android.material.textfield.TextInputLayout
+&nbsp;import com.google.firebase.auth.FirebaseAuth
+&nbsp;import com.google.firebase.auth.FirebaseUser
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * A simple [Fragment] subclass.
+&nbsp; * Use the [LoginFragment.newInstance] factory method to
+&nbsp; * create an instance of this fragment.
+&nbsp; */
+<b class="fc">&nbsp;class LoginFragment(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) : Fragment() {</b>
+&nbsp;    private lateinit var userViewModel: UserViewModel
+&nbsp;//    lateinit var auth: FirebaseAuth
+&nbsp;
+&nbsp;    override fun onCreate(savedInstanceState: Bundle?) {
+<b class="fc">&nbsp;        super.onCreate(savedInstanceState)</b>
+<b class="fc">&nbsp;        userViewModel = ViewModelProvider(this, LoginViewModelFactory())[UserViewModel::class.java]</b>
+&nbsp;//        auth = FirebaseAuth.getInstance()
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    override fun onCreateView(
+&nbsp;        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+&nbsp;    ): View? {
+&nbsp;        // Inflate the layout for this fragment
+<b class="fc">&nbsp;        val view = inflater.inflate(R.layout.fragment_login, container, false)</b>
+&nbsp;
+&nbsp;        // Set variables for views
+<b class="fc">&nbsp;        val etEmail = view.findViewById&lt;TextInputLayout&gt;(R.id.login_email) // binding.username</b>
+<b class="fc">&nbsp;        val etEmailInput =</b>
+<b class="fc">&nbsp;            view.findViewById&lt;TextInputEditText&gt;(R.id.etUserEmail) // binding.username</b>
+<b class="fc">&nbsp;        val etPassword = view.findViewById&lt;TextInputLayout&gt;(R.id.login_password)</b>
+<b class="fc">&nbsp;        val etPasswordInput = view.findViewById&lt;TextInputEditText&gt;(R.id.etLoginPassword)</b>
+<b class="fc">&nbsp;        val btnLogin = view.findViewById&lt;Button&gt;(R.id.btnLogin)</b>
+<b class="fc">&nbsp;        val pbLoading = view.findViewById&lt;CircularProgressIndicator&gt;(R.id.pbLoading)</b>
+&nbsp;
+&nbsp;
+&nbsp;        // Listen to changes in Email input
+<b class="fc">&nbsp;        etEmailInput.setOnKeyListener { _, _, _ -&gt;</b>
+&nbsp;//            Log.d(&quot;LoginFragment&quot;, etEmailInput.text.toString())
+<b class="nc">&nbsp;            if (userViewModel.isEmailValid(etEmailInput.text!!)) {</b>
+&nbsp;                // Clear Error
+<b class="nc">&nbsp;                etEmail.error = null</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                etEmail.error = getString(R.string.invalid_email)</b>
+&nbsp;            }
+<b class="nc">&nbsp;            false</b>
+&nbsp;        }
+&nbsp;//
+&nbsp;//        // Listen to changes in Password input
+&nbsp;//        etPasswordInput.setOnKeyListener { _, _, _ -&gt;
+&nbsp;//            if (userViewModel.isPasswordValid(etPasswordInput.text!!)) {
+&nbsp;//                // Clear Error
+&nbsp;//                etPassword.error = null
+&nbsp;//            } else {
+&nbsp;//                etPassword.error = getString(R.string.invalid_password)
+&nbsp;//            }
+&nbsp;//            false
+&nbsp;//        }
+&nbsp;
+&nbsp;        // Listen to Done action on keyboard
+<b class="fc">&nbsp;        etPasswordInput.setOnEditorActionListener { _, actionId, _ -&gt;</b>
+<b class="nc">&nbsp;            when (actionId) {</b>
+<b class="nc">&nbsp;                EditorInfo.IME_ACTION_DONE -&gt; login(</b>
+<b class="nc">&nbsp;                    etEmailInput.text.toString(), etPasswordInput.text.toString()</b>
+&nbsp;                )
+&nbsp;            }
+<b class="nc">&nbsp;            false</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+&nbsp;        // Listen to Login btn click event
+<b class="fc">&nbsp;        btnLogin?.setOnClickListener {</b>
+&nbsp;            // On login clicked
+&nbsp;            //Verify Data validity
+<b class="nc">&nbsp;            if (!userViewModel.isEmailValid(etEmailInput?.text!!) || !userViewModel.isPasswordValid(</b>
+<b class="nc">&nbsp;                    etPasswordInput?.text!!</b>
+&nbsp;                )
+&nbsp;            ) {
+<b class="nc">&nbsp;                return@setOnClickListener</b>
+&nbsp;            }
+&nbsp;            // Show circular loader
+<b class="nc">&nbsp;            pbLoading?.visibility = View.VISIBLE</b>
+&nbsp;
+&nbsp;            // Call login process
+<b class="nc">&nbsp;            login(etEmailInput.text.toString(), etPasswordInput.text.toString())</b>
+<b class="nc">&nbsp;            pbLoading?.visibility = View.GONE</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        return view</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    fun login(email: String, password: String) {
+<b class="fc">&nbsp;        val etPassword = view?.findViewById&lt;TextInputLayout&gt;(R.id.login_password)</b>
+<b class="fc">&nbsp;        val etEmail = view?.findViewById&lt;TextInputLayout&gt;(R.id.login_email) // binding.username</b>
+<b class="fc">&nbsp;        auth.signInWithEmailAndPassword(</b>
+<b class="fc">&nbsp;            email, password</b>
+<b class="fc">&nbsp;        ).addOnCompleteListener { task -&gt;</b>
+<b class="nc">&nbsp;            if (task.isSuccessful) {</b>
+<b class="nc">&nbsp;                val user = task.result.user</b>
+<b class="nc">&nbsp;                if (user != null) {</b>
+<b class="nc">&nbsp;                    updateUiWithUser(user)</b>
+<b class="nc">&nbsp;                    Log.i(TAG, user.toString())</b>
+&nbsp;                }
+<b class="nc">&nbsp;                activity?.finishAffinity()</b>
+<b class="nc">&nbsp;                startActivity(Intent(activity, MainActivity::class.java))</b>
+&nbsp;            }
+<b class="fc">&nbsp;        }.addOnFailureListener { exception -&gt;</b>
+<b class="nc">&nbsp;            showLoginFailed(R.string.login_failed)</b>
+<b class="nc">&nbsp;            Log.i(TAG, &quot;Login Failed, $exception.localizedMessage&quot;)</b>
+<b class="nc">&nbsp;            etEmail?.error = &quot; &quot;</b>
+<b class="nc">&nbsp;            etPassword?.error = &quot;Invalid Email or Password&quot;</b>
+&nbsp;//            error(&quot;Login Failed, $exception.localizedMessage&quot;)
+&nbsp;//                Toast.makeText(applicationContext, exception.localizedMessage, Toast.LENGTH_LONG)
+&nbsp;//                    .show()
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    // Called when User login successful
+&nbsp;    private fun updateUiWithUser(model: FirebaseUser) {
+<b class="nc">&nbsp;        val welcome = getString(R.string.welcome)</b>
+<b class="nc">&nbsp;        val displayName = model.displayName</b>
+&nbsp;        // TODO : initiate successful logged in experience
+&nbsp;
+<b class="nc">&nbsp;        Toast.makeText(</b>
+<b class="nc">&nbsp;            requireActivity().application,</b>
+<b class="nc">&nbsp;            &quot;$welcome $displayName&quot;,</b>
+<b class="nc">&nbsp;            Toast.LENGTH_LONG,</b>
+<b class="nc">&nbsp;        ).show()</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    // Called when user login failed
+&nbsp;    private fun showLoginFailed(
+&nbsp;        @StringRes errorString: Int,
+&nbsp;    ) {
+<b class="nc">&nbsp;        Toast.makeText(requireActivity().application, errorString, Toast.LENGTH_SHORT).show()</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+<b class="fc">&nbsp;    companion object {</b>
+<b class="fc">&nbsp;        private val TAG: String = LoginFragment::class.java.name</b>
+&nbsp;    }
+<b class="fc">&nbsp;}</b>
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+
+
+</script>
+
+<div class="footer">
+
+    <div style="float:right;">generated on 2024-05-12 21:32</div>
+</div>
+</body>
+</html>

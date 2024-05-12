@@ -47,7 +47,7 @@ class BottomSheetEditFragment : BottomSheetDialogFragment() {
         prefs = SharedFirebasePreferences.getDefaultInstance(context)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
         calendarViewModel =
-            ViewModelProvider(this.requireParentFragment())[CalendarViewModel::class.java]
+            ViewModelProvider(requireActivity())[CalendarViewModel::class.java]
 
         return inflater.inflate(R.layout.bottom_window_edit, container, false)
     }

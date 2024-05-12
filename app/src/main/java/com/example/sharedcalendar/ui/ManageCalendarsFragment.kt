@@ -18,10 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,7 +49,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -112,23 +108,6 @@ class ManageCalendarsFragment : Fragment() {
     }
 }
 
-
-@Composable
-fun DoseFAB(navController: NavController) {
-    ExtendedFloatingActionButton(
-        text = { Text(text = "Add Calendar") },
-        icon = {
-            Icon(
-                imageVector = Icons.Default.Add, contentDescription = "add"
-            )
-        },
-        onClick = {
-            navController.navigate(ManageCalendarScreens.Create.name)
-        },
-        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp),
-        containerColor = MaterialTheme.colorScheme.tertiary
-    )
-}
 
 @Composable
 fun ManageCalendarScreen(

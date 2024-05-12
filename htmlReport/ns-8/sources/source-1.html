@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+    <title>Coverage Report > ColorFamily</title>
+    <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+
+
+    </style>
+    <script src="../../js/highlight.min.js" type="text/javascript"></script>
+    <script src="../../js/highlightjs-line-numbers.min.js" type="text/javascript"></script>
+</head>
+
+<body>
+<div class="content">
+    <div class="breadCrumbs">
+        Current scope: <a href="../../index.html">all classes</a>
+        <span class="separator">|</span>
+        <a href="../index.html">com.example.sharedcalendar.ui.theme</a>
+    </div>
+
+    <h1>Coverage Summary for Class: ColorFamily (com.example.sharedcalendar.ui.theme)</h1>
+
+    <table class="coverageStats">
+        <tr>
+            <th class="name">Class</th>
+            <th class="coverageStat
+">
+                Class, %
+            </th>
+            <th class="coverageStat
+">
+                Method, %
+            </th>
+            <th class="coverageStat
+">
+                Line, %
+            </th>
+        </tr>
+        <tr>
+            <td class="name">ColorFamily</td>
+            <td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+                <span class="absValue">
+    (0/1)
+  </span>
+            </td>
+            <td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+                <span class="absValue">
+    (0/1)
+  </span>
+            </td>
+            <td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+                <span class="absValue">
+    (0/5)
+  </span>
+            </td>
+        </tr>
+
+    </table>
+
+    <br/>
+    <br/>
+
+
+    <pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.sharedcalendar.ui.theme
+&nbsp;
+&nbsp;import android.app.Activity
+&nbsp;import android.os.Build
+&nbsp;import androidx.compose.foundation.isSystemInDarkTheme
+&nbsp;import androidx.compose.material3.MaterialTheme
+&nbsp;import androidx.compose.material3.darkColorScheme
+&nbsp;import androidx.compose.material3.dynamicDarkColorScheme
+&nbsp;import androidx.compose.material3.dynamicLightColorScheme
+&nbsp;import androidx.compose.material3.lightColorScheme
+&nbsp;import androidx.compose.runtime.Composable
+&nbsp;import androidx.compose.runtime.Immutable
+&nbsp;import androidx.compose.runtime.SideEffect
+&nbsp;import androidx.compose.ui.graphics.Color
+&nbsp;import androidx.compose.ui.graphics.toArgb
+&nbsp;import androidx.compose.ui.platform.LocalContext
+&nbsp;import androidx.compose.ui.platform.LocalView
+&nbsp;import androidx.core.view.WindowCompat
+&nbsp;import com.example.compose.backgroundDark
+&nbsp;import com.example.compose.backgroundDarkHighContrast
+&nbsp;import com.example.compose.backgroundDarkMediumContrast
+&nbsp;import com.example.compose.backgroundLight
+&nbsp;import com.example.compose.backgroundLightHighContrast
+&nbsp;import com.example.compose.backgroundLightMediumContrast
+&nbsp;import com.example.compose.errorContainerDark
+&nbsp;import com.example.compose.errorContainerDarkHighContrast
+&nbsp;import com.example.compose.errorContainerDarkMediumContrast
+&nbsp;import com.example.compose.errorContainerLight
+&nbsp;import com.example.compose.errorContainerLightHighContrast
+&nbsp;import com.example.compose.errorContainerLightMediumContrast
+&nbsp;import com.example.compose.errorDark
+&nbsp;import com.example.compose.errorDarkHighContrast
+&nbsp;import com.example.compose.errorDarkMediumContrast
+&nbsp;import com.example.compose.errorLight
+&nbsp;import com.example.compose.errorLightHighContrast
+&nbsp;import com.example.compose.errorLightMediumContrast
+&nbsp;import com.example.compose.inverseOnSurfaceDark
+&nbsp;import com.example.compose.inverseOnSurfaceDarkHighContrast
+&nbsp;import com.example.compose.inverseOnSurfaceDarkMediumContrast
+&nbsp;import com.example.compose.inverseOnSurfaceLight
+&nbsp;import com.example.compose.inverseOnSurfaceLightHighContrast
+&nbsp;import com.example.compose.inverseOnSurfaceLightMediumContrast
+&nbsp;import com.example.compose.inversePrimaryDark
+&nbsp;import com.example.compose.inversePrimaryDarkHighContrast
+&nbsp;import com.example.compose.inversePrimaryDarkMediumContrast
+&nbsp;import com.example.compose.inversePrimaryLight
+&nbsp;import com.example.compose.inversePrimaryLightHighContrast
+&nbsp;import com.example.compose.inversePrimaryLightMediumContrast
+&nbsp;import com.example.compose.inverseSurfaceDark
+&nbsp;import com.example.compose.inverseSurfaceDarkHighContrast
+&nbsp;import com.example.compose.inverseSurfaceDarkMediumContrast
+&nbsp;import com.example.compose.inverseSurfaceLight
+&nbsp;import com.example.compose.inverseSurfaceLightHighContrast
+&nbsp;import com.example.compose.inverseSurfaceLightMediumContrast
+&nbsp;import com.example.compose.onBackgroundDark
+&nbsp;import com.example.compose.onBackgroundDarkHighContrast
+&nbsp;import com.example.compose.onBackgroundDarkMediumContrast
+&nbsp;import com.example.compose.onBackgroundLight
+&nbsp;import com.example.compose.onBackgroundLightHighContrast
+&nbsp;import com.example.compose.onBackgroundLightMediumContrast
+&nbsp;import com.example.compose.onErrorContainerDark
+&nbsp;import com.example.compose.onErrorContainerDarkHighContrast
+&nbsp;import com.example.compose.onErrorContainerDarkMediumContrast
+&nbsp;import com.example.compose.onErrorContainerLight
+&nbsp;import com.example.compose.onErrorContainerLightHighContrast
+&nbsp;import com.example.compose.onErrorContainerLightMediumContrast
+&nbsp;import com.example.compose.onErrorDark
+&nbsp;import com.example.compose.onErrorDarkHighContrast
+&nbsp;import com.example.compose.onErrorDarkMediumContrast
+&nbsp;import com.example.compose.onErrorLight
+&nbsp;import com.example.compose.onErrorLightHighContrast
+&nbsp;import com.example.compose.onErrorLightMediumContrast
+&nbsp;import com.example.compose.onPrimaryContainerDark
+&nbsp;import com.example.compose.onPrimaryContainerDarkHighContrast
+&nbsp;import com.example.compose.onPrimaryContainerDarkMediumContrast
+&nbsp;import com.example.compose.onPrimaryContainerLight
+&nbsp;import com.example.compose.onPrimaryContainerLightHighContrast
+&nbsp;import com.example.compose.onPrimaryContainerLightMediumContrast
+&nbsp;import com.example.compose.onPrimaryDark
+&nbsp;import com.example.compose.onPrimaryDarkHighContrast
+&nbsp;import com.example.compose.onPrimaryDarkMediumContrast
+&nbsp;import com.example.compose.onPrimaryLight
+&nbsp;import com.example.compose.onPrimaryLightHighContrast
+&nbsp;import com.example.compose.onPrimaryLightMediumContrast
+&nbsp;import com.example.compose.onSecondaryContainerDark
+&nbsp;import com.example.compose.onSecondaryContainerDarkHighContrast
+&nbsp;import com.example.compose.onSecondaryContainerDarkMediumContrast
+&nbsp;import com.example.compose.onSecondaryContainerLight
+&nbsp;import com.example.compose.onSecondaryContainerLightHighContrast
+&nbsp;import com.example.compose.onSecondaryContainerLightMediumContrast
+&nbsp;import com.example.compose.onSecondaryDark
+&nbsp;import com.example.compose.onSecondaryDarkHighContrast
+&nbsp;import com.example.compose.onSecondaryDarkMediumContrast
+&nbsp;import com.example.compose.onSecondaryLight
+&nbsp;import com.example.compose.onSecondaryLightHighContrast
+&nbsp;import com.example.compose.onSecondaryLightMediumContrast
+&nbsp;import com.example.compose.onSurfaceDark
+&nbsp;import com.example.compose.onSurfaceDarkHighContrast
+&nbsp;import com.example.compose.onSurfaceDarkMediumContrast
+&nbsp;import com.example.compose.onSurfaceLight
+&nbsp;import com.example.compose.onSurfaceLightHighContrast
+&nbsp;import com.example.compose.onSurfaceLightMediumContrast
+&nbsp;import com.example.compose.onSurfaceVariantDark
+&nbsp;import com.example.compose.onSurfaceVariantDarkHighContrast
+&nbsp;import com.example.compose.onSurfaceVariantDarkMediumContrast
+&nbsp;import com.example.compose.onSurfaceVariantLight
+&nbsp;import com.example.compose.onSurfaceVariantLightHighContrast
+&nbsp;import com.example.compose.onSurfaceVariantLightMediumContrast
+&nbsp;import com.example.compose.onTertiaryContainerDark
+&nbsp;import com.example.compose.onTertiaryContainerDarkHighContrast
+&nbsp;import com.example.compose.onTertiaryContainerDarkMediumContrast
+&nbsp;import com.example.compose.onTertiaryContainerLight
+&nbsp;import com.example.compose.onTertiaryContainerLightHighContrast
+&nbsp;import com.example.compose.onTertiaryContainerLightMediumContrast
+&nbsp;import com.example.compose.onTertiaryDark
+&nbsp;import com.example.compose.onTertiaryDarkHighContrast
+&nbsp;import com.example.compose.onTertiaryDarkMediumContrast
+&nbsp;import com.example.compose.onTertiaryLight
+&nbsp;import com.example.compose.onTertiaryLightHighContrast
+&nbsp;import com.example.compose.onTertiaryLightMediumContrast
+&nbsp;import com.example.compose.outlineDark
+&nbsp;import com.example.compose.outlineDarkHighContrast
+&nbsp;import com.example.compose.outlineDarkMediumContrast
+&nbsp;import com.example.compose.outlineLight
+&nbsp;import com.example.compose.outlineLightHighContrast
+&nbsp;import com.example.compose.outlineLightMediumContrast
+&nbsp;import com.example.compose.outlineVariantDark
+&nbsp;import com.example.compose.outlineVariantDarkHighContrast
+&nbsp;import com.example.compose.outlineVariantDarkMediumContrast
+&nbsp;import com.example.compose.outlineVariantLight
+&nbsp;import com.example.compose.outlineVariantLightHighContrast
+&nbsp;import com.example.compose.outlineVariantLightMediumContrast
+&nbsp;import com.example.compose.primaryContainerDark
+&nbsp;import com.example.compose.primaryContainerDarkHighContrast
+&nbsp;import com.example.compose.primaryContainerDarkMediumContrast
+&nbsp;import com.example.compose.primaryContainerLight
+&nbsp;import com.example.compose.primaryContainerLightHighContrast
+&nbsp;import com.example.compose.primaryContainerLightMediumContrast
+&nbsp;import com.example.compose.primaryDark
+&nbsp;import com.example.compose.primaryDarkHighContrast
+&nbsp;import com.example.compose.primaryDarkMediumContrast
+&nbsp;import com.example.compose.primaryLight
+&nbsp;import com.example.compose.primaryLightHighContrast
+&nbsp;import com.example.compose.primaryLightMediumContrast
+&nbsp;import com.example.compose.scrimDark
+&nbsp;import com.example.compose.scrimDarkHighContrast
+&nbsp;import com.example.compose.scrimDarkMediumContrast
+&nbsp;import com.example.compose.scrimLight
+&nbsp;import com.example.compose.scrimLightHighContrast
+&nbsp;import com.example.compose.scrimLightMediumContrast
+&nbsp;import com.example.compose.secondaryContainerDark
+&nbsp;import com.example.compose.secondaryContainerDarkHighContrast
+&nbsp;import com.example.compose.secondaryContainerDarkMediumContrast
+&nbsp;import com.example.compose.secondaryContainerLight
+&nbsp;import com.example.compose.secondaryContainerLightHighContrast
+&nbsp;import com.example.compose.secondaryContainerLightMediumContrast
+&nbsp;import com.example.compose.secondaryDark
+&nbsp;import com.example.compose.secondaryDarkHighContrast
+&nbsp;import com.example.compose.secondaryDarkMediumContrast
+&nbsp;import com.example.compose.secondaryLight
+&nbsp;import com.example.compose.secondaryLightHighContrast
+&nbsp;import com.example.compose.secondaryLightMediumContrast
+&nbsp;import com.example.compose.surfaceBrightDark
+&nbsp;import com.example.compose.surfaceBrightDarkHighContrast
+&nbsp;import com.example.compose.surfaceBrightDarkMediumContrast
+&nbsp;import com.example.compose.surfaceBrightLight
+&nbsp;import com.example.compose.surfaceBrightLightHighContrast
+&nbsp;import com.example.compose.surfaceBrightLightMediumContrast
+&nbsp;import com.example.compose.surfaceContainerDark
+&nbsp;import com.example.compose.surfaceContainerDarkHighContrast
+&nbsp;import com.example.compose.surfaceContainerDarkMediumContrast
+&nbsp;import com.example.compose.surfaceContainerHighDark
+&nbsp;import com.example.compose.surfaceContainerHighDarkHighContrast
+&nbsp;import com.example.compose.surfaceContainerHighDarkMediumContrast
+&nbsp;import com.example.compose.surfaceContainerHighLight
+&nbsp;import com.example.compose.surfaceContainerHighLightHighContrast
+&nbsp;import com.example.compose.surfaceContainerHighLightMediumContrast
+&nbsp;import com.example.compose.surfaceContainerHighestDark
+&nbsp;import com.example.compose.surfaceContainerHighestDarkHighContrast
+&nbsp;import com.example.compose.surfaceContainerHighestDarkMediumContrast
+&nbsp;import com.example.compose.surfaceContainerHighestLight
+&nbsp;import com.example.compose.surfaceContainerHighestLightHighContrast
+&nbsp;import com.example.compose.surfaceContainerHighestLightMediumContrast
+&nbsp;import com.example.compose.surfaceContainerLight
+&nbsp;import com.example.compose.surfaceContainerLightHighContrast
+&nbsp;import com.example.compose.surfaceContainerLightMediumContrast
+&nbsp;import com.example.compose.surfaceContainerLowDark
+&nbsp;import com.example.compose.surfaceContainerLowDarkHighContrast
+&nbsp;import com.example.compose.surfaceContainerLowDarkMediumContrast
+&nbsp;import com.example.compose.surfaceContainerLowLight
+&nbsp;import com.example.compose.surfaceContainerLowLightHighContrast
+&nbsp;import com.example.compose.surfaceContainerLowLightMediumContrast
+&nbsp;import com.example.compose.surfaceContainerLowestDark
+&nbsp;import com.example.compose.surfaceContainerLowestDarkHighContrast
+&nbsp;import com.example.compose.surfaceContainerLowestDarkMediumContrast
+&nbsp;import com.example.compose.surfaceContainerLowestLight
+&nbsp;import com.example.compose.surfaceContainerLowestLightHighContrast
+&nbsp;import com.example.compose.surfaceContainerLowestLightMediumContrast
+&nbsp;import com.example.compose.surfaceDark
+&nbsp;import com.example.compose.surfaceDarkHighContrast
+&nbsp;import com.example.compose.surfaceDarkMediumContrast
+&nbsp;import com.example.compose.surfaceDimDark
+&nbsp;import com.example.compose.surfaceDimDarkHighContrast
+&nbsp;import com.example.compose.surfaceDimDarkMediumContrast
+&nbsp;import com.example.compose.surfaceDimLight
+&nbsp;import com.example.compose.surfaceDimLightHighContrast
+&nbsp;import com.example.compose.surfaceDimLightMediumContrast
+&nbsp;import com.example.compose.surfaceLight
+&nbsp;import com.example.compose.surfaceLightHighContrast
+&nbsp;import com.example.compose.surfaceLightMediumContrast
+&nbsp;import com.example.compose.surfaceVariantDark
+&nbsp;import com.example.compose.surfaceVariantDarkHighContrast
+&nbsp;import com.example.compose.surfaceVariantDarkMediumContrast
+&nbsp;import com.example.compose.surfaceVariantLight
+&nbsp;import com.example.compose.surfaceVariantLightHighContrast
+&nbsp;import com.example.compose.surfaceVariantLightMediumContrast
+&nbsp;import com.example.compose.tertiaryContainerDark
+&nbsp;import com.example.compose.tertiaryContainerDarkHighContrast
+&nbsp;import com.example.compose.tertiaryContainerDarkMediumContrast
+&nbsp;import com.example.compose.tertiaryContainerLight
+&nbsp;import com.example.compose.tertiaryContainerLightHighContrast
+&nbsp;import com.example.compose.tertiaryContainerLightMediumContrast
+&nbsp;import com.example.compose.tertiaryDark
+&nbsp;import com.example.compose.tertiaryDarkHighContrast
+&nbsp;import com.example.compose.tertiaryDarkMediumContrast
+&nbsp;import com.example.compose.tertiaryLight
+&nbsp;import com.example.compose.tertiaryLightHighContrast
+&nbsp;import com.example.compose.tertiaryLightMediumContrast
+&nbsp;
+&nbsp;private val lightScheme = lightColorScheme(
+&nbsp;    primary = primaryLight,
+&nbsp;    onPrimary = onPrimaryLight,
+&nbsp;    primaryContainer = primaryContainerLight,
+&nbsp;    onPrimaryContainer = onPrimaryContainerLight,
+&nbsp;    secondary = secondaryLight,
+&nbsp;    onSecondary = onSecondaryLight,
+&nbsp;    secondaryContainer = secondaryContainerLight,
+&nbsp;    onSecondaryContainer = onSecondaryContainerLight,
+&nbsp;    tertiary = tertiaryLight,
+&nbsp;    onTertiary = onTertiaryLight,
+&nbsp;    tertiaryContainer = tertiaryContainerLight,
+&nbsp;    onTertiaryContainer = onTertiaryContainerLight,
+&nbsp;    error = errorLight,
+&nbsp;    onError = onErrorLight,
+&nbsp;    errorContainer = errorContainerLight,
+&nbsp;    onErrorContainer = onErrorContainerLight,
+&nbsp;    background = backgroundLight,
+&nbsp;    onBackground = onBackgroundLight,
+&nbsp;    surface = surfaceLight,
+&nbsp;    onSurface = onSurfaceLight,
+&nbsp;    surfaceVariant = surfaceVariantLight,
+&nbsp;    onSurfaceVariant = onSurfaceVariantLight,
+&nbsp;    outline = outlineLight,
+&nbsp;    outlineVariant = outlineVariantLight,
+&nbsp;    scrim = scrimLight,
+&nbsp;    inverseSurface = inverseSurfaceLight,
+&nbsp;    inverseOnSurface = inverseOnSurfaceLight,
+&nbsp;    inversePrimary = inversePrimaryLight,
+&nbsp;    surfaceDim = surfaceDimLight,
+&nbsp;    surfaceBright = surfaceBrightLight,
+&nbsp;    surfaceContainerLowest = surfaceContainerLowestLight,
+&nbsp;    surfaceContainerLow = surfaceContainerLowLight,
+&nbsp;    surfaceContainer = surfaceContainerLight,
+&nbsp;    surfaceContainerHigh = surfaceContainerHighLight,
+&nbsp;    surfaceContainerHighest = surfaceContainerHighestLight,
+&nbsp;)
+&nbsp;
+&nbsp;private val darkScheme = darkColorScheme(
+&nbsp;    primary = primaryDark,
+&nbsp;    onPrimary = onPrimaryDark,
+&nbsp;    primaryContainer = primaryContainerDark,
+&nbsp;    onPrimaryContainer = onPrimaryContainerDark,
+&nbsp;    secondary = secondaryDark,
+&nbsp;    onSecondary = onSecondaryDark,
+&nbsp;    secondaryContainer = secondaryContainerDark,
+&nbsp;    onSecondaryContainer = onSecondaryContainerDark,
+&nbsp;    tertiary = tertiaryDark,
+&nbsp;    onTertiary = onTertiaryDark,
+&nbsp;    tertiaryContainer = tertiaryContainerDark,
+&nbsp;    onTertiaryContainer = onTertiaryContainerDark,
+&nbsp;    error = errorDark,
+&nbsp;    onError = onErrorDark,
+&nbsp;    errorContainer = errorContainerDark,
+&nbsp;    onErrorContainer = onErrorContainerDark,
+&nbsp;    background = backgroundDark,
+&nbsp;    onBackground = onBackgroundDark,
+&nbsp;    surface = surfaceDark,
+&nbsp;    onSurface = onSurfaceDark,
+&nbsp;    surfaceVariant = surfaceVariantDark,
+&nbsp;    onSurfaceVariant = onSurfaceVariantDark,
+&nbsp;    outline = outlineDark,
+&nbsp;    outlineVariant = outlineVariantDark,
+&nbsp;    scrim = scrimDark,
+&nbsp;    inverseSurface = inverseSurfaceDark,
+&nbsp;    inverseOnSurface = inverseOnSurfaceDark,
+&nbsp;    inversePrimary = inversePrimaryDark,
+&nbsp;    surfaceDim = surfaceDimDark,
+&nbsp;    surfaceBright = surfaceBrightDark,
+&nbsp;    surfaceContainerLowest = surfaceContainerLowestDark,
+&nbsp;    surfaceContainerLow = surfaceContainerLowDark,
+&nbsp;    surfaceContainer = surfaceContainerDark,
+&nbsp;    surfaceContainerHigh = surfaceContainerHighDark,
+&nbsp;    surfaceContainerHighest = surfaceContainerHighestDark,
+&nbsp;)
+&nbsp;
+&nbsp;private val mediumContrastLightColorScheme = lightColorScheme(
+&nbsp;    primary = primaryLightMediumContrast,
+&nbsp;    onPrimary = onPrimaryLightMediumContrast,
+&nbsp;    primaryContainer = primaryContainerLightMediumContrast,
+&nbsp;    onPrimaryContainer = onPrimaryContainerLightMediumContrast,
+&nbsp;    secondary = secondaryLightMediumContrast,
+&nbsp;    onSecondary = onSecondaryLightMediumContrast,
+&nbsp;    secondaryContainer = secondaryContainerLightMediumContrast,
+&nbsp;    onSecondaryContainer = onSecondaryContainerLightMediumContrast,
+&nbsp;    tertiary = tertiaryLightMediumContrast,
+&nbsp;    onTertiary = onTertiaryLightMediumContrast,
+&nbsp;    tertiaryContainer = tertiaryContainerLightMediumContrast,
+&nbsp;    onTertiaryContainer = onTertiaryContainerLightMediumContrast,
+&nbsp;    error = errorLightMediumContrast,
+&nbsp;    onError = onErrorLightMediumContrast,
+&nbsp;    errorContainer = errorContainerLightMediumContrast,
+&nbsp;    onErrorContainer = onErrorContainerLightMediumContrast,
+&nbsp;    background = backgroundLightMediumContrast,
+&nbsp;    onBackground = onBackgroundLightMediumContrast,
+&nbsp;    surface = surfaceLightMediumContrast,
+&nbsp;    onSurface = onSurfaceLightMediumContrast,
+&nbsp;    surfaceVariant = surfaceVariantLightMediumContrast,
+&nbsp;    onSurfaceVariant = onSurfaceVariantLightMediumContrast,
+&nbsp;    outline = outlineLightMediumContrast,
+&nbsp;    outlineVariant = outlineVariantLightMediumContrast,
+&nbsp;    scrim = scrimLightMediumContrast,
+&nbsp;    inverseSurface = inverseSurfaceLightMediumContrast,
+&nbsp;    inverseOnSurface = inverseOnSurfaceLightMediumContrast,
+&nbsp;    inversePrimary = inversePrimaryLightMediumContrast,
+&nbsp;    surfaceDim = surfaceDimLightMediumContrast,
+&nbsp;    surfaceBright = surfaceBrightLightMediumContrast,
+&nbsp;    surfaceContainerLowest = surfaceContainerLowestLightMediumContrast,
+&nbsp;    surfaceContainerLow = surfaceContainerLowLightMediumContrast,
+&nbsp;    surfaceContainer = surfaceContainerLightMediumContrast,
+&nbsp;    surfaceContainerHigh = surfaceContainerHighLightMediumContrast,
+&nbsp;    surfaceContainerHighest = surfaceContainerHighestLightMediumContrast,
+&nbsp;)
+&nbsp;
+&nbsp;private val highContrastLightColorScheme = lightColorScheme(
+&nbsp;    primary = primaryLightHighContrast,
+&nbsp;    onPrimary = onPrimaryLightHighContrast,
+&nbsp;    primaryContainer = primaryContainerLightHighContrast,
+&nbsp;    onPrimaryContainer = onPrimaryContainerLightHighContrast,
+&nbsp;    secondary = secondaryLightHighContrast,
+&nbsp;    onSecondary = onSecondaryLightHighContrast,
+&nbsp;    secondaryContainer = secondaryContainerLightHighContrast,
+&nbsp;    onSecondaryContainer = onSecondaryContainerLightHighContrast,
+&nbsp;    tertiary = tertiaryLightHighContrast,
+&nbsp;    onTertiary = onTertiaryLightHighContrast,
+&nbsp;    tertiaryContainer = tertiaryContainerLightHighContrast,
+&nbsp;    onTertiaryContainer = onTertiaryContainerLightHighContrast,
+&nbsp;    error = errorLightHighContrast,
+&nbsp;    onError = onErrorLightHighContrast,
+&nbsp;    errorContainer = errorContainerLightHighContrast,
+&nbsp;    onErrorContainer = onErrorContainerLightHighContrast,
+&nbsp;    background = backgroundLightHighContrast,
+&nbsp;    onBackground = onBackgroundLightHighContrast,
+&nbsp;    surface = surfaceLightHighContrast,
+&nbsp;    onSurface = onSurfaceLightHighContrast,
+&nbsp;    surfaceVariant = surfaceVariantLightHighContrast,
+&nbsp;    onSurfaceVariant = onSurfaceVariantLightHighContrast,
+&nbsp;    outline = outlineLightHighContrast,
+&nbsp;    outlineVariant = outlineVariantLightHighContrast,
+&nbsp;    scrim = scrimLightHighContrast,
+&nbsp;    inverseSurface = inverseSurfaceLightHighContrast,
+&nbsp;    inverseOnSurface = inverseOnSurfaceLightHighContrast,
+&nbsp;    inversePrimary = inversePrimaryLightHighContrast,
+&nbsp;    surfaceDim = surfaceDimLightHighContrast,
+&nbsp;    surfaceBright = surfaceBrightLightHighContrast,
+&nbsp;    surfaceContainerLowest = surfaceContainerLowestLightHighContrast,
+&nbsp;    surfaceContainerLow = surfaceContainerLowLightHighContrast,
+&nbsp;    surfaceContainer = surfaceContainerLightHighContrast,
+&nbsp;    surfaceContainerHigh = surfaceContainerHighLightHighContrast,
+&nbsp;    surfaceContainerHighest = surfaceContainerHighestLightHighContrast,
+&nbsp;)
+&nbsp;
+&nbsp;private val mediumContrastDarkColorScheme = darkColorScheme(
+&nbsp;    primary = primaryDarkMediumContrast,
+&nbsp;    onPrimary = onPrimaryDarkMediumContrast,
+&nbsp;    primaryContainer = primaryContainerDarkMediumContrast,
+&nbsp;    onPrimaryContainer = onPrimaryContainerDarkMediumContrast,
+&nbsp;    secondary = secondaryDarkMediumContrast,
+&nbsp;    onSecondary = onSecondaryDarkMediumContrast,
+&nbsp;    secondaryContainer = secondaryContainerDarkMediumContrast,
+&nbsp;    onSecondaryContainer = onSecondaryContainerDarkMediumContrast,
+&nbsp;    tertiary = tertiaryDarkMediumContrast,
+&nbsp;    onTertiary = onTertiaryDarkMediumContrast,
+&nbsp;    tertiaryContainer = tertiaryContainerDarkMediumContrast,
+&nbsp;    onTertiaryContainer = onTertiaryContainerDarkMediumContrast,
+&nbsp;    error = errorDarkMediumContrast,
+&nbsp;    onError = onErrorDarkMediumContrast,
+&nbsp;    errorContainer = errorContainerDarkMediumContrast,
+&nbsp;    onErrorContainer = onErrorContainerDarkMediumContrast,
+&nbsp;    background = backgroundDarkMediumContrast,
+&nbsp;    onBackground = onBackgroundDarkMediumContrast,
+&nbsp;    surface = surfaceDarkMediumContrast,
+&nbsp;    onSurface = onSurfaceDarkMediumContrast,
+&nbsp;    surfaceVariant = surfaceVariantDarkMediumContrast,
+&nbsp;    onSurfaceVariant = onSurfaceVariantDarkMediumContrast,
+&nbsp;    outline = outlineDarkMediumContrast,
+&nbsp;    outlineVariant = outlineVariantDarkMediumContrast,
+&nbsp;    scrim = scrimDarkMediumContrast,
+&nbsp;    inverseSurface = inverseSurfaceDarkMediumContrast,
+&nbsp;    inverseOnSurface = inverseOnSurfaceDarkMediumContrast,
+&nbsp;    inversePrimary = inversePrimaryDarkMediumContrast,
+&nbsp;    surfaceDim = surfaceDimDarkMediumContrast,
+&nbsp;    surfaceBright = surfaceBrightDarkMediumContrast,
+&nbsp;    surfaceContainerLowest = surfaceContainerLowestDarkMediumContrast,
+&nbsp;    surfaceContainerLow = surfaceContainerLowDarkMediumContrast,
+&nbsp;    surfaceContainer = surfaceContainerDarkMediumContrast,
+&nbsp;    surfaceContainerHigh = surfaceContainerHighDarkMediumContrast,
+&nbsp;    surfaceContainerHighest = surfaceContainerHighestDarkMediumContrast,
+&nbsp;)
+&nbsp;
+&nbsp;private val highContrastDarkColorScheme = darkColorScheme(
+&nbsp;    primary = primaryDarkHighContrast,
+&nbsp;    onPrimary = onPrimaryDarkHighContrast,
+&nbsp;    primaryContainer = primaryContainerDarkHighContrast,
+&nbsp;    onPrimaryContainer = onPrimaryContainerDarkHighContrast,
+&nbsp;    secondary = secondaryDarkHighContrast,
+&nbsp;    onSecondary = onSecondaryDarkHighContrast,
+&nbsp;    secondaryContainer = secondaryContainerDarkHighContrast,
+&nbsp;    onSecondaryContainer = onSecondaryContainerDarkHighContrast,
+&nbsp;    tertiary = tertiaryDarkHighContrast,
+&nbsp;    onTertiary = onTertiaryDarkHighContrast,
+&nbsp;    tertiaryContainer = tertiaryContainerDarkHighContrast,
+&nbsp;    onTertiaryContainer = onTertiaryContainerDarkHighContrast,
+&nbsp;    error = errorDarkHighContrast,
+&nbsp;    onError = onErrorDarkHighContrast,
+&nbsp;    errorContainer = errorContainerDarkHighContrast,
+&nbsp;    onErrorContainer = onErrorContainerDarkHighContrast,
+&nbsp;    background = backgroundDarkHighContrast,
+&nbsp;    onBackground = onBackgroundDarkHighContrast,
+&nbsp;    surface = surfaceDarkHighContrast,
+&nbsp;    onSurface = onSurfaceDarkHighContrast,
+&nbsp;    surfaceVariant = surfaceVariantDarkHighContrast,
+&nbsp;    onSurfaceVariant = onSurfaceVariantDarkHighContrast,
+&nbsp;    outline = outlineDarkHighContrast,
+&nbsp;    outlineVariant = outlineVariantDarkHighContrast,
+&nbsp;    scrim = scrimDarkHighContrast,
+&nbsp;    inverseSurface = inverseSurfaceDarkHighContrast,
+&nbsp;    inverseOnSurface = inverseOnSurfaceDarkHighContrast,
+&nbsp;    inversePrimary = inversePrimaryDarkHighContrast,
+&nbsp;    surfaceDim = surfaceDimDarkHighContrast,
+&nbsp;    surfaceBright = surfaceBrightDarkHighContrast,
+&nbsp;    surfaceContainerLowest = surfaceContainerLowestDarkHighContrast,
+&nbsp;    surfaceContainerLow = surfaceContainerLowDarkHighContrast,
+&nbsp;    surfaceContainer = surfaceContainerDarkHighContrast,
+&nbsp;    surfaceContainerHigh = surfaceContainerHighDarkHighContrast,
+&nbsp;    surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
+&nbsp;)
+&nbsp;
+<b class="nc">&nbsp;@Immutable</b>
+&nbsp;data class ColorFamily(
+<b class="nc">&nbsp;    val color: Color,</b>
+<b class="nc">&nbsp;    val onColor: Color,</b>
+<b class="nc">&nbsp;    val colorContainer: Color,</b>
+<b class="nc">&nbsp;    val onColorContainer: Color</b>
+&nbsp;)
+&nbsp;
+&nbsp;val unspecified_scheme = ColorFamily(
+&nbsp;    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
+&nbsp;)
+&nbsp;
+&nbsp;@Composable
+&nbsp;fun AppTheme(
+&nbsp;    darkTheme: Boolean = isSystemInDarkTheme(),
+&nbsp;    // Dynamic color is available on Android 12+
+&nbsp;    dynamicColor: Boolean = true,
+&nbsp;    content: @Composable() () -&gt; Unit
+&nbsp;) {
+&nbsp;    val colorScheme = when {
+&nbsp;        dynamicColor &amp;&amp; Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.S -&gt; {
+&nbsp;            val context = LocalContext.current
+&nbsp;            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+&nbsp;        }
+&nbsp;
+&nbsp;        darkTheme -&gt; darkScheme
+&nbsp;        else -&gt; lightScheme
+&nbsp;    }
+&nbsp;    val view = LocalView.current
+&nbsp;    if (!view.isInEditMode) {
+&nbsp;        SideEffect {
+&nbsp;            val window = (view.context as Activity).window
+&nbsp;            window.statusBarColor = colorScheme.primary.toArgb()
+&nbsp;            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    MaterialTheme(
+&nbsp;        colorScheme = colorScheme,
+&nbsp;        typography = AppTypography,
+&nbsp;        content = content
+&nbsp;    )
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+
+
+</script>
+
+<div class="footer">
+
+    <div style="float:right;">generated on 2024-05-12 21:32</div>
+</div>
+</body>
+</html>

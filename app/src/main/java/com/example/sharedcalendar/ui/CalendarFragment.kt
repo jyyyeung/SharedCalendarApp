@@ -27,7 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 class CalendarFragment : Fragment() {
     private lateinit var firebaseViewModel: FirebaseViewModel
     private val calendarViewModel by lazy {
-        ViewModelProvider(this)[CalendarViewModel::class.java]
+        ViewModelProvider(requireActivity())[CalendarViewModel::class.java]
     }
 
     override fun onCreateView(

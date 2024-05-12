@@ -1,5 +1,6 @@
 package com.example.sharedcalendar
 
+import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.MutableLiveData
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
@@ -24,6 +25,7 @@ import java.time.YearMonth
 class MonthViewFragmentTest : BaseTest() {
 
     private lateinit var fragment: MonthViewFragment
+    private lateinit var scenario: FragmentScenario<MonthViewFragment>
 
     override fun extendedSetup() {
         val activity =
@@ -32,15 +34,17 @@ class MonthViewFragmentTest : BaseTest() {
         val spykCalendarViewModel = spyk(CalendarViewModel())
         activity.supportFragmentManager.beginTransaction().apply {
             add(fragment, "monthViewFragment")
-            commitNow()
+            commit()
         }
 //        Shadows.shadowOf(Looper.getMainLooper()).idle()
 //
         setField(fragment, "firebaseViewModel", spykFirebaseViewModel)
         setField(fragment, "calendarViewModel", spykCalendarViewModel)
 //        var localContext = fragment.requireContext()
-        setField(fragment, "binding", FragmentMonthViewBinding.bind(fragment.view!!))
+//        setField(fragment, "binding", FragmentMonthViewBinding.bind(fragment.view!!))
 
+        scenario =
+            launchFragmentInContainer<MonthViewFragment>(themeResId = R.style.Base_Theme_SharedCalendar)
     }
 
     @Test
@@ -48,12 +52,14 @@ class MonthViewFragmentTest : BaseTest() {
         val events = MutableLiveData<MutableList<Event>>()
         every { spykFirebaseViewModel.events } returns events
         every { spykFirebaseViewModel.getGroupedEvents() } returns emptyMap()
+        scenario.onFragment {
 
+//            fragment.view?.let { fragment.onViewCreated(it, null) }
 
-        fragment.view?.let { fragment.onViewCreated(it, null) }
+            assertNotNull(it.binding.MonthViewCalendar.dayBinder)
+            assertNotNull(it.binding.MonthViewCalendar.monthHeaderBinder)
+        }
 
-        assertNotNull(fragment.binding.MonthViewCalendar.dayBinder)
-        assertNotNull(fragment.binding.MonthViewCalendar.monthHeaderBinder)
     }
 
     @Test
@@ -62,7 +68,11 @@ class MonthViewFragmentTest : BaseTest() {
         every { spykFirebaseViewModel.events } returns events
         every { spykFirebaseViewModel.getGroupedEvents() } returns emptyMap()
 
-        fragment.onViewCreated(fragment.view!!, null).apply {
+        scenario.onFragment {
+
+            setField(it, "firebaseViewModel", spykFirebaseViewModel)
+//        }
+//        fragment.onViewCreated(fragment.view!!, null).apply {
 
             events.value = mutableListOf(mockk<Event>(relaxed = true))
 
@@ -77,7 +87,11 @@ class MonthViewFragmentTest : BaseTest() {
         every { spykFirebaseViewModel.events } returns events
         every { spykFirebaseViewModel.getGroupedEvents() } returns emptyMap()
 
-        fragment.onViewCreated(fragment.view!!, null).apply {
+        scenario.onFragment {
+
+            setField(it, "firebaseViewModel", spykFirebaseViewModel)
+
+//        fragment.onViewCreated(fragment.view!!, null).apply {
 
             events.value = mutableListOf(mockk<Event>(relaxed = true))
 
