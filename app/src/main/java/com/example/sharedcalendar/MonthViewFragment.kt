@@ -51,7 +51,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
         binding = FragmentMonthViewBinding.bind(view)
         calendarViewModel =
-            ViewModelProvider(requireParentFragment())[CalendarViewModel::class.java]
+            ViewModelProvider(requireActivity())[CalendarViewModel::class.java]
         val daysOfWeek = daysOfWeek()
         val currentMonth = YearMonth.now()
         val startMonth = currentMonth.minusMonths(200)
