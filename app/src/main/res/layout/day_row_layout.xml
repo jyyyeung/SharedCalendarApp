@@ -46,7 +46,6 @@
                     android:layout_weight="1.5"
                     android:text="By: "
                     android:textColor="@color/black"
-                    android:textSize="36dp"
                     android:paddingRight="30dp"/>
             </LinearLayout>
 
@@ -85,10 +84,11 @@
                     android:text="End Date"
                     android:textColor="@color/black" />
                 <TextView
+                    android:id="@+id/cardEndTimeTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
-                    android:text="End Date"
+                    android:text="End Time"
                     android:textColor="@color/black"/>
 
             </LinearLayout>

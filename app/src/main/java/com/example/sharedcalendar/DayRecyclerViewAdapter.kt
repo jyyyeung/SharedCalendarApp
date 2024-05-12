@@ -24,6 +24,9 @@ class DayRecyclerViewAdapter(private val eventList: ArrayList<Event>) : Recycler
         holder.tvStartDate.text = eventList[position].startTime.toLocalDate().toString()
         holder.tvEndDate.text = eventList[position].endTime.toLocalDate().toString()
         holder.tvDes.text = eventList[position].description
+        holder.tvStartTime.text = "${eventList[position].startTime.hour}:${eventList[position].startTime.minute}"
+        holder.tvEndTime.text = "${eventList[position].endTime.hour}:${eventList[position].endTime.minute}"
+
 
         val event = eventList[position]
         holder.itemView.setOnClickListener{

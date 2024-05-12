@@ -10,5 +10,7 @@ class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val tvStartDate: TextView = itemView.findViewById(R.id.cardStartDateTV)
     val tvEndDate: TextView = itemView.findViewById(R.id.cardEndDateTV)
     val tvDes: TextView = itemView.findViewById(R.id.cardDescriptionTV)
+    val tvStartTime: TextView = itemView.findViewById(R.id.cardStartTimeTV)
+    val tvEndTime: TextView = itemView.findViewById(R.id.cardEndTimeTV)
 
 }

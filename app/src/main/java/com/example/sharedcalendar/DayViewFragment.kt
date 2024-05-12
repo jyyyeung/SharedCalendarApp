@@ -41,14 +41,14 @@ class DayViewFragment(selectedDate: LocalDate): Fragment(R.layout.day_view_fragm
             //firebaseViewModel.get
         }
 
-
+        val bottomWindow = BottomSheetEditFragment()
         //RecyclerView Click
         adapter.onItemClick = {
-            val bottomWindow = BottomSheetEditFragment.newInstance(it)
             bottomWindow.show(
                 childFragmentManager,
                 "BottomSheetDialogue"
             )
+            bottomWindow.parseEvent(it)
         }
 
     }
@@ -60,7 +60,7 @@ class DayViewFragment(selectedDate: LocalDate): Fragment(R.layout.day_view_fragm
     private fun initialiseObject(){
         itemList = arrayListOf<Event>()
         var test = Event(
-            "0","0","event0","description")
+            "0","0","event0","description",LocalDateTime.now().toString(), LocalDateTime.now(),LocalDateTime.now().plusHours(2).toString(),LocalDateTime.now().plusHours(2))
         var test1 = Event(
             "1","0","event1","description")
         var test2 = Event(

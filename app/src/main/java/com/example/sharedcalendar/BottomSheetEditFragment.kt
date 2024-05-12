@@ -35,6 +35,9 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
     private lateinit var endDateText: TextView
     private lateinit var endTimeText: TextView
     private lateinit var swIsAllDay: MaterialSwitch
+    private lateinit var thisEvent : Event
+    private lateinit var etNewEventName : EditText
+    private lateinit var etNewEventDescription : EditText
 
 
     override fun onCreateView(
@@ -59,9 +62,11 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
         endDateText = view.findViewById(R.id.edit_endDateTV)
         endTimeText = view.findViewById(R.id.edit_endTimeTV)
         swIsAllDay = view.findViewById(R.id.edit_swIsAllDay)
+        etNewEventName = view.findViewById<EditText>(R.id.edit_etNewEventName)
+        etNewEventDescription = view.findViewById<EditText>(R.id.edit_etNewEventDescription)
 
-        val sampleText = arguments?.getString("sampleText")
-        dateText.text = sampleText
+        SetupView()
+
 
 
         //Handle Click on StartDate
@@ -84,9 +89,9 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
                     Log.d("StartDate", "StartDate: $startDateTime")
                     dateCheck()
                 },
-                (LocalDateTime.now().year),
-                (LocalDateTime.now().month.value - 1),
-                (LocalDateTime.now().dayOfMonth)
+                (thisEvent.startTime.year),
+                (thisEvent.startTime.month.value - 1),
+                (thisEvent.startTime.dayOfMonth)
             )
 
             datePickerDialog.show()
@@ -113,9 +118,9 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
                     Log.d("StartDate", "endDate: $endDateTime")
                     dateCheck()
                 },
-                (LocalDateTime.now().year),
-                (LocalDateTime.now().month.value - 1),
-                (LocalDateTime.now().dayOfMonth)
+                (thisEvent.endTime.year),
+                (thisEvent.endTime.monthValue - 1),
+                (thisEvent.endTime.dayOfMonth)
             )
 
             datePickerDialog.show()
@@ -136,7 +141,7 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
                         )
                     dateCheck()
                     Log.d("StartDate", "startDate: $startDateTime")
-                }, 15, 30, false
+                }, thisEvent.startTime.hour, thisEvent.startTime.minute, false
             )
             timePickerDialog.show()
         }
@@ -157,7 +162,7 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
                         )
                     dateCheck()
                     Log.d("StartDate", "endDate: $endDateTime")
-                }, 15, 30, false
+                }, thisEvent.endTime.hour, thisEvent.endTime.minute, false
             )
             timePickerDialog.show()
         }
@@ -194,8 +199,7 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
         // TODO: Cannot edit Description after new event input
         // TODO: (later) allow user to choose which calendar to add to
         // TODO: Validate input fields
-        val etNewEventName = view.findViewById<EditText>(R.id.edit_etNewEventName)
-        val etNewEventDescription = view.findViewById<EditText>(R.id.edit_etNewEventDescription)
+
         //Save Button
         val saveBtn = view.findViewById<Button>(R.id.edit_saveBtn)
         saveBtn.setOnClickListener {
@@ -263,17 +267,31 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
 
         }
 
+        dateCheck()
+
 
     }
 
-    fun SetupView( event: Event){
-        dateText.text = event.startTime.toString()
+    fun parseEvent(event:Event){
+        thisEvent = event
+    }
+    fun SetupView(){
+        dateText.text = thisEvent.startTime.toLocalDate().toString()
+        timeText.text = "${thisEvent.startTime.hour}:${thisEvent.startTime.minute}"
+        endDateText.text = thisEvent.endTime.toLocalDate().toString()
+        endTimeText.text = "${thisEvent.endTime.hour}:${thisEvent.endTime.minute}"
+        swIsAllDay.isChecked = thisEvent.isAllDay
+        etNewEventName.setText(thisEvent.title)
+        etNewEventDescription.setText(thisEvent.description)
+
+        startDateTime = thisEvent.startTime
+        endDateTime = thisEvent.endTime
 
     }
 
     fun dateCheck() {
         Log.d("dateCheck", "Checking Date")
-        val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
+        val saveBtn = view?.findViewById<Button>(R.id.edit_saveBtn)
         //Do nothing if not yet picked all date
         if (dateText.text == "Date") {
             saveBtn?.isEnabled = false
@@ -306,13 +324,13 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
 
 
         if (startDateTime.isAfter(endDateTime)) {
-            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
+            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_edit_text2_layout)
 
             startDateLL?.setBackgroundColor(resources.getColor(R.color.highlight_red))
             saveBtn?.isEnabled = false
         } else {
-            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
-            val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
+            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_edit_text2_layout)
+            //val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
             startDateLL?.setBackgroundColor(resources.getColor(R.color.white))
             saveBtn?.isEnabled = true
         }
@@ -321,13 +339,6 @@ class BottomSheetEditFragment() : BottomSheetDialogFragment(){
 
     companion object {
         private val TAG: String? = BottomSheetFragment::class.java.name
-        fun newInstance(event: Event): BottomSheetEditFragment {
-            val fragment = BottomSheetEditFragment()
-            val args = Bundle()
-            args.putString("sampleText", event.startTime.toString())
-            fragment.arguments = args
-            return fragment
-        }
 
     }
 
