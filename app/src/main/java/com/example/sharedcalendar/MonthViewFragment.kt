@@ -15,6 +15,7 @@ import com.example.sharedcalendar.databinding.CalendarHeaderBinding
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.displayText
+import com.google.common.annotations.VisibleForTesting
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -31,7 +32,8 @@ import java.time.YearMonth
 
 class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
-    private lateinit var firebaseViewModel: FirebaseViewModel
+    @VisibleForTesting
+    lateinit var firebaseViewModel: FirebaseViewModel
     private var selectedDate: LocalDate? = null
 
 
@@ -52,7 +54,7 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         val startMonth = currentMonth.minusMonths(200)
         val endMonth = currentMonth.plusMonths(200)
 
-        firebaseViewModel.calendars.observe(requireActivity()) {
+        firebaseViewModel.calendars.observe(viewLifecycleOwner) {
             firebaseViewModel.getCurrentMonthEvents()
         }
 
@@ -63,16 +65,8 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
             Log.i(TAG, events.toString())
             // Update Event list upon updates
-            eventsThisMonth = buildList {
-                for (event in events) {
-//                    Log.i(TAG, event.toString())
-                    currentMonth.atDay(event.startTime.dayOfMonth).also { date ->
-                        add(event)
-                    }
-                }
-            }.groupBy {
-                it.startTime.toLocalDate()
-            }
+            eventsThisMonth = firebaseViewModel.getGroupedEvents()
+            Log.i(TAG, "Month View calendar Events updated")
             binding.MonthViewCalendar.notifyCalendarChanged()
         }
 

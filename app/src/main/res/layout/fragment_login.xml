@@ -84,7 +84,7 @@
             app:layout_constraintTop_toBottomOf="@+id/login_email">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_login_password"
+                android:id="@+id/etLoginPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="@string/prompt_password"
@@ -102,9 +102,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:background="@color/gray"
             android:text="@string/action_sign_in"
             android:textAllCaps="false"
-            android:background="@color/gray"
             app:layout_constraintEnd_toStartOf="@+id/guideline_right"
             app:layout_constraintStart_toStartOf="@+id/guideline_left"
             app:layout_constraintTop_toBottomOf="@+id/login_password" />

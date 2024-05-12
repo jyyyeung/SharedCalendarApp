@@ -3,7 +3,6 @@ package com.example.sharedcalendar.ui.share
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -16,14 +15,19 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.models.Calendar
+import com.example.sharedcalendar.models.Share
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 
+/**
+ * A simple [DialogFragment] subclass.
+ * Use the [ShareCalendarFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ */
 class ShareCalendarFragment : DialogFragment() {
     //    private val viewModel by viewModels<EventViewModel>()
     private var toolbar: Toolbar? = null
@@ -89,6 +93,9 @@ class ShareCalendarFragment : DialogFragment() {
             if (!shareViewModel.isEmailValid(etUserEmail.text)) {
                 shareUserEmail.error = getString(R.string.invalid_email)
                 return@setOnClickListener
+            } else if (etUserEmail.text.toString() == FirebaseAuth.getInstance().currentUser?.email) {
+                shareUserEmail.error = "You cannot share with yourself"
+                return@setOnClickListener
             } else {
                 shareUserEmail.error = null
             }
@@ -106,40 +113,11 @@ class ShareCalendarFragment : DialogFragment() {
 
             // Save Share
             val db = Firebase.firestore
-            db.collection("shares")
-                .where(
-                    Filter.and(
-                        Filter.equalTo("calendarId", calendarId),
-                        Filter.equalTo("userEmail", userEmail)
-                    )
-                ).get().addOnSuccessListener { results ->
-                    Log.i(TAG, results.toString())
-                    if (results.isEmpty) {
-                        val newShare = hashMapOf(
-                            "calendarId" to calendarId,
-                            "userEmail" to userEmail,
-                            "scope" to scope
-                        )
-                        // Share does not exist
-                        db.collection("shares").add(newShare).addOnSuccessListener { result ->
-                            Log.d(TAG, "DocumentSnapshot successfully written!")
-                            this.dismiss()
-                        }.addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-
-                    } else {
-                        val share = results.documents[0]
-
-                        db.collection("shares").document(share.id)
-                            .set(
-                                hashMapOf("scope" to scope),
-                                SetOptions.merge()
-                            ).addOnSuccessListener {
-                                Log.d(TAG, "DocumentSnapshot successfully written!")
-                                this.dismiss()
-                            }.addOnFailureListener { e -> Log.w(TAG, "Error updating document", e) }
-                    }
-                }
-
+            val newShare: Share =
+                Share(calendarId = calendarId, userEmail = userEmail, scope = scope)
+            firebaseViewModel.createShare(newShare).also {
+                this.dismiss()
+            }
 
         }
 
@@ -163,16 +141,6 @@ class ShareCalendarFragment : DialogFragment() {
         toolbar!!.setNavigationOnClickListener { dismiss() }
         toolbar!!.title = "Share Calendar"
         toolbar!!.inflateMenu(R.menu.share_calendar_dialog)
-        toolbar!!.setOnMenuItemClickListener { item: MenuItem? ->
-            Log.d(TAG, item.toString())
-//            if (item.toString() == "save") {
-//                if (saveNewShare()) dismiss()
-//            }
-
-            true
-        }
-
-
     }
 
     companion object {
@@ -185,4 +153,6 @@ class ShareCalendarFragment : DialogFragment() {
             return shareCalendarFragment
         }
     }
+
+
 }

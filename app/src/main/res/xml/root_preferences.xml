@@ -1,15 +1,16 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="Account">
-        <EditTextPreference
-            app:key="name"
-            app:title="@string/pref_name_Title"
-            app:useSimpleSummaryProvider="true" />
-    </PreferenceCategory>
+    <!--    <PreferenceCategory app:title="Account">-->
+    <!--        <EditTextPreference-->
+    <!--            app:key="name"-->
+    <!--            app:title="@string/pref_name_Title"-->
+    <!--            app:useSimpleSummaryProvider="true" />-->
+    <!--    </PreferenceCategory>-->
 
-    <PreferenceCategory app:title="@string/messages_header">
+    <PreferenceCategory
+        app:key="default"
+        app:title="Default Values">
         <ListPreference
-            app:defaultValue="month"
             app:entries="@array/calendar_view_entries"
             app:entryValues="@array/calendar_view_values"
             app:key="calendar_view"
@@ -20,6 +21,5 @@
             app:title="Default Calendar"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
-
 
 </PreferenceScreen>

@@ -36,6 +36,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -46,8 +47,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -248,10 +247,9 @@ fun ProfileProperty(label: String, value: String) {
 }
 
 
-@Preview
 @Composable
 fun CalendarListItem(
-    @PreviewParameter(CalendarPreviewParameterProvider::class) calendar: Calendar,
+    calendar: Calendar,
     onItemClicked: (calendar: Calendar) -> Unit = {
         ManageCalendarsViewModel().setCalendar(
             calendar
@@ -298,7 +296,7 @@ fun SelectCalendarScreen(
     firebaseViewModel: FirebaseViewModel = viewModel(),
     onItemClicked: (calendar: Calendar) -> Unit = { },
 ) {
-//    val calendars = firebaseViewModel.calendars.observeAsState()
+    val calendars = firebaseViewModel.calendars.observeAsState()
     // API call
 //    LaunchedEffect(key1 = Unit) {
 //        firebaseViewModel.getCalendars()
@@ -306,11 +304,13 @@ fun SelectCalendarScreen(
 ////            firebaseViewModel.getCalendars()
 ////        }
 //    }
-    val calendars = firebaseViewModel.getStaticCalendars()
+//    val calendars = firebaseViewModel.getStaticCalendars()
 
     Log.i("Calendar List", calendars.toString())
 
-    SelectCalendarList(
-        calendars = calendars, onItemClicked = onItemClicked, modifier = modifier
-    )
+    calendars.value?.let {
+        SelectCalendarList(
+            calendars = it.toList(), onItemClicked = onItemClicked, modifier = modifier
+        )
+    }
 }

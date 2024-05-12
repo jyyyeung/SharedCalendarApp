@@ -1,5 +1,6 @@
 package com.example.sharedcalendar.ui
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +9,13 @@ import android.widget.Button
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.example.sharedcalendar.BottomSheetFragment
 import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.MonthViewFragment
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.WeekViewFragment
+import com.google.firebase.auth.FirebaseAuth
 import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 
 /**
@@ -21,21 +24,22 @@ import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
  * create an instance of this fragment.
  */
 class CalendarFragment : Fragment() {
-    private lateinit var prefs: SharedFirebasePreferences
     private lateinit var firebaseViewModel: FirebaseViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = SharedFirebasePreferences.getDefaultInstance(activity)
-        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_calendar, container, false)
+
+        val prefs: SharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(requireActivity())
+        firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
         // Change Fragment from month to week on button click
         // Set variables for change view buttons
@@ -50,7 +54,7 @@ class CalendarFragment : Fragment() {
         // By default, the view fragment is month view fragment
         childFragmentManager.beginTransaction().apply {
             // Set Default View based on user preferences
-            when (prefs.getString("calendar_view", "month")) {
+            when (prefs.getString("${FirebaseAuth.getInstance().uid}|default|view", "month")) {
                 "week" -> replace(R.id.flFragment, weekViewFragment)
                 "month" -> replace(R.id.flFragment, monthViewFragment)
             }
@@ -84,8 +88,7 @@ class CalendarFragment : Fragment() {
 
         addEventBtn.setOnClickListener {
             bottomWindow.show(
-                childFragmentManager,
-                "BottomSheetDialogue"
+                childFragmentManager, "BottomSheetDialogue"
             )
         }
         return view

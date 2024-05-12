@@ -1,0 +1,339 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EditCalendarRouteKt</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.sharedcalendar.feature.editcalendar</a>
+</div>
+
+<h1>Coverage Summary for Class: EditCalendarRouteKt (com.example.sharedcalendar.feature.editcalendar)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EditCalendarRouteKt</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    51.9%
+  </span>
+  <span class="absValue">
+    (27/52)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.9%
+  </span>
+  <span class="absValue">
+    (46/49)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EditCalendarRouteKt$EditCalendarScreen$1$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EditCalendarRouteKt$EditCalendarScreen$1$2$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EditCalendarRouteKt$EditCalendarScreen$1$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EditCalendarRouteKt$EditCalendarScreen$2</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (3/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    51.9%
+  </span>
+  <span class="absValue">
+    (27/52)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.3%
+  </span>
+  <span class="absValue">
+    (46/58)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.sharedcalendar.feature.editcalendar
+&nbsp;
+&nbsp;import android.util.Log
+&nbsp;import androidx.compose.foundation.layout.Arrangement
+&nbsp;import androidx.compose.foundation.layout.Column
+&nbsp;import androidx.compose.foundation.layout.Spacer
+&nbsp;import androidx.compose.foundation.layout.fillMaxWidth
+&nbsp;import androidx.compose.foundation.layout.padding
+&nbsp;import androidx.compose.foundation.rememberScrollState
+&nbsp;import androidx.compose.foundation.verticalScroll
+&nbsp;import androidx.compose.material.icons.Icons
+&nbsp;import androidx.compose.material.icons.filled.Done
+&nbsp;import androidx.compose.material3.Button
+&nbsp;import androidx.compose.material3.ExperimentalMaterial3Api
+&nbsp;import androidx.compose.material3.Icon
+&nbsp;import androidx.compose.material3.MaterialTheme
+&nbsp;import androidx.compose.material3.Text
+&nbsp;import androidx.compose.material3.TextField
+&nbsp;import androidx.compose.runtime.Composable
+&nbsp;import androidx.compose.runtime.getValue
+&nbsp;import androidx.compose.runtime.mutableStateOf
+&nbsp;import androidx.compose.runtime.remember
+&nbsp;import androidx.compose.runtime.setValue
+&nbsp;import androidx.compose.ui.Modifier
+&nbsp;import androidx.compose.ui.platform.LocalContext
+&nbsp;import androidx.compose.ui.unit.dp
+&nbsp;import com.example.sharedcalendar.FirebaseViewModel
+&nbsp;import com.example.sharedcalendar.models.Calendar
+&nbsp;
+&nbsp;
+&nbsp;fun editCalendar(
+&nbsp;    calendar: Calendar,
+&nbsp;    editedFields: HashMap&lt;String, Any&gt;,
+&nbsp;    firebaseViewModel: FirebaseViewModel,
+&nbsp;    onBackButtonClicked: () -&gt; Unit
+&nbsp;) {
+<b class="fc">&nbsp;    for (field in editedFields) {</b>
+<b class="fc">&nbsp;        when (field.key) {</b>
+<b class="fc">&nbsp;            &quot;name&quot; -&gt; if ((editedFields[&quot;name&quot;]!! as String).isBlank()) {</b>
+<b class="fc">&nbsp;                editedFields.remove(&quot;name&quot;)</b>
+&nbsp;            }
+&nbsp;
+<b class="pc">&nbsp;            &quot;description&quot; -&gt; if ((editedFields[&quot;description&quot;] as String).isBlank()) {</b>
+<b class="nc">&nbsp;                editedFields.remove(&quot;description&quot;)</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+<b class="fc">&nbsp;    if (editedFields.isEmpty()) {</b>
+&nbsp;        // Go back
+<b class="fc">&nbsp;        onBackButtonClicked()</b>
+<b class="fc">&nbsp;        return</b>
+&nbsp;    }
+&nbsp;    // Modify values in db
+<b class="fc">&nbsp;    calendar.id?.let {</b>
+<b class="fc">&nbsp;        firebaseViewModel.editCalendar(it, editedFields)</b>
+&nbsp;        // Go back
+<b class="fc">&nbsp;        onBackButtonClicked()</b>
+<b class="fc">&nbsp;    }</b>
+<b class="fc">&nbsp;    Log.i(&quot;Edit Cal&quot;, &quot;${calendar.id} $editedFields &quot;)</b>
+&nbsp;
+<b class="fc">&nbsp;}</b>
+&nbsp;
+&nbsp;@Composable
+&nbsp;fun EditCalendarScreen(
+<b class="nc">&nbsp;    modifier: Modifier = Modifier,</b>
+&nbsp;    calendar: Calendar,
+&nbsp;    firebaseViewModel: FirebaseViewModel,
+&nbsp;    onBackButtonClicked: () -&gt; Unit
+<b class="pc">&nbsp;) {</b>
+&nbsp;
+<b class="fc">&nbsp;    val context = LocalContext.current</b>
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    val editedFields = hashMapOf&lt;String, Any&gt;()</b>
+&nbsp;
+<b class="fc">&nbsp;    var calendarName by remember { mutableStateOf(calendar.name) }</b>
+<b class="fc">&nbsp;    var calendarDescription by remember { mutableStateOf(calendar.description) }</b>
+&nbsp;
+<b class="fc">&nbsp;    Column(</b>
+<b class="fc">&nbsp;        modifier = modifier.verticalScroll(rememberScrollState()),</b>
+<b class="fc">&nbsp;        verticalArrangement = Arrangement.spacedBy(8.dp)</b>
+&nbsp;    ) {
+&nbsp;
+<b class="fc">&nbsp;        Text(</b>
+<b class="fc">&nbsp;            text = &quot;Edit Calendar Information&quot;, style = MaterialTheme.typography.bodyLarge</b>
+&nbsp;        )
+<b class="fc">&nbsp;        TextField(</b>
+<b class="fc">&nbsp;            modifier = Modifier.fillMaxWidth(),</b>
+<b class="fc">&nbsp;            value = calendarName,</b>
+<b class="fc">&nbsp;            readOnly = calendar.isDefault,</b>
+<b class="pc">&nbsp;            onValueChange = { calendarName = it },</b>
+&nbsp;            placeholder = {
+&nbsp;                Text(
+&nbsp;                    text = &quot;Enter the name of calendar&quot;
+&nbsp;                )
+&nbsp;            },
+&nbsp;        )
+&nbsp;
+<b class="fc">&nbsp;        Spacer(modifier = Modifier.padding(4.dp))</b>
+<b class="fc">&nbsp;        TextField(</b>
+<b class="fc">&nbsp;            modifier = Modifier.fillMaxWidth(),</b>
+<b class="fc">&nbsp;            value = calendarDescription,</b>
+<b class="pc">&nbsp;            onValueChange = { calendarDescription = it },</b>
+&nbsp;            placeholder = {
+&nbsp;                Text(
+&nbsp;                    text = &quot;Enter the description for this calendar&quot;
+&nbsp;                )
+&nbsp;            }
+&nbsp;        )
+&nbsp;
+<b class="fc">&nbsp;        Spacer(modifier = Modifier.padding(4.dp))</b>
+&nbsp;
+<b class="fc">&nbsp;        Button(</b>
+&nbsp;            onClick = {
+<b class="nc">&nbsp;                onClickSaveButton(</b>
+<b class="nc">&nbsp;                    calendarName,</b>
+<b class="nc">&nbsp;                    calendarDescription,</b>
+<b class="nc">&nbsp;                    calendar,</b>
+<b class="nc">&nbsp;                    editedFields,</b>
+<b class="nc">&nbsp;                    firebaseViewModel, onBackButtonClicked</b>
+&nbsp;                )
+<b class="nc">&nbsp;            }</b>
+&nbsp;        ) {
+&nbsp;            Icon(imageVector = Icons.Filled.Done, contentDescription = &quot;save&quot;)
+&nbsp;            Text(&quot;Save&quot;)
+&nbsp;        }
+<b class="fc">&nbsp;    }</b>
+<b class="nc">&nbsp;}</b>
+&nbsp;
+&nbsp;fun onClickSaveButton(
+&nbsp;    calendarName: String,
+&nbsp;    calendarDescription: String,
+&nbsp;    calendar: Calendar,
+&nbsp;    editedFields: HashMap&lt;String, Any&gt;,
+&nbsp;    firebaseViewModel: FirebaseViewModel,
+&nbsp;    onBackButtonClicked: () -&gt; Unit
+&nbsp;) {
+&nbsp;    // Save the changes
+<b class="fc">&nbsp;    if (calendarName != calendar.name) editedFields[&quot;name&quot;] = calendarName</b>
+<b class="fc">&nbsp;    if (calendarDescription != calendar.description)</b>
+<b class="fc">&nbsp;        editedFields[&quot;description&quot;] = calendarDescription</b>
+<b class="fc">&nbsp;    editCalendar(</b>
+<b class="fc">&nbsp;        calendar,</b>
+<b class="fc">&nbsp;        editedFields,</b>
+<b class="fc">&nbsp;        firebaseViewModel,</b>
+<b class="fc">&nbsp;        onBackButtonClicked</b>
+&nbsp;    )
+<b class="fc">&nbsp;}</b>
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-05-12 02:48</div>
+</div>
+</body>
+</html>

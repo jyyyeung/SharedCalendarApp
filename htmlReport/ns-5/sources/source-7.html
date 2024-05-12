@@ -1,0 +1,184 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserViewModelKt</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.sharedcalendar.ui.login</a>
+</div>
+
+<h1>Coverage Summary for Class: UserViewModelKt (com.example.sharedcalendar.ui.login)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserViewModelKt</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.sharedcalendar.ui.login
+&nbsp;
+&nbsp;import android.text.Editable
+&nbsp;import androidx.core.util.PatternsCompat
+&nbsp;import androidx.lifecycle.ViewModel
+&nbsp;
+<b class="nc">&nbsp;private val TAG: String = UserViewModel::class.java.name</b>
+&nbsp;
+&nbsp;/**
+&nbsp; * ViewModel for the login screen.
+&nbsp; * @constructor Creates a new instance of [UserViewModel].
+&nbsp; */
+&nbsp;class UserViewModel : ViewModel() {
+&nbsp;
+&nbsp;//    fun updateUserSettings(
+&nbsp;//        sharedPreferences: SharedPreferences?,
+&nbsp;//        key: String?
+&nbsp;//    ) {
+&nbsp;//        val user = Firebase.auth.currentUser
+&nbsp;//        val db = Firebase.firestore
+&nbsp;//
+&nbsp;//        if (key == &quot;name&quot;) {
+&nbsp;//            val newName = sharedPreferences?.getString(key, null)
+&nbsp;//            if (newName != null) {
+&nbsp;//                val profileUpdates = userProfileChangeRequest {
+&nbsp;//                    displayName = newName
+&nbsp;//                }
+&nbsp;//
+&nbsp;//                user!!.updateProfile(profileUpdates)
+&nbsp;//                    .addOnCompleteListener { task -&gt;
+&nbsp;//                        if (task.isSuccessful) {
+&nbsp;//                            Log.d(TAG, &quot;User profile updated.&quot;)
+&nbsp;//                        }
+&nbsp;//                    }
+&nbsp;//
+&nbsp;//                val docData = hashMapOf(&quot;name&quot; to newName)
+&nbsp;//                db.collection(&quot;users&quot;).document(user.uid).set(docData, SetOptions.merge())
+&nbsp;//            }
+&nbsp;//
+&nbsp;//        }
+&nbsp;//
+&nbsp;//
+&nbsp;//    }
+&nbsp;
+&nbsp;    fun valuesAreEqual(value1: Editable, value2: Editable): Boolean {
+&nbsp;        return value1.toString() == value2.toString()
+&nbsp;    }
+&nbsp;
+&nbsp;    fun isUsernameValid(username: Editable): Boolean {
+&nbsp;        return username.toString().isNotBlank() &amp;&amp; !username.toString().contains(&#39; &#39;)
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Email Validation: Checks if the email is valid.
+&nbsp;     * @param email The email to be checked.
+&nbsp;     * @return True if the email is valid, false otherwise.
+&nbsp;     */
+&nbsp;    fun isEmailValid(email: Editable): Boolean {
+&nbsp;        return if (email.toString().contains(&#39;@&#39;)) {
+&nbsp;            PatternsCompat.EMAIL_ADDRESS.matcher(email.toString()).matches()
+&nbsp;        } else {
+&nbsp;            email.toString().isNotBlank()
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // TODO: Add password validation
+&nbsp;    fun String.isPasswordValid(): Boolean {
+&nbsp;        val passwordRegex = &quot;^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$&quot;
+&nbsp;        return passwordRegex.toRegex().matches(this)
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Password Validation: Checks if the password is valid.
+&nbsp;     * @param password The password to be checked.
+&nbsp;     * @return True if the password is valid, false otherwise.
+&nbsp;     */
+&nbsp;    fun isPasswordValid(password: Editable): Boolean {
+&nbsp;        return password.toString().isNotBlank() &amp;&amp; password.toString().trim().length &gt; 5
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-05-12 02:48</div>
+</div>
+</body>
+</html>

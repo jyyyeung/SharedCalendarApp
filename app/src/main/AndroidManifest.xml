@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:targetSandboxVersion="1">
     <!-- Required for API -->
-    <!--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
-    <!--    <uses-permission android:name="android.permission.INTERNET" />-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -16,15 +16,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
 
-        android:theme="@style/Theme.Material3.DynamicColors.DayNight.NoActionBar"
+        android:theme="@style/Base.Theme.SharedCalendar"
         tools:targetApi="31">
         <activity
             android:name=".ui.ManageCalendarsFragment"
             android:exported="false" />
-        <activity
-            android:name=".ui.SettingsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_settings" />
+
         <activity
             android:name=".ui.login.AuthActivity"
             android:exported="true"
