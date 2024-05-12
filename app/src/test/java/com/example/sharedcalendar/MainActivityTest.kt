@@ -1,10 +1,7 @@
 package com.example.sharedcalendar
 
-import android.content.Intent
 import android.os.Looper
 import android.view.MenuItem
-import android.widget.ImageButton
-import androidx.core.os.bundleOf
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -15,17 +12,15 @@ import com.example.sharedcalendar.ui.ManageCalendarsFragment
 import com.example.sharedcalendar.ui.SettingsFragment
 import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.share.ShareCalendarFragment
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.navigation.NavigationView
-import io.mockk.Awaits
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.runs
 import io.mockk.spyk
 import io.mockk.verify
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -34,9 +29,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows
 import org.robolectric.Shadows.shadowOf
-import kotlin.reflect.typeOf
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -163,13 +156,15 @@ class MainActivityTest : BaseTest() {
 
         activity?.onStart()
 
+
         val drawerLayout: DrawerLayout = activity?.findViewById(R.id.drawerLayout)!!
-        val buttonDrawerToggle: ImageButton = activity?.findViewById(R.id.drawerLayoutToggle)!!
+        val appBarLayout: AppBarLayout = activity?.findViewById(R.id.appBarLayout_topAppBar)!!
         val nvSidebar: NavigationView = activity?.findViewById(R.id.nvSidebar)!!
 
         assertNotNull(drawerLayout)
-        assertNotNull(buttonDrawerToggle)
+        assertNotNull(appBarLayout)
         assertNotNull(nvSidebar)
+
     }
 
     @Test
@@ -243,7 +238,7 @@ class MainActivityTest : BaseTest() {
             // Assert
             verify(exactly = 1) { drawerLayout.close() }
             verify(exactly = 1) {
-                ShareCalendarFragment.display(any())
+                ShareCalendarFragment.display(mFragmentManager)
             }
         }
     }

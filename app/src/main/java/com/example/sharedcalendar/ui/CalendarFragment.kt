@@ -2,10 +2,10 @@ package com.example.sharedcalendar.ui
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
@@ -14,7 +14,9 @@ import com.example.sharedcalendar.FirebaseViewModel
 import com.example.sharedcalendar.MonthViewFragment
 import com.example.sharedcalendar.R
 import com.example.sharedcalendar.WeekViewFragment
+import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 
 /**
@@ -24,6 +26,9 @@ import com.google.firebase.auth.FirebaseAuth
  */
 class CalendarFragment : Fragment() {
     private lateinit var firebaseViewModel: FirebaseViewModel
+    private val calendarViewModel by lazy {
+        ViewModelProvider(this)[CalendarViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -36,46 +41,81 @@ class CalendarFragment : Fragment() {
             PreferenceManager.getDefaultSharedPreferences(requireActivity())
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
+        firebaseViewModel.calendars.observe(requireActivity()) {
+
+            // Get Events from Database
+            firebaseViewModel.getEvents()
+        }
+
+        firebaseViewModel.getEvents()
+
         // Change Fragment from month to week on button click
-        // Set variables for change view buttons
-        val weekBtn: Button = view.findViewById(R.id.weekBtn)
-        val monthBtn: Button = view.findViewById(R.id.monthBtn)
+        val tabLayout: TabLayout = view.findViewById(R.id.tabLayout_viewMode)
 
         // Set variables for View Fragments
         val monthViewFragment = MonthViewFragment()
-        val weekViewFragment = WeekViewFragment()
+        val weekViewFragment = WeekViewFragment(7)
+        val halfWeekViewFragment = WeekViewFragment(3)
+        val dayViewFragment = WeekViewFragment(1)
+//        val dayViewFragment = DayViewFragment()
+        val defaultViewModeFragment =
+            when (prefs.getString("${FirebaseAuth.getInstance().uid}|default|view", "month")) {
+                "week" -> weekViewFragment
+                "month" -> monthViewFragment
+                "3-day" -> halfWeekViewFragment
+                "day" -> dayViewFragment
+                else -> monthViewFragment
+            }
+
+        calendarViewModel.viewMode.observe(viewLifecycleOwner) {
+            Log.d(TAG, "onCreateView: viewMode: $it")
+            when (it) {
+                "week" -> tabLayout.getTabAt(1)?.select()
+                "month" -> tabLayout.getTabAt(0)?.select()
+                "3-day" -> tabLayout.getTabAt(2)?.select()
+                "day" -> tabLayout.getTabAt(3)?.select()
+            }
+        }
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                Log.d(TAG, "onTabSelected: ${tab?.text}")
+                val selectedViewModeFragment = when (tab?.text) {
+                    getString(R.string.tabItem_month) -> monthViewFragment
+                    getString(R.string.tabItem_week) -> weekViewFragment
+                    getString(R.string.tabItem_halfWeek) -> halfWeekViewFragment
+                    getString(R.string.tabItem_day) -> dayViewFragment
+                    else -> defaultViewModeFragment
+                }
+                // Handle tab select
+                childFragmentManager.beginTransaction().apply {
+                    // Replace fragment with month view fragment
+                    replace(R.id.frameLayout_calendarFragment, selectedViewModeFragment)
+                    addToBackStack(null)
+                    // commit the change
+                    commit()
+                }
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // Handle tab reselect
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // Handle tab unselect
+            }
+        })
 
 
         // By default, the view fragment is month view fragment
         childFragmentManager.beginTransaction().apply {
             // Set Default View based on user preferences
-            when (prefs.getString("${FirebaseAuth.getInstance().uid}|default|view", "month")) {
-                "week" -> replace(R.id.flFragment, weekViewFragment)
-                "month" -> replace(R.id.flFragment, monthViewFragment)
-            }
+            replace(R.id.frameLayout_calendarFragment, defaultViewModeFragment)
             commit()
         }
 
-        // When Click Month Button
-        monthBtn.setOnClickListener {
-            childFragmentManager.beginTransaction().apply {
-                // Replace fragment with month view fragment
-                replace(R.id.flFragment, monthViewFragment)
-                addToBackStack(null)
-                // commit the change
-                commit()
-            }
-        }
-        // When Click Week Button
-        weekBtn.setOnClickListener {
-            childFragmentManager.beginTransaction().apply {
-                // Replace fragment with week view fragment
-                replace(R.id.flFragment, weekViewFragment)
-                addToBackStack(null)
-                // Commit the changes
-                commit()
-            }
-        }
 
         // When Click AddEvent Button
         val addEventBtn: FloatingActionButton = view.findViewById(R.id.addEventBtn)

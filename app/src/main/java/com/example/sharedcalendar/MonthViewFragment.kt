@@ -15,6 +15,7 @@ import com.example.sharedcalendar.databinding.CalendarHeaderBinding
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.displayText
+import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
 import com.google.common.annotations.VisibleForTesting
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -34,12 +35,14 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
 
     @VisibleForTesting
     lateinit var firebaseViewModel: FirebaseViewModel
+    lateinit var calendarViewModel: CalendarViewModel
     private var selectedDate: LocalDate? = null
 
 
     //            private val thisEvents = viewModel.getEvents(true).groupBy { it.startTime.toLocalDate() }
     private var eventsThisMonth: Map<LocalDate, List<Event>>? = null
     lateinit var binding: FragmentMonthViewBinding
+
 
     //    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,17 +52,12 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
         eventsThisMonth = firebaseViewModel.getGroupedEvents()
 
         binding = FragmentMonthViewBinding.bind(view)
+        calendarViewModel =
+            ViewModelProvider(requireParentFragment())[CalendarViewModel::class.java]
         val daysOfWeek = daysOfWeek()
         val currentMonth = YearMonth.now()
         val startMonth = currentMonth.minusMonths(200)
         val endMonth = currentMonth.plusMonths(200)
-
-        firebaseViewModel.calendars.observe(viewLifecycleOwner) {
-            firebaseViewModel.getEvents()
-        }
-
-        // Get Events from Database
-        firebaseViewModel.getEvents()
 
         // Listen for Event Updates
         firebaseViewModel.events.observe(viewLifecycleOwner) { events ->
@@ -116,11 +114,26 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
                         if (selectedDate != day.date) {
                             val oldDate = selectedDate
                             selectedDate = day.date
-                            parentFragmentManager.beginTransaction().apply {
-                                replace(R.id.flFragment, DayViewFragment(selectedDate!!))
-                                addToBackStack(null)
-                                commit()
-                            }
+
+                            calendarViewModel.setSelectedDate(selectedDate!!)
+                            // Change Fragment from month to week on button click
+                            calendarViewModel.changeViewMode("3-day")
+//                            parentFragmentManager.beginTransaction().apply {
+//                                replace(
+//                                    R.id.frameLayout_calendarFragment,
+//                                    WeekViewFragment(3)
+//                                )
+//                                addToBackStack(null)
+//                                commit()
+//                            }
+//                            parentFragmentManager.beginTransaction().apply {
+//                                replace(
+//                                    R.id.frameLayout_calendarFragment,
+//                                    DayViewFragment(selectedDate!!)
+//                                )
+//                                addToBackStack(null)
+//                                commit()
+//                            }
 
 
 //                            val binding = this@MonthViewFragment.binding

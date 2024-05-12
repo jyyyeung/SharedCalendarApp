@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -19,6 +18,7 @@ import com.example.sharedcalendar.ui.login.AuthActivity
 import com.example.sharedcalendar.ui.login.LoginViewModelFactory
 import com.example.sharedcalendar.ui.login.UserViewModel
 import com.example.sharedcalendar.ui.share.ShareCalendarFragment
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import com.google.common.annotations.VisibleForTesting
 import com.google.firebase.auth.FirebaseAuth
@@ -67,8 +67,9 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
         // START SIDEBAR NAVIGATION //
         //Drawer button
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
-        val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
+//        val buttonDrawerToggle: ImageButton = findViewById(R.id.drawerLayoutToggle)
         val nvSidebar: NavigationView = findViewById(R.id.nvSidebar)
+
 
         firebaseViewModel.getUserShares()
 
@@ -82,7 +83,9 @@ class MainActivity(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) 
         }
 
         // If Click on Burger, Open drawer Layout
-        buttonDrawerToggle.setOnClickListener {
+        val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
+        topAppBar.setNavigationOnClickListener {
+            // Handle navigation icon press
             drawerLayout.open()
 
             val tvUsername: TextView = findViewById(R.id.tvSidebarUsername)

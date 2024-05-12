@@ -5,6 +5,9 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import com.alamkanak.weekview.WeekView
 import com.example.sharedcalendar.WeekViewFragment
+import com.example.sharedcalendar.ui.CalendarFragment
+import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
+import io.mockk.spyk
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,12 +26,26 @@ class WeekViewFragmentTest : BaseTest() {
         val activity =
             Robolectric.buildActivity(MainActivity::class.java).create().start().resume().get()
         fragment = WeekViewFragment()
+        val parentFragment = CalendarFragment()
+        val spykCalendarViewModel = spyk(CalendarViewModel())
+
         activity.supportFragmentManager.beginTransaction().apply {
             add(
-                fragment, "weekViewFragment"
+                parentFragment, "calendarFragment"
             )
-            commit()
+            commitNow()
+
+            parentFragment.childFragmentManager.beginTransaction().apply {
+                add(
+                    fragment, "weekFragment"
+                )
+                commit()
+            }
+
         }
+
+
+
 
         scenario =
             launchFragmentInContainer<WeekViewFragment>(themeResId = R.style.Base_Theme_SharedCalendar)
@@ -48,15 +65,21 @@ class WeekViewFragmentTest : BaseTest() {
     // WeekViewFragment's selectedDate is initialized to LocalDate.now()
     @Test
     fun test_week_view_fragment_selected_date_initialized() {
-        val selectedDate = getField<LocalDate>(fragment, "selectedDate")
-        assertEquals(LocalDate.now(), selectedDate)
+        scenario.onFragment {
+            setField(it, "calendarViewModel", spykFirebaseViewModel)
+            val selectedDate = getField<LocalDate>(it, "selectedDate")
+            assertEquals(LocalDate.now(), selectedDate)
+        }
     }
 
     // WeekViewFragment's weekView is initialized successfully
     @Test
     fun test_week_view_fragment_week_view_initialized() {
-        val weekView = getField<WeekView>(fragment, "weekView")
-        assertNotNull(weekView)
+        scenario.onFragment {
+            setField(it, "calendarViewModel", spykFirebaseViewModel)
+            val weekView = getField<WeekView>(it, "weekView")
+            assertNotNull(weekView)
+        }
     }
 
     // WeekViewFragment's adapter is set successfully

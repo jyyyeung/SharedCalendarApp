@@ -29,7 +29,7 @@ class SpinnerAdapterTest : BaseTest() {
     fun test_inflateViewWithColorNameAndCode() {
         // Arrange
         val items = listOf(Color("Red", "#FF0000"))
-        val adapter = SpinnerAdapter(context, items)
+        val adapter = spyk(SpinnerAdapter(context, items))
 
         // Act
         val view = adapter.getView(0, null, mockk())

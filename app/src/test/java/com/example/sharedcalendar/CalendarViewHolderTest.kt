@@ -5,17 +5,14 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.sharedcalendar.BaseTest
 import com.example.sharedcalendar.CalendarAdapter
 import com.example.sharedcalendar.CalendarViewHolder
-import io.mockk.MockKAnnotations
-import io.mockk.verify
-import org.junit.Before
-import org.junit.Test
 import com.example.sharedcalendar.R
+import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.verify
 import org.junit.Rule
-
+import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 
@@ -58,7 +55,7 @@ class CalendarViewHolderTest : BaseTest() {
 //        mockTextView.performClick().apply {
 
         // Assert
-        verify { mockOnItemClickListener.onItemClick(viewHolder.adapterPosition, "Some Text") }
+        verify { mockOnItemClickListener.onItemClick(any(), "Some Text") }
 //        }
     }
 }

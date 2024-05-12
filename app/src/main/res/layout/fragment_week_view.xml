@@ -15,18 +15,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:columnGap="8dp"
-        app:dayBackgroundColor="@color/white"
-        app:defaultEventColor="?attr/colorSurfaceContainerHigh"
+        app:dayBackgroundColor="?attr/colorSurface"
+        app:defaultEventColor="?attr/colorPrimary"
         app:eventTextColor="?attr/colorOnSurface"
         app:headerBackgroundColor="?attr/colorPrimaryContainer"
         app:headerPadding="12dp"
+        app:headerTextColor="?attr/colorOnPrimaryContainer"
         app:hourHeight="60dp"
-        app:numberOfVisibleDays="3"
-        app:timeColumnBackgroundColor="@color/white"
+        app:nowLineColor="?attr/colorPrimary"
+        app:timeColumnBackgroundColor="?attr/colorSurface"
         app:timeColumnPadding="8dp"
         app:timeColumnTextColor="?attr/colorOnSurface"
         app:timeColumnTextSize="12sp"
-        app:todayBackgroundColor="?attr/colorSurface" />
+        app:todayBackgroundColor="?attr/colorPrimaryContainer"
+
+
+        />
 
 
 </LinearLayout>

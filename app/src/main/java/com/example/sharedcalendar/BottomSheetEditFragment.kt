@@ -15,7 +15,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.example.sharedcalendar.models.Event
-import com.example.sharedcalendar.ui.editEvent.DayViewViewModel
+import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.firebase.auth.FirebaseAuth
@@ -28,7 +28,7 @@ import java.time.LocalDateTime
 class BottomSheetEditFragment : BottomSheetDialogFragment() {
     private lateinit var prefs: SharedFirebasePreferences
     private lateinit var firebaseViewModel: FirebaseViewModel
-    private lateinit var dayViewViewModel: DayViewViewModel
+    private lateinit var calendarViewModel: CalendarViewModel
 
     private lateinit var startDateTime: LocalDateTime
     private lateinit var endDateTime: LocalDateTime
@@ -46,8 +46,8 @@ class BottomSheetEditFragment : BottomSheetDialogFragment() {
     ): View? {
         prefs = SharedFirebasePreferences.getDefaultInstance(context)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
-        dayViewViewModel =
-            ViewModelProvider(this.requireParentFragment())[DayViewViewModel::class.java]
+        calendarViewModel =
+            ViewModelProvider(this.requireParentFragment())[CalendarViewModel::class.java]
 
         return inflater.inflate(R.layout.bottom_window_edit, container, false)
     }
@@ -64,9 +64,9 @@ class BottomSheetEditFragment : BottomSheetDialogFragment() {
         etNewEventName = view.findViewById<EditText>(R.id.edit_etNewEventName)
         etNewEventDescription = view.findViewById<EditText>(R.id.edit_etNewEventDescription)
 
-        thisEvent = dayViewViewModel.editEvent.value!!
+        thisEvent = calendarViewModel.editEvent.value!!
 
-        dayViewViewModel.editEvent.observe(viewLifecycleOwner) {
+        calendarViewModel.editEvent.observe(viewLifecycleOwner) {
             thisEvent = it
             SetupView()
         }

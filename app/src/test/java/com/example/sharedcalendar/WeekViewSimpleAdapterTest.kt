@@ -1,23 +1,20 @@
 package com.example.sharedcalendar
 
-import android.graphics.Color.parseColor
 import android.util.Log
 import com.alamkanak.weekview.WeekViewEntity
 import com.example.sharedcalendar.models.Event
-import io.mockk.Awaits
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
+import io.mockk.mockk
 import io.mockk.slot
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.time.LocalDateTime
-import java.util.GregorianCalendar
 
 @RunWith(RobolectricTestRunner::class)
 class WeekViewSimpleAdapterTest : BaseTest() {
+    val mockFragmentManager = mockk<androidx.fragment.app.FragmentManager>()
     override fun extendedSetup() {
         // No-op
     }
@@ -25,8 +22,9 @@ class WeekViewSimpleAdapterTest : BaseTest() {
     // Adapter correctly creates WeekViewEntity for each Event passed to it
     @Test
     fun `test adapter creates entity for each event`() {
+
         // Arrange
-        val adapter = WeekViewSimpleAdapter()
+        val adapter = WeekViewSimpleAdapter(mockFragmentManager)
         val event1 = Event(title = "Event 1")
         val event2 = Event(title = "Event 2")
         val eventList = listOf(event1, event2)
@@ -43,7 +41,7 @@ class WeekViewSimpleAdapterTest : BaseTest() {
     @Test
     fun `test entity has correct properties`() {
         // Arrange
-        val adapter = WeekViewSimpleAdapter()
+        val adapter = WeekViewSimpleAdapter(mockFragmentManager)
         val event = Event(
             id = "1",
             title = "Test Event",
@@ -69,7 +67,7 @@ class WeekViewSimpleAdapterTest : BaseTest() {
     @Test
     fun `test entity style set with correct color`() {
         // Arrange
-        val adapter = WeekViewSimpleAdapter()
+        val adapter = WeekViewSimpleAdapter(mockFragmentManager)
         val event = Event(color = "#FF0000")
 
         // Act
@@ -100,7 +98,7 @@ class WeekViewSimpleAdapterTest : BaseTest() {
     @Test
     fun `test adapter logs message with correct event information`() {
         // Arrange
-        val adapter = WeekViewSimpleAdapter()
+        val adapter = WeekViewSimpleAdapter(mockFragmentManager)
         val event = Event(title = "Test Event")
         val loggerSlot = slot<String>()
 
@@ -118,7 +116,7 @@ class WeekViewSimpleAdapterTest : BaseTest() {
     @Test(expected = NoSuchFieldException::class)
     fun `test event has empty title`() {
         // Arrange
-        val adapter = WeekViewSimpleAdapter()
+        val adapter = WeekViewSimpleAdapter(mockFragmentManager)
         val event = Event(title = "")
 
         // Act
@@ -147,7 +145,7 @@ class WeekViewSimpleAdapterTest : BaseTest() {
     @Test
     fun `test adapter handles all day events`() {
         // Arrange
-        val adapter = WeekViewSimpleAdapter()
+        val adapter = WeekViewSimpleAdapter(mockFragmentManager)
         val event = Event(isAllDay = true)
 
         // Act

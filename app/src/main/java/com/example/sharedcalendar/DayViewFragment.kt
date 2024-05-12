@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sharedcalendar.databinding.DayViewFragmentBinding
 import com.example.sharedcalendar.models.Event
-import com.example.sharedcalendar.ui.editEvent.DayViewViewModel
+import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
 import java.time.LocalDate
 
 
@@ -22,8 +22,8 @@ class DayViewFragment(selectedDate: LocalDate) : Fragment(R.layout.day_view_frag
     private var date = selectedDate
 
     private lateinit var firebaseViewModel: FirebaseViewModel
-    private val dayViewViewModel by lazy {
-        ViewModelProvider(this)[DayViewViewModel::class.java]
+    private val calendarViewModel by lazy {
+        ViewModelProvider(this)[CalendarViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +60,7 @@ class DayViewFragment(selectedDate: LocalDate) : Fragment(R.layout.day_view_frag
         val bottomWindow = BottomSheetEditFragment()
         //RecyclerView Click
         adapter.onItemClick = {
-            dayViewViewModel.setEditEvent(it)
+            calendarViewModel.setEditEvent(it)
 
             if (!bottomWindow.isAdded)
                 bottomWindow.show(

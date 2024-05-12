@@ -95,7 +95,7 @@ class UserViewModelTest {
 
     @Test
     fun `isPasswordValid returns true when password is valid`() {
-        val validPassword = "password"
+        val validPassword = "Pa@.W0rd!!"
         every { mockPassword.toString() } returns validPassword
 
         assertTrue(viewModel.isPasswordValid(mockPassword))

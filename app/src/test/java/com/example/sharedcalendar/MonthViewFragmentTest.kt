@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
 import com.example.sharedcalendar.models.Event
 import com.example.sharedcalendar.models.displayText
+import com.example.sharedcalendar.ui.editEvent.CalendarViewModel
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -16,7 +17,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -29,13 +29,15 @@ class MonthViewFragmentTest : BaseTest() {
         val activity =
             Robolectric.buildActivity(MainActivity::class.java).create().start().resume().get()
         fragment = spyk(MonthViewFragment())
+        val spykCalendarViewModel = spyk(CalendarViewModel())
         activity.supportFragmentManager.beginTransaction().apply {
             add(fragment, "monthViewFragment")
-            commitNowAllowingStateLoss()
+            commitNow()
         }
-        Shadows.shadowOf(activity.mainLooper).idle()
-
+//        Shadows.shadowOf(Looper.getMainLooper()).idle()
+//
         setField(fragment, "firebaseViewModel", spykFirebaseViewModel)
+        setField(fragment, "calendarViewModel", spykCalendarViewModel)
 //        var localContext = fragment.requireContext()
         setField(fragment, "binding", FragmentMonthViewBinding.bind(fragment.view!!))
 

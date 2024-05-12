@@ -38,7 +38,7 @@ class WeekViewSimpleAdapter(private val fragmentManager: FragmentManager) :
             DayViewFragment(data.startTime.toLocalDate()) // Replace "YourNewFragment" with the fragment you want to navigate to
         fragmentManager.beginTransaction()
             .replace(
-                R.id.flFragment,
+                R.id.frameLayout_calendarFragment,
                 newFragment
             ) // Replace "R.id.fragmentContainer" with the ID of the container where you want to replace the fragment
             .addToBackStack(null)

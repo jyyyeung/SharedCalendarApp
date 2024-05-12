@@ -41,15 +41,10 @@ class SettingsFragment(private val user: FirebaseUser = FirebaseAuth.getInstance
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
-        Log.i(TAG, prefs.all.toString())
-    }
-
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
 
         val context = preferenceManager.context
         val screen = preferenceManager.preferenceScreen

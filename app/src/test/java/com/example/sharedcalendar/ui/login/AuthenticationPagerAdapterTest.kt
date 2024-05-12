@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import io.mockk.mockk
+import io.mockk.spyk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -20,7 +21,7 @@ class AuthenticationPagerAdapterTest {
     fun setup() {
         fragmentManager = mockk(relaxed = true)
         lifecycle = mockk(relaxed = true)
-        authenticationPagerAdapter = AuthenticationPagerAdapter(fragmentManager, lifecycle)
+        authenticationPagerAdapter = spyk(AuthenticationPagerAdapter(fragmentManager, lifecycle))
     }
 
     @Test

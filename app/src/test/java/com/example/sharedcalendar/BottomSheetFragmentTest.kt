@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.Button
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import com.example.sharedcalendar.models.Event
 import io.mockk.MockKAnnotations
@@ -17,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import java.time.LocalDateTime
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -130,10 +130,11 @@ class BottomSheetFragmentTest : BaseTest() {
         val scenario = launchFragmentInContainer<BottomSheetFragment>(
             themeResId = R.style.Base_Theme_SharedCalendar,
         )
-        scenario.moveToState(Lifecycle.State.RESUMED)
         scenario.onFragment {
             it.onViewCreated(it.requireView(), null)
 
+            it.startDateTime = LocalDateTime.now()
+            it.endDateTime = LocalDateTime.now().plusDays(1)
             it.dateText.text = "2022.12.31"
             it.endDateText.text = "2023.01.01"
             it.timeText.text = "12:00"
@@ -142,6 +143,7 @@ class BottomSheetFragmentTest : BaseTest() {
             it.checkDateIsValid()
 
             assertEquals(true, it.view?.findViewById<Button>(R.id.saveBtn)?.isEnabled)
+
         }
     }
 

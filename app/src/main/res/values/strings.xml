@@ -57,4 +57,9 @@
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="swipe_left_to_register">Swipe Left to Register</string>
+    <string name="tabItem_day">Day</string>
+    <string name="tabItem_week">Week</string>
+    <string name="tabItem_month">Month</string>
+    <string name="fab_addEventButton">Add Event Button</string>
+    <string name="tabItem_halfWeek">3 Days</string>
 </resources>
