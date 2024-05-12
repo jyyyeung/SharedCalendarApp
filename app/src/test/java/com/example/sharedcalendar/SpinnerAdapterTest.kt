@@ -1,21 +1,19 @@
 import android.content.Context
 import android.graphics.Color.parseColor
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import com.example.sharedcalendar.BaseTest
 import com.example.sharedcalendar.Color
+import com.example.sharedcalendar.R
 import com.example.sharedcalendar.SpinnerAdapter
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.spyk
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import com.example.sharedcalendar.R
-import io.mockk.mockkStatic
-import io.mockk.spyk
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class SpinnerAdapterTest : BaseTest() {
@@ -66,6 +64,7 @@ class SpinnerAdapterTest : BaseTest() {
     // Adapter correctly sets text of colorText based on color name
     @Test
     fun test_setTextBasedOnColorName() {
+
         // Arrange
         val items = listOf(Color("Red", "#FF0000"))
         val adapter = spyk(SpinnerAdapter(context, items))

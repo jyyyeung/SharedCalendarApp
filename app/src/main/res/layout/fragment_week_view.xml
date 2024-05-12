@@ -29,22 +29,4 @@
         app:todayBackgroundColor="?attr/colorSurface" />
 
 
-    <!--    <com.google.android.material.appbar.AppBarLayout-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content">-->
-    <!--        <androidx.appcompat.widget.Toolbar-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:id="@+id/WeeklyToolbar"/>-->
-    <!--        <com.kizitonwose.calendar.view.WeekCalendarView-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="match_parent"-->
-    <!--            android:id="@+id/WeekView"-->
-    <!--            app:cv_dayViewResource="@layout/weekly_calender_day"-->
-    <!--            app:cv_daySize="seventhWidth"-->
-    <!--            app:cv_orientation="horizontal"/>-->
-
-
-    <!--</com.google.android.material.appbar.AppBarLayout>-->
-
 </LinearLayout>

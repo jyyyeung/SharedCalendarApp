@@ -2,13 +2,14 @@ package com.example.sharedcalendar
 
 import android.content.Context
 import android.widget.Button
-import android.widget.TextView
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import com.example.sharedcalendar.models.Event
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.spyk
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -17,11 +18,13 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 
+
 @RunWith(RobolectricTestRunner::class)
 class BottomSheetFragmentTest : BaseTest() {
 
     private lateinit var fragment: BottomSheetFragment
     private lateinit var context: Context
+    private lateinit var scenario: FragmentScenario<BottomSheetFragment>
 
     override fun extendedSetup() {
         MockKAnnotations.init(this)
@@ -31,13 +34,18 @@ class BottomSheetFragmentTest : BaseTest() {
         context = mockApplicationContext
         val activity =
             Robolectric.buildActivity(MainActivity::class.java).create().start().resume().get()
-        fragment = spyk(BottomSheetFragment())
+        fragment = BottomSheetFragment()
+
         activity.supportFragmentManager.beginTransaction().apply {
             add(
                 fragment, "bottomSheetFragment"
             )
             commit()
         }
+
+//        scenario = launchFragmentInContainer<BottomSheetFragment>(
+//            themeResId = R.style.Base_Theme_SharedCalendar,
+//        )
 
 
         setField(fragment, "prefs", mockSharedPrefs)
@@ -57,17 +65,22 @@ class BottomSheetFragmentTest : BaseTest() {
     @Test
     fun `onViewCreated sets up date and time pickers`() {
         val events = MutableLiveData<List<Event>>()
-//        every { viewModel.events } returns events
-//        every { viewModel.getGroupedEvents() } returns emptyMap()
+        scenario = launchFragmentInContainer<BottomSheetFragment>(
+            themeResId = R.style.Base_Theme_SharedCalendar,
+        )
+        scenario.onFragment {
+            it.onViewCreated(it.requireView(), null)
 
-//        fragment.onViewCreated(Robolectric.buildActivity(MainActivity::class.java).get(), null)
+            setField(it, "prefs", mockSharedPrefs)
+            setField(it, "firebaseViewModel", spykFirebaseViewModel)
 
-        val dateText = getField<TextView>(fragment, "dateText")
-        assertNotNull(dateText)
-        assertNotNull(fragment.timeText)
-        assertNotNull(fragment.endDateText)
-        assertNotNull(fragment.endTimeText)
-        assertNotNull(fragment.swIsAllDay)
+            assertNotNull(it.timeText)
+            assertNotNull(it.endDateText)
+            assertNotNull(it.endTimeText)
+            assertNotNull(it.swIsAllDay)
+
+        }
+
     }
 
     @Test
@@ -77,38 +90,59 @@ class BottomSheetFragmentTest : BaseTest() {
         every { spykFirebaseViewModel.getGroupedEvents() } returns emptyMap()
 
 //        fragment.onViewCreated(Robolectric.buildActivity(MainActivity::class.java).get(), null)
+        val scenario = launchFragmentInContainer<BottomSheetFragment>(
+            themeResId = R.style.Base_Theme_SharedCalendar,
+        )
+        scenario.onFragment {
+            it.onViewCreated(it.requireView(), null)
+            events.value = mutableListOf(mockk())
 
-        events.value = mutableListOf(mockk())
+            setField(it, "prefs", mockSharedPrefs)
+            setField(it, "firebaseViewModel", spykFirebaseViewModel)
 
-        verify { spykFirebaseViewModel.getGroupedEvents() }
+            verify { spykFirebaseViewModel.getGroupedEvents() }
+        }
+
     }
 
     @Test
     fun `dateCheck disables save button when dates and times are not valid`() {
-//        fragment.onViewCreated(Robolectric.buildActivity(MainActivity::class.java).get(), null)
+        scenario = launchFragmentInContainer<BottomSheetFragment>(
+            themeResId = R.style.Base_Theme_SharedCalendar,
+        )
+        scenario.onFragment {
+            it.onViewCreated(it.requireView(), null)
 
-        fragment.dateText.text = "Date"
-        fragment.endDateText.text = "Date"
-        fragment.timeText.text = "Time"
-        fragment.endTimeText.text = "Time"
+            it.dateText.text = "Date"
+            it.endDateText.text = "Date"
+            it.timeText.text = "Time"
+            it.endTimeText.text = "Time"
 
-        fragment.checkDateIsValid()
+            it.checkDateIsValid()
 
-        assertEquals(false, fragment.view?.findViewById<Button>(R.id.saveBtn)?.isEnabled)
+            assertEquals(false, it.view?.findViewById<Button>(R.id.saveBtn)?.isEnabled)
+        }
     }
 
     @Test
     fun `dateCheck enables save button when dates and times are valid`() {
 //        fragment.onViewCreated(Robolectric.buildActivity(MainActivity::class.java).get(), null)
+        val scenario = launchFragmentInContainer<BottomSheetFragment>(
+            themeResId = R.style.Base_Theme_SharedCalendar,
+        )
+        scenario.moveToState(Lifecycle.State.RESUMED)
+        scenario.onFragment {
+            it.onViewCreated(it.requireView(), null)
 
-        fragment.dateText.text = "2022.12.31"
-        fragment.endDateText.text = "2023.01.01"
-        fragment.timeText.text = "12:00"
-        fragment.endTimeText.text = "12:00"
+            it.dateText.text = "2022.12.31"
+            it.endDateText.text = "2023.01.01"
+            it.timeText.text = "12:00"
+            it.endTimeText.text = "12:00"
 
-        fragment.checkDateIsValid()
+            it.checkDateIsValid()
 
-        assertEquals(true, fragment.view?.findViewById<Button>(R.id.saveBtn)?.isEnabled)
+            assertEquals(true, it.view?.findViewById<Button>(R.id.saveBtn)?.isEnabled)
+        }
     }
 
 

@@ -1,6 +1,5 @@
 package com.example.sharedcalendar
 
-import android.view.View
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.MutableLiveData
 import com.example.sharedcalendar.databinding.FragmentMonthViewBinding
@@ -92,7 +91,7 @@ class MonthViewFragmentTest : BaseTest() {
         every { spykFirebaseViewModel.getGroupedEvents() } returns groupedEvents
         every { spykFirebaseViewModel.events } returns events
 
-        launchFragmentInContainer<MonthViewFragment>()
+        launchFragmentInContainer<MonthViewFragment>(themeResId = R.style.Base_Theme_SharedCalendar)
 
         verify(exactly = 1) { spykFirebaseViewModel.getGroupedEvents() }
         verify(exactly = 1) { spykFirebaseViewModel.events }
@@ -105,7 +104,7 @@ class MonthViewFragmentTest : BaseTest() {
         every { spykFirebaseViewModel.getGroupedEvents() } returns groupedEvents
         every { spykFirebaseViewModel.events } returns events
 
-        launchFragmentInContainer<MonthViewFragment>()
+        launchFragmentInContainer<MonthViewFragment>(themeResId = R.style.Base_Theme_SharedCalendar)
 
         events.postValue(groupedEvents.values.flatten().toMutableList())
 

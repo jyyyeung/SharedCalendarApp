@@ -1,31 +1,15 @@
 package com.example.sharedcalendar
 
 import android.content.Context
-import android.graphics.Color.parseColor
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.test.core.app.ApplicationProvider
 import com.alamkanak.weekview.WeekView
-import com.alamkanak.weekview.WeekViewEntity
-import com.example.sharedcalendar.models.Event
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import com.example.sharedcalendar.WeekViewFragment
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import java.time.LocalDateTime
-import com.example.sharedcalendar.WeekViewFragment
-import com.example.sharedcalendar.models.Calendar
-import io.mockk.core.ValueClassSupport.maybeUnboxValueForMethodReturn
-import io.mockk.spyk
 import org.robolectric.Robolectric
-import org.robolectric.Shadows
+import org.robolectric.RobolectricTestRunner
 import java.time.LocalDate
 
 @RunWith(RobolectricTestRunner::class)
@@ -46,7 +30,8 @@ class WeekViewFragmentTest : BaseTest() {
             commit()
         }
 
-        scenario = launchFragmentInContainer<WeekViewFragment>()
+        scenario =
+            launchFragmentInContainer<WeekViewFragment>(themeResId = R.style.Base_Theme_SharedCalendar)
 
         setField(fragment, "firebaseViewModel", spykFirebaseViewModel)
         fragmentScenario = FragmentScenario.launchInContainer(WeekViewFragment::class.java)

@@ -65,7 +65,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         val today = LocalDateTime.now()
 
-
         //Handle Click on StartDate
         dateText = view.findViewById(R.id.startDateTV)
         timeText = view.findViewById(R.id.startTimeTV)
