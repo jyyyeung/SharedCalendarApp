@@ -8,10 +8,13 @@
     android:isScrollContainer="true"
     android:orientation="vertical"
     android:padding="10dp"
+    android:windowSoftInputMode="adjustPan"
     app:layout_behavior="com.google.android.material.behavior.BottomSheetBehavior">
+
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
         android:id="@+id/dhAddEvent"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
