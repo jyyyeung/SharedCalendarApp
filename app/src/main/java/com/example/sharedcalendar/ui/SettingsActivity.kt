@@ -57,6 +57,7 @@ class SettingsFragment(private val user: FirebaseUser = FirebaseAuth.getInstance
         val lpDefaultView: ListPreference? = findPreference("calendar_view")
         lpDefaultView?.key = "${user.uid}|default|view"
         lpDefaultView?.setDefaultValue("month")
+        lpDefaultView?.value = prefs.getString("${user.uid}|default|view", "month")
 
         val lpDefaultCalendar: ListPreference? = findPreference("default_calendar")
         lpDefaultCalendar?.key = "${user.uid}|default|calendar"

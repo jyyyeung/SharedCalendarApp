@@ -37,13 +37,13 @@
         android:paddingBottom="30dp">
 
 
-        <com.google.android.material.textfield.TextInputEditText
-
+        <EditText
             android:id="@+id/etNewEventName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
+            android:autofillHints=""
             android:enabled="true"
             android:focusedByDefault="true"
             android:hint="Add Title"
@@ -55,7 +55,6 @@
             android:paddingBottom="30dp"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:textColor="@color/black"
             android:textSize="30sp"
             android:visibility="visible"
             tools:visibility="visible" />

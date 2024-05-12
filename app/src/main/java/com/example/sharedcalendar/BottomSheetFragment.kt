@@ -1,5 +1,6 @@
 package com.example.sharedcalendar
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.SharedPreferences
@@ -58,6 +59,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         return inflater.inflate(R.layout.bottom_window, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
@@ -70,8 +72,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         endDateText = view.findViewById(R.id.endDateTV)
         endTimeText = view.findViewById(R.id.endTimeTV)
         swIsAllDay = view.findViewById(R.id.swIsAllDay)
-
-        dateText.text = "Date"
 
         //Handle Click on StartDate
         dateText.setOnClickListener {
@@ -291,10 +291,10 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         // If Start Date time is after End Date time, show error and disable save button
         val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
         if (startDateTime.isAfter(endDateTime)) {
-            startDateLL?.setBackgroundColor(resources.getColor(R.color.highlight_red))
+            startDateLL?.setBackgroundColor(resources.getColor(R.color.md_theme_error))
             saveBtn?.isEnabled = false
         } else {
-            startDateLL?.setBackgroundColor(resources.getColor(R.color.white))
+            startDateLL?.setBackgroundColor(resources.getColor(R.color.md_theme_background))
             saveBtn?.isEnabled = true
         }
 
