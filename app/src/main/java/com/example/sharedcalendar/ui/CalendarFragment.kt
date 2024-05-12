@@ -89,6 +89,7 @@ class CalendarFragment : Fragment() {
                             getString(R.string.tabItem_day) -> dayViewFragment
                             else -> defaultViewModeFragment
                         }
+
                     // Handle tab select
                     childFragmentManager.beginTransaction().apply {
                         // Replace fragment with month view fragment
@@ -111,9 +112,12 @@ class CalendarFragment : Fragment() {
 
         // By default, the view fragment is month view fragment
         childFragmentManager.beginTransaction().apply {
-            // Set Default View based on user preferences
-            replace(R.id.frameLayout_calendarFragment, defaultViewModeFragment)
-            commit()
+            when (prefs.getString("${FirebaseAuth.getInstance().uid}|default|view", "month")) {
+                "week" -> tabLayout.getTabAt(1)?.select()
+                "month" -> tabLayout.getTabAt(0)?.select()
+                "3-day" -> tabLayout.getTabAt(2)?.select()
+                "day" -> tabLayout.getTabAt(3)?.select()
+            }
         }
 
         // When Click AddEvent Button
