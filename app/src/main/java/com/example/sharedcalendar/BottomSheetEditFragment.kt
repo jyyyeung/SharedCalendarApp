@@ -2,7 +2,6 @@ package com.example.sharedcalendar
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,61 +14,60 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
-import androidx.preference.PreferenceManager
+import com.example.sharedcalendar.models.Event
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.materialswitch.MaterialSwitch
-import com.google.common.annotations.VisibleForTesting
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import sharefirebasepreferences.crysxd.de.lib.SharedFirebasePreferences
 import java.time.LocalDateTime
 import kotlin.random.Random
 
 
-class BottomSheetFragment : BottomSheetDialogFragment() {
-    private lateinit var prefs: SharedPreferences
+class BottomSheetEditFragment() : BottomSheetDialogFragment(){
+    private lateinit var prefs: SharedFirebasePreferences
     private lateinit var firebaseViewModel: FirebaseViewModel
 
-    @VisibleForTesting
-    lateinit var startDateTime: LocalDateTime
+    private lateinit var startDateTime: LocalDateTime
+    private lateinit var endDateTime: LocalDateTime
+    private lateinit var dateText: TextView
+    private lateinit var timeText: TextView
+    private lateinit var endDateText: TextView
+    private lateinit var endTimeText: TextView
+    private lateinit var swIsAllDay: MaterialSwitch
+    private lateinit var thisEvent : Event
+    private lateinit var etNewEventName : EditText
+    private lateinit var etNewEventDescription : EditText
 
-    @VisibleForTesting
-    lateinit var endDateTime: LocalDateTime
-
-    @VisibleForTesting
-    lateinit var dateText: TextView
-
-    @VisibleForTesting
-    lateinit var timeText: TextView
-
-    @VisibleForTesting
-    lateinit var endDateText: TextView
-
-    @VisibleForTesting
-    lateinit var endTimeText: TextView
-
-    @VisibleForTesting
-    lateinit var swIsAllDay: MaterialSwitch
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
+        prefs = SharedFirebasePreferences.getDefaultInstance(context)
         firebaseViewModel = ViewModelProvider(requireActivity())[FirebaseViewModel::class.java]
 
-        return inflater.inflate(R.layout.bottom_window, container, false)
+        return inflater.inflate(R.layout.bottom_window_edit, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle? ) {
 
         super.onViewCreated(view, savedInstanceState)
         val today = LocalDateTime.now()
 
 
-        //Handle Click on StartDate
-        dateText = view.findViewById(R.id.startDateTV)
-        timeText = view.findViewById(R.id.startTimeTV)
-        endDateText = view.findViewById(R.id.endDateTV)
-        endTimeText = view.findViewById(R.id.endTimeTV)
-        swIsAllDay = view.findViewById(R.id.swIsAllDay)
+
+
+        dateText = view.findViewById(R.id.edit_startDateTV)
+        timeText = view.findViewById(R.id.edit_startTimeTV)
+        endDateText = view.findViewById(R.id.edit_endDateTV)
+        endTimeText = view.findViewById(R.id.edit_endTimeTV)
+        swIsAllDay = view.findViewById(R.id.edit_swIsAllDay)
+        etNewEventName = view.findViewById<EditText>(R.id.edit_etNewEventName)
+        etNewEventDescription = view.findViewById<EditText>(R.id.edit_etNewEventDescription)
+
+        SetupView()
+
+
 
         //Handle Click on StartDate
         dateText.setOnClickListener {
@@ -91,9 +89,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                     Log.d("StartDate", "StartDate: $startDateTime")
                     dateCheck()
                 },
-                (LocalDateTime.now().year),
-                (LocalDateTime.now().month.value - 1),
-                (LocalDateTime.now().dayOfMonth)
+                (thisEvent.startTime.year),
+                (thisEvent.startTime.month.value - 1),
+                (thisEvent.startTime.dayOfMonth)
             )
 
             datePickerDialog.show()
@@ -120,9 +118,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                     Log.d("StartDate", "endDate: $endDateTime")
                     dateCheck()
                 },
-                (LocalDateTime.now().year),
-                (LocalDateTime.now().month.value - 1),
-                (LocalDateTime.now().dayOfMonth)
+                (thisEvent.endTime.year),
+                (thisEvent.endTime.monthValue - 1),
+                (thisEvent.endTime.dayOfMonth)
             )
 
             datePickerDialog.show()
@@ -143,7 +141,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                         )
                     dateCheck()
                     Log.d("StartDate", "startDate: $startDateTime")
-                }, 15, 30, false
+                }, thisEvent.startTime.hour, thisEvent.startTime.minute, false
             )
             timePickerDialog.show()
         }
@@ -164,7 +162,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                         )
                     dateCheck()
                     Log.d("StartDate", "endDate: $endDateTime")
-                }, 15, 30, false
+                }, thisEvent.endTime.hour, thisEvent.endTime.minute, false
             )
             timePickerDialog.show()
         }
@@ -172,7 +170,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         loadColor()
 
         //Cancel Button
-        val cancelBtn = view.findViewById<Button>(R.id.cancelBtn)
+        val cancelBtn = view.findViewById<Button>(R.id.edit_cancelBtn)
         cancelBtn.setOnClickListener {
             this.dismiss()
         }
@@ -191,9 +189,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
 
         //Color select
-        val colorText = view.findViewById<TextView>(R.id.colorTextView)
+        val colorText = view.findViewById<TextView>(R.id.edit_colorTextView)
         colorText.setOnClickListener {
-            val spinner = view.findViewById<Spinner>(R.id.colorSpinner)
+            val spinner = view.findViewById<Spinner>(R.id.edit_colorSpinner)
             spinner?.performClick()
 
         }
@@ -201,10 +199,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         // TODO: Cannot edit Description after new event input
         // TODO: (later) allow user to choose which calendar to add to
         // TODO: Validate input fields
-        val etNewEventName = view.findViewById<EditText>(R.id.etNewEventName)
-        val etNewEventDescription = view.findViewById<EditText>(R.id.etNewEventDescription)
+
         //Save Button
-        val saveBtn = view.findViewById<Button>(R.id.saveBtn)
+        val saveBtn = view.findViewById<Button>(R.id.edit_saveBtn)
         saveBtn.setOnClickListener {
 
             var startHour = 0
@@ -226,15 +223,14 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 endMinute = eMinute
             }
 
-            var defaultCalendar =
-                prefs.getString("${FirebaseAuth.getInstance().uid}|default|calendar", null)
-            Log.i(TAG, defaultCalendar.toString())
+            var defaultCalendar = prefs.getString("default_calendar", null)
+            //Log.i(BottomSheetFragment.TAG, defaultCalendar.toString())
             if (defaultCalendar.isNullOrBlank()) {
                 defaultCalendar = (activity as MainActivity).getCalendarId()
             }
 
 
-            val newEvent: HashMap<String, Any?> = hashMapOf(
+            val newEvent = hashMapOf(
                 "longId" to Random.nextLong(until = Long.MAX_VALUE),
                 "calendarId" to defaultCalendar,
                 "title" to etNewEventName.text.toString(),
@@ -249,34 +245,53 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 "color" to selectedColor.code
             )
 //
-//            val db = Firebase.firestore
-//            db.collection("events").add(newEvent).addOnSuccessListener { documentReference ->
-//                Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-//                documentReference.get().addOnSuccessListener { result ->
-//                    val event = result.toObject(Event::class.java)
-//                    if (event is Event) {
-//                        event.id = result.id
-//                        event.startTime =
-//                            LocalDateTime.parse(result.get("startTimestamp").toString())
-//                        event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
-//                        firebaseViewModel.addEventToCalendar(event)
-//                    }
-//                    firebaseViewModel.getCurrentMonthEvents()
-//
-//                    this.dismiss()
-//                }
-//            }.addOnFailureListener { e ->
-//                Log.w(TAG, "Error adding document", e)
-            firebaseViewModel.addEventToCalendar(newEvent).run {
-                this@BottomSheetFragment.dismiss()
+            val db = Firebase.firestore
+            db.collection("events").add(newEvent).addOnSuccessListener { documentReference ->
+                //Log.d(BottomSheetFragment.TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+                documentReference.get().addOnSuccessListener { result ->
+                    val event = result.toObject(Event::class.java)
+                    if (event is Event) {
+                        event.id = result.id
+                        event.startTime =
+                            LocalDateTime.parse(result.get("startTimestamp").toString())
+                        event.endTime = LocalDateTime.parse(result.get("endTimestamp").toString())
+                        firebaseViewModel.addEventToCalendar(event)
+                    }
+                    firebaseViewModel.getCurrentMonthEvents()
+
+                    this.dismiss()
+                }
+            }.addOnFailureListener { e ->
+                //Log.w(BottomSheetFragment.TAG, "Error adding document", e)
             }
+
         }
+
+        dateCheck()
+
+
     }
 
+    fun parseEvent(event:Event){
+        thisEvent = event
+    }
+    fun SetupView(){
+        dateText.text = thisEvent.startTime.toLocalDate().toString()
+        timeText.text = "${thisEvent.startTime.hour}:${thisEvent.startTime.minute}"
+        endDateText.text = thisEvent.endTime.toLocalDate().toString()
+        endTimeText.text = "${thisEvent.endTime.hour}:${thisEvent.endTime.minute}"
+        swIsAllDay.isChecked = thisEvent.isAllDay
+        etNewEventName.setText(thisEvent.title)
+        etNewEventDescription.setText(thisEvent.description)
+
+        startDateTime = thisEvent.startTime
+        endDateTime = thisEvent.endTime
+
+    }
 
     fun dateCheck() {
         Log.d("dateCheck", "Checking Date")
-        val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
+        val saveBtn = view?.findViewById<Button>(R.id.edit_saveBtn)
         //Do nothing if not yet picked all date
         if (dateText.text == "Date") {
             saveBtn?.isEnabled = false
@@ -309,13 +324,13 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
 
         if (startDateTime.isAfter(endDateTime)) {
-            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
+            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_edit_text2_layout)
 
             startDateLL?.setBackgroundColor(resources.getColor(R.color.highlight_red))
             saveBtn?.isEnabled = false
         } else {
-            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_text2_layout)
-            val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
+            val startDateLL = view?.findViewById<LinearLayout>(R.id.bottom_window_edit_text2_layout)
+            //val saveBtn = view?.findViewById<Button>(R.id.saveBtn)
             startDateLL?.setBackgroundColor(resources.getColor(R.color.white))
             saveBtn?.isEnabled = true
         }
@@ -324,6 +339,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
     companion object {
         private val TAG: String? = BottomSheetFragment::class.java.name
+
     }
 
 
@@ -354,3 +370,4 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
 
 }
+

@@ -110,15 +110,22 @@ class MonthViewFragment : Fragment(R.layout.fragment_month_view) {
             val binding = CalendarDayBinding.bind(view)
 
             init {
-                // On click listener for each day "cell"
+                // Click listener for each day
                 view.setOnClickListener {
                     if (day.position == DayPosition.MonthDate) {
                         if (selectedDate != day.date) {
                             val oldDate = selectedDate
                             selectedDate = day.date
-                            val binding = this@MonthViewFragment.binding
-                            binding.MonthViewCalendar.notifyDateChanged(day.date)
-                            oldDate?.let { binding.MonthViewCalendar.notifyDateChanged(it) }
+                            parentFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment,DayViewFragment(selectedDate!!))
+                                addToBackStack(null)
+                                commit()
+                            }
+
+
+//                            val binding = this@MonthViewFragment.binding
+//                            binding.MonthViewCalendar.notifyDateChanged(day.date)
+//                            oldDate?.let { binding.MonthViewCalendar.notifyDateChanged(it) }
                         }
                     }
                 }

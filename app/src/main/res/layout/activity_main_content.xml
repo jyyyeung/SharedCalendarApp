@@ -19,23 +19,7 @@
             android:paddingRight="10dp"
             android:contentDescription="@string/toggle_sidebar"
             android:src="@drawable/round_menu_24" />
-        <Button
-            android:id="@+id/weekBtn"
-            android:layout_width="wrap_content"
-            android:background="@drawable/round_button"
 
-            android:layout_height="wrap_content"
-            android:paddingRight="15dp"
-            android:text="Week" />
-
-        <Button
-            android:id="@+id/monthBtn"
-            android:layout_width="wrap_content"
-            android:paddingLeft="10dp"
-            android:textAlignment="center"
-            android:layout_height="wrap_content"
-            android:background="@drawable/round_button"
-            android:text="Month" />
 
     </androidx.appcompat.widget.Toolbar>
 
